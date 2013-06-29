@@ -1,0 +1,112 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+{{ escape(topic.node.name) }}
+{% end %}
+{% block style %}
+  {% if topic.node.icon_img %}
+  <link rel="shortcut icon" href="{{ topic.node.icon }}" type="image/x-icon" />
+  {% end %}
+  {% if topic.node.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ topic.node.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if topic.node.style %}
+  <style type="text/css">
+    {{ topic.node.style }}
+  </style>
+  {% end %}
+<!--
+<link rel="stylesheet" href="{{ static_url('js/ext/redactor/redactor.css') }}" />
+-->
+<link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
+<script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
+{% end %}
+{% block script %}
+<!--
+<script src="{{ static_url('js/ext/redactor/zh_cn.js') }}"></script>
+<script src="{{ static_url('js/ext/redactor/redactor.min.js') }}"></script>
+<script type="text/javascript">
+  $('#editor').redactor();
+</script>
+-->
+<script src="{{ static_url('js/ext/ueditor/ueditor.config.js') }}"></script>
+<script src="{{ static_url('js/ext/ueditor/ueditor.all.min.js') }}"></script>
+<script type="text/javascript">
+  var width = $('#shape').width();
+  var ue = new UE.ui.Editor({initialFrameWidth: width * 0.75, initialFrameHeight: 200});
+  if ($('#editor').length > 0) {
+    ue.render("editor");
+  }
+</script>
+
+<!--
+<script src="{{ static_url('js/ext/ui/jquery.ui.core.js') }}"></script>
+<script src="{{ static_url('js/ext/ui/jquery.ui.widget.js') }}"></script>
+<script src="{{ static_url('js/ext/ui/jquery.ui.position.js') }}"></script>
+<script src="{{ static_url('js/ext/ui/jquery.ui.menu.js') }}"></script>
+<script src="{{ static_url('js/ext/ui/jquery.ui.autocomplete.js') }}"></script>
+<script src="{{ static_url('js/ext/triggeredAutocomplete/jquery-ui.triggeredAutocomplete.js') }}"></script>
+-->
+
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.iframe-transport.js') }}"></script>
+<!-- The basic File Upload plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload.js') }}"></script>
+<!-- The File Upload file processing plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-fp.js') }}"></script>
+<!-- The File Upload user interface plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-ui.js') }}"></script>
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+<!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
+
+<script src="{{ static_url('js/topic.js') }}"></script>
+{% end %}
+{% block node_id_param %}
+?node_id={{ topic.node.id }}
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="/nodes">节点</a>
+  </li>
+  <li>
+    <a href="{{ topic.node.url }}">{{ escape(topic.node.name) }}</a>
+  </li>
+</ul>
+{{ modules.TopicWrap(topic) }}
+<div class="organ reply-list">
+  <ul class="nav clearfix">
+    <li {% if category == 'all' %}class="on"{% end %}><a href="{{ topic.url }}">评论列表</a></li>
+    <li {% if category == 'hot' %}class="on"{% end %}><a href="{{ topic.url }}?category=hot">热门评论</a></li>
+  </ul>
+  {{ modules.ReplyList(replies) }}
+  <script type="text/javascript">
+    SyntaxHighlighter.all();
+  </script>
+</div>
+{{ modules.Page(page=page, page_count=page_count, url=url) }}
+{% if current_user %}
+<div class="organ reply-create">
+  <div class="organ-head no-border">
+    评论创建
+  </div>
+  <div class="organ-body">
+    {{ modules.ReplyForm(form=form, topic=topic, page=page, button="发布") }}
+    <form style="display: none;" method="post" action="/image/upload" enctype="multipart/form-data" method="post">
+      <input id='pic-select' type="file" name="myimage" data-url="/image/upload" multiple />
+      {{ xsrf_form_html() }}
+    </form>
+  </div>
+</div>
+{% end %}
+{% end %}

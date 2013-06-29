@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% block subtitle %}首页{% end %} - {{ handler.settings['site_title'] }}{% end %}</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ static_url('css/base.css') }}" />
+    {% block style %}{% end %}
+  </head>
+  <body>
+    <!--[if lte IE 8]>
+      <div class="error chromeframe">您正在使用<strong>漏洞百出</strong>的浏览器，为了正常地访问本网站，请升级您的浏览器 <a target="_blank" href="http://browsehappy.com">立即升级</a></div>
+    <![endif]-->
+    <div id="shape" class="shape">
+      <div id="head">
+        {% block head %}
+        <div class="logo"></div>
+        <ul class="menu">
+          {% if current_user %}
+          {% if current_user.is_admin %}
+          <li class="add-node"><a title="添加节点" class="icon-tag" href="/node/create{% block node_id_param %}{% end %}"></a></li>
+          {% end %}
+          <li class="add-topic"><a title="添加主题" class="icon-plus" href="/topic/create{% block node_id_param %}{% end %}"></a></li>
+          <li class="notification">
+            {% if current_user.unread_notification_count > 0 %}
+            <a title="提醒" class="icon-bell-alt" href="/notifications?category=unread">
+              <span class="count">
+                {{ current_user.unread_notification_count }}
+              </span>
+            </a>
+            {% else %}
+            <a title="提醒" class="icon-bell-alt" href="/notifications"></a>
+            {% end %}
+          </li>
+          <li class="message">
+            {% if current_user.unread_message_box_count > 0 %}
+            <a title="私信" class="icon-envelope-alt" href="/messages?category=unread">
+              <span class="count">
+                {{ current_user.unread_message_box_count }}
+              </span>
+            </a>
+            {% else %}
+            <a title="私信" class="icon-envelope-alt" href="/messages"></a>
+            {% end %}
+          </li>
+          <li class="setting"><a title="设置" class="icon-cog" href="/account/setting"></a></li>
+          <li class="home"><a title="个人主页" class="icon-user" href="{{ current_user.url }}"></a></li>
+          {% else %}
+          <li class="signin"><a title="登录" class="icon-signin" href="/signin"></a></li>
+          <li class="signup"><a title="注册" class="icon-plus-sign" href="/signup"></a></li>
+          {% end %}
+        </ul>
+        {% end %}
+      </div>
+      <div id="body">
+        {% block body %}{% end %}
+      </div>
+    </div>
+    <span class="request_time">&#160;&#160;{% set request_time = 1000.0 * handler.request.request_time() %}{{ "%.2f ms" % request_time }}</span>
+    <script type="text/javascript" src="http://tajs.qq.com/stats?sId=25280217" charset="UTF-8"></script>
+  </body>
+  <script src="{{ static_url('js/jquery.js') }}"></script>
+  <script src="{{ static_url('js/ext/template.min.js') }}"></script>
+  <script src="{{ static_url('js/base.js') }}"></script>
+  {% set flash_messages = handler.flash_message() %}
+  {% if flash_messages %}
+    <script>
+      {% for flash_cate, flash_msg in flash_messages %}
+      var result = {'status': '{{ flash_cate }}', 'message': '{{ flash_msg }}'};
+      noty(result, true);
+      {% end %}
+    </script>
+  {% end %}
+  {% block script %}{% end %}
+</html>

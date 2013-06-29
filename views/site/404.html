@@ -1,0 +1,23 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+404
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+</ul>
+<div class="organ nav-shadow">
+  <div class="fzf">
+    <div class="title">
+      抱歉，此页面不存在
+    </div>
+    <div class="control">
+      <a href="/">返回首页</a>
+    </div>
+    <img src="/static/public/img/404-error.jpg">
+  </div>
+</div>
+{% end %}

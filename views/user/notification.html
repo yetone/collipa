@@ -1,0 +1,53 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+  <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
+  {% if current_user.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ current_user.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if current_user.style %}
+  <style type="text/css">
+    {{ current_user.style }}
+  </style>
+  {% end %}
+  <link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
+  <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/user.js') }}"></script>
+<script>
+  $('.notification .count').remove();
+</script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="/users">用户</a>
+  </li>
+  <li>
+    <a href="{{ current_user.url }}">{{ escape(current_user.nickname) }}</a>
+  </li>
+  <li class="now">
+    提醒
+  </li>
+</ul>
+<div class="organ notification-list nav-shadow">
+  <ul class="nav clearfix no-top-border">
+    <li {% if category == 'unread' %}class="on"{% end %}>
+      <a href="/notifications?category=unread">未读</a>
+    </li>
+    <li {% if category == 'all' %}class="on"{% end %}>
+      <a href="/notifications">全部</a>
+    </li>
+  </ul>
+  {{ modules.NotificationList(notifications=current_user.get_notifications(page=page, category=category)) }}
+</div>
+{% end %}

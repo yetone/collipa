@@ -1,0 +1,14 @@
+<ul class="users">
+  {% for user in users %}
+  <li>
+    <a title="{{ escape(user.nickname) }}" href="{{ user.url }}">
+      <div class="avatar">
+        <img class="avatar" src="{{ user.get_avatar(size=128) }}">
+      </div>
+      <div class="username">
+        <span>{{ escape(user.nickname) }}</span>
+      </div>
+    </a>
+  </li>
+  {% end %}
+</ul>

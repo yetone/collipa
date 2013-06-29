@@ -1,0 +1,57 @@
+
+<div class="organ profile-head nav-shadow">
+  <div class="profile-card clearfix">
+    <a href="">
+      <img class="avatar" src="{{ user.get_avatar(size=128) }}">
+    </a>
+    <div class="detail">
+      <strong>{{ escape(user.nickname) }}</strong>
+      <small>第 {{ user.id }} 号会员，创建于 {{ user.created }}</small>
+      <div class="description">{{ escape(user.description) }}</div>
+      <ul class="profile-list">
+        {% if user.address %}
+        <li>
+          <i class="icon-map-marker"></i> {{ escape(user.address) }}
+        </li>
+        {% end %}
+        {% if user.website %}
+        <li>
+          <i class="icon-globe"></i>
+          <a href="{{ escape(user.website) }}">{{ escape(user.website) }}</a>
+        </li>
+        {% end %}
+      </ul>
+    </div>
+    <ul class="status">
+      <li>
+        <a href="{{ user.url }}/topics"><span>{{ user.topic_count }}</span>主题</a>
+      </li>
+      <li>
+        <a href="{{ user.url }}/replies"><span>{{ user.reply_count }}</span>评论</a>
+      </li>
+      <li>
+        <a href="{{ user.url }}/followings"><span>{{ user.following_count }}</span>正在关注</a>
+      </li>
+      <li>
+        <a href="{{ user.url }}/followers"><span>{{ user.follower_count }}</span>关注者</a>
+      </li>
+    </ul>
+  </div>
+  <div class="profile-data">
+    <div class="profile-info-list">
+      <span class="profile-info-title">获得</span>
+      <span class="profile-info-up"><i class="icon-thumbs-up"></i> {{ user.up_count }} 赞同</span>
+      <span class="profile-info-thank"><i class="icon-heart"></i> {{ user.thank_count }} 感谢</span>
+    </div>
+    {% if current_user and current_user != user %}
+    <div class="profile-action">
+      {% if current_user.is_followed(user=user) %}
+      <a title="取消关注" class="btn unfo" href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow">已关注</a>
+      {% else %}
+      <a title="关注" class="btn fo" href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow">关注</a>
+      {% end %}
+      <a class="btn mail" title="私信" href="/message/create?user_id={{ user.id }}"><i class="icon-envelope"></i></a>
+    </div>
+    {% end %}
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<ul class="parent-nodes">
+  {% for node in nodes %}
+  <li id="{{ node.urlname }}">
+    <a href="{{ node.url }}">
+      <div class="node-tag">
+        <img class="icon" align="absmiddle" src="{{ node.icon }}">
+        <span class="name">
+          {{ escape(node.name) }}
+        </span>
+      </div>
+      <div class="description">
+        {{ node.summary }}
+      </div>
+    </a>
+  </li>
+  {% end %}
+</ul>

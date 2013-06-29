@@ -1,0 +1,97 @@
+{% if replies %}
+<ul class="item-list">
+  {% for reply in replies %}
+  <li id="reply-{{ reply.floor }}" data-id="{{ reply.id }}" class="item clearfix">
+    <a class="avatar fl" href="{{ reply.author.url }}">
+      <img class="avatar" src="{{ reply.author.get_avatar(size=48) }}">
+    </a>
+    <div class="item-content">
+      <div class="author-info">
+        <a class="name" data-name="{{ reply.author.name }}" href="{{ reply.author.url }}">{{ escape(reply.author.nickname) }}</a>
+        <span>{{ reply.floor }} 楼,</span>
+        <a class="time" href="{{ reply.url }}">{{ reply.created }}</a>
+        {% if reply.updated_at != reply.created_at %}
+        <a title="有 {{ reply.history_count }} 次修改记录" class="icon-edit-sign edit-count reply-edit-count" href="{{ reply.url }}/history"></a>
+        {% end %}
+      </div>
+      <div class="content reply-content">
+        {{ reply.content }}
+      </div>
+      <div class="meta">
+        {% if current_user %}
+        <ul class="vote clearfix hidden">
+          {% if current_user.is_uped(reply=reply) %}
+          <li class="up pressed">
+            <a title="取消赞同" href="{{ reply.url }}?action=up"><i class="icon-thumbs-up"></i> 已赞同({{ reply.up_count }})</a>
+          </li>
+          {% else %}
+          <li class="up">
+            <a title="赞同" href="{{ reply.url }}?action=up"><i class="icon-thumbs-up"></i> 赞同({{ reply.up_count }})</a>
+          </li>
+          {% end %}
+          {% if current_user.is_downed(reply=reply) %}
+          <li class="down pressed">
+            <a title="取消反对" href="{{ reply.url }}?action=down"><i class="icon-thumbs-down"></i> 已反对({{ reply.down_count }})</a>
+          </li>
+          {% else %}
+          <li class="down">
+            <a title="反对" href="{{ reply.url }}?action=down"><i class="icon-thumbs-down"></i> 反对({{ reply.down_count }})</a>
+          </li>
+          {% end %}
+          {% if current_user.is_collected(reply=reply) %}
+          <li class="collect pressed">
+            <a title="取消收藏" href="{{ reply.url }}?action=collect"><i class="icon-bookmark"></i> 已收藏</a>
+          </li>
+          {% else %}
+          <li class="collect">
+            <a title="收藏" href="{{ reply.url }}?action=collect"><i class="icon-bookmark"></i> 收藏</a>
+          </li>
+          {% end %}
+          {% if current_user != reply.author %}
+            {% if current_user.is_thanked(reply=reply) %}
+            <li class="thank pressed">
+              <a href="{{ reply.url }}?action=thank"><i class="icon-heart"></i> 已感谢</a>
+            </li>
+            {% else %}
+            <li class="thank">
+              <a title="感谢" href="{{ reply.url }}?action=thank"><i class="icon-heart"></i> 感谢</a>
+            </li>
+            {% end %}
+            <li class="more">
+              <a title="更多" href="#;"><i class="icon-ellipsis-horizontal"></i></a>
+              <ul class="menu-list">
+                {% if current_user.is_reported(reply=reply) %}
+                <li class="collect pressed">
+                  <a title="取消举报" href="{{ reply.url }}?action=report"><i class="icon-flag"></i> 已举报</a>
+                </li>
+                {% else %}
+                <li class="collect">
+                  <a title="举报" href="{{ reply.url }}?action=report"><i class="icon-flag"></i> 举报</a>
+                </li>
+                {% end %}
+              </ul>
+            </li>
+          {% else %}
+          <li class="edit">
+            <a title="修改" href="{{ reply.url }}/edit"><i class="icon-pencil"></i> 修改</a>
+          </li>
+          {% end %}
+        </ul>
+        <ul class="action clearfix">
+          <li class="reply">
+            <a title="回复" href="#;"><i class="icon-reply"></i></a>
+          </li>
+        </ul>
+        {% end %}
+      </div>
+    </div>
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无评论
+  </div>
+</div>
+{% end %}

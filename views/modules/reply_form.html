@@ -1,0 +1,34 @@
+<form action="{% if action %}{{ action }}{% else %}/reply/create?topic_id={{ topic.id }}{% end %}" method="post" class="fm">
+  {{ xsrf_form_html() }}
+  <input type="hidden" name="page" value="{{ page }}">
+  {% for field in form %}
+  {% if field.name == 'content' %}
+    <div class="status-msg"></div>
+  {% end %}
+  <div class="fm-row">
+    <div class="fm-item{% if field.required %} fm-required{% end %}">
+      {{ field.label() }} 
+      <script id="editor" type="text/plain" name="{{ field.name }}">{{ field._value() }}</script>
+      <!--
+      <textarea id="editor" name="content"></textarea>
+      -->
+    </div>
+    {% if field.errors or field.description %}
+    <div class="fm-explain">
+      {% if field.errors %}
+      <ul class="fm-error">
+        {% for error in field.errors %}
+        <li>{{ error }}</li>
+        {% end %}
+      </ul>
+      {% else %}
+      {{ field.description }}
+      {% end %}
+    </div>
+    {% end %}
+  </div>
+  {% end %}
+  <div class="fm-action">
+    <button data-id="{{ topic.id }}" type="submit" class="btn">{{ button }}</button>
+  </div>
+</form>

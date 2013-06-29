@@ -1,0 +1,22 @@
+{% if histories %}
+<div class="history-list">
+  {% for history in histories %}
+  <div class="history no-padding history_{{ history.id }} clearfix">
+    <div class="history-meta">
+      <a class="author-name" href="{{ history.author.url }}">{{ escape(history.author.nickname) }}</a>
+      修改于
+      <a class="time" href="{{ history.item.url }}">{{ history.created }}</a>
+    </div>
+    <div class="history-content">
+      {{ history.content }}
+    </div>
+  </div>
+  {% end %}
+</div>
+{% else %}
+<div class="explain">
+  <div>
+    暂无历史记录
+  </div>
+</div>
+{% end %}

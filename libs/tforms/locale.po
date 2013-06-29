@@ -1,0 +1,121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2011
+# This file is distributed under the same license as the tforms package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-10-23 16:57+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: fields.py:365
+msgid "Not a valid integer value"
+msgstr ""
+
+#: fields.py:385
+msgid "Not a valid float value"
+msgstr ""
+
+#: fields.py:432
+msgid "Not a valid datetime value"
+msgstr ""
+
+#: fields.py:450
+msgid "Not a valid date value"
+msgstr ""
+
+#: fields.py:514
+msgid "Invalid Choice: could not coerce"
+msgstr ""
+
+#: fields.py:521
+msgid "Not a valid choice"
+msgstr ""
+
+#: fields.py:547
+msgid "Invalid choice(s): one or more data inputs could not be coerced"
+msgstr ""
+
+#: fields.py:554
+#, python-format
+msgid "'%(value)s' is not a valid choice for this field"
+msgstr ""
+
+#: validators.py:49
+#, python-format
+msgid "Invalid field name '%s'."
+msgstr ""
+
+#: validators.py:56
+#, python-format
+msgid "Field must be equal to %(other_name)s."
+msgstr ""
+
+#: validators.py:91
+#, python-format
+msgid "Field must be at least %(min)d character long."
+msgstr ""
+
+#: validators.py:94
+#, python-format
+msgid "Field cannot be longer than %(max)d character."
+msgstr ""
+
+#: validators.py:97
+#, python-format
+msgid "Field must be between %(min)d and %(max)d characters long."
+msgstr ""
+
+#: validators.py:132
+#, python-format
+msgid "Number must be greater than %(min)s."
+msgstr ""
+
+#: validators.py:134
+#, python-format
+msgid "Number must be less than %(max)s."
+msgstr ""
+
+#: validators.py:136
+#, python-format
+msgid "Number must be between %(min)s and %(max)s."
+msgstr ""
+
+#: validators.py:157
+msgid "This field is required."
+msgstr "此空必须填入"
+
+#: validators.py:185
+msgid "Invalid input."
+msgstr ""
+
+#: validators.py:204
+msgid "Invalid email address."
+msgstr ""
+
+#: validators.py:221
+msgid "Invalid IP address."
+msgstr ""
+
+#: validators.py:246
+msgid "Invalid URL."
+msgstr ""
+
+#: validators.py:273
+#, python-format
+msgid "Invalid value, must be one of: %(values)s."
+msgstr ""
+
+#: validators.py:300
+#, python-format
+msgid "Invalid value, can't be any of: %(values)s."
+msgstr ""

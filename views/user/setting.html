@@ -1,0 +1,122 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+  <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
+  {% if current_user.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ current_user.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if current_user.style %}
+  <style type="text/css">
+    {{ current_user.style }}
+  </style>
+  {% end %}
+  <link rel="stylesheet" href="{{ static_url('js/ext/jcrop/css/jquery.Jcrop.min.css') }}" type="text/css">
+  <link rel="stylesheet" type="text/css" href="{{ static_url('css/user.css') }}" />
+{% end %}
+
+{% block script %}
+<script type="text/javascript" src="{{ static_url('js/ext/jcrop/js/jquery.Jcrop.min.js') }}"></script>
+
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.iframe-transport.js') }}"></script>
+<!-- The basic File Upload plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload.js') }}"></script>
+<!-- The File Upload file processing plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-fp.js') }}"></script>
+<!-- The File Upload user interface plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-ui.js') }}"></script>
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+<!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
+
+<script src="{{ static_url('js/user_setting.js') }}"></script>
+<script src="{{ static_url('js/avatar_crop.js') }}"></script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+</ul>
+<div class="organ signup setting hide-coat nav-shadow">
+  <div class="organ-head">
+    基本设置
+  </div>
+  <div class="organ-body">
+    {{ modules.SettingForm(form=form, button="保存")}}
+  </div>
+</div>
+<div class="organ signup setting">
+  <div class="organ-head hide-coat">
+    头像设置
+  </div>
+  <div class="organ-body text-center">
+    <div class="avatar-show hide-coat">
+      <img class="avatar-128" src="{{ current_user.get_avatar(size=128)}}">
+      <div id="avatar-status" class="uploader-status hidden">
+        <div class="loader-bar" style="width: 70px; margin: 70px auto 5px;">&nbsp;</div>
+        <p>正在上传头像...</p>
+      </div>
+    </div>
+    <button id="set-avatar-btn" class="btn hide-coat">上传头像</button>
+    <div id="avatar-cropper" class="hidden" style="display: none;">
+      <div style="text-align: center;">
+        <a href="#;" class="btn btn-big" id="btn-avatar-done">确认</a>
+        &nbsp;&nbsp;
+        <a href="#;" class="btn btn-big" id="btn-avatar-cancel">取消</a>
+      </div>
+      <div id="img-select">
+        <img src="" id="target">
+      </div>
+    </div>
+    <form class="hidden" action="/account/setting/avatar/crop" method="post" onsubmit="return checkCoords();">
+      <input type="hidden" id="x" name="x" />
+      <input type="hidden" id="y" name="y" />
+      <input type="hidden" id="w" name="w" />
+      <input type="hidden" id="h" name="h" />
+      <input type="hidden" id="src" name="src" />
+      {{ xsrf_form_html() }}
+      <div style="padding: 20px 32px;">
+      <input id="crop-upload" type="submit" value="保存头像" class="btn big-btn" />
+      </div>
+    </form>
+    <form class="hidden" method="post" action="/upload/avatar" enctype="multipart/form-data" method="post">
+        <div class="form-goup">
+          <label for="avatar-upload">头像设置</label>
+          <input id="pic-select" type="file" name="myavatar" />
+          {{ xsrf_form_html() }}
+          <button id="upload" class="btn mini-btn">上传</button>
+        </div>
+    </form>
+  </div>
+</div>
+<div class="organ topic-create node-pic-edit hide-coat">
+  <div class="organ-head">
+    个人主页样式
+  </div>
+  <div class="organ-body text-center">
+    <div class="head-preview">
+      <img src="{{ current_user.head }}">
+    </div>
+    <div class="status-msg"></div>
+    <div class="sm-explain">建议图片尺寸为 720x160，文件大小为 6Ｍ 以下</div>
+    <button data-category="head" class="set-user-img btn">设置头部背景</button>
+    <div class="background-preview">
+      <img src="{{ current_user.background }}">
+    </div>
+    <div class="status-msg"></div>
+    <button data-category="background" class="set-user-img btn">设置背景</button>
+    <form style="display: none;" method="post" action="/account/upload" enctype="multipart/form-data" method="post">
+      <input type="hidden" id="category" name="category" />
+      <input data-category="head" id='user-img-select' type="file" name="myimage" data-url="/account/upload" multiple />
+      {{ xsrf_form_html() }}
+    </form>
+  </div>
+</div>
+{% end %}

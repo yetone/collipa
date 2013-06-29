@@ -1,0 +1,36 @@
+<form action="{% if action %}{{ action }}{% end %}" method="post" class="fm">
+  {{ xsrf_form_html() }}
+  {% for field in form %}
+  {% if field.name == 'description' %}
+    <div class="status-msg"></div>
+  {% end %}
+  <div class="fm-row">
+    <div class="fm-item{% if field.required %} fm-required{% end %}">
+      {{ field.label() }} 
+      {% if field.name == 'description' %}
+      <script id="editor" type="text/plain" name="{{ field.name }}">{{ field._value() }}</script>
+      {% elif field.name == 'parent_name' %}
+      {{ field(class_='fm-text', size="30", data_placeholder="请选择父节点") }}
+      {% else %}
+      {{ field(class_='fm-text', size="30") }}
+      {% end %}
+    </div>
+    {% if field.errors or field.description %}
+    <div class="fm-explain">
+      {% if field.errors %}
+      <ul class="fm-error">
+        {% for error in field.errors %}
+        <li>{{ error }}</li>
+        {% end %}
+      </ul>
+      {% else %}
+      {{ field.description }}
+      {% end %}
+    </div>
+    {% end %}
+  </div>
+  {% end %}
+  <div class="fm-action">
+    <button type="submit" class="btn">{{ button }}</button>
+  </div>
+</form>

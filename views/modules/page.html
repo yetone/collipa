@@ -1,0 +1,133 @@
+{% if page_count > 1 %}
+<div class="pagination">
+  <ul>
+    {% if page > 4 %}
+      {% if page + 2 < page_count %}
+        {% if page != 1 %}
+          <li class="prev">
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page - 1 }}">上一页</a>
+          </li>
+        {% end %}
+        <li>
+          <a href="{{ url }}">1</a>
+        </li>
+        <li class="active">
+          <a href="#">...</a>
+        </li>
+        {% for p in xrange(page - 3, page + 2) %}
+          {% if p + 1 == page %}
+          <li class="active">
+          {% else %}
+          <li>
+          {% end %}
+          <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ p + 1 }}">{{ p + 1 }}</a>
+          </li>
+        {% end %}
+        <li class="active">
+          <a href="#">...</a>
+        </li>
+        <li>
+          <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page_count }}">{{ page_count }}</a>
+        </li>
+        {% if page != page_count %}
+          <li class="next">
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page + 1}}">下一页</a>
+          </li>
+        {% end %}
+      {% else %}
+        {% if page != 1 %}
+          <li class="prev">
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page - 1 }}">上一页</a>
+          </li>
+        {% end %}
+        <li>
+          <a href="{{ url }}">1</a>
+        </li>
+        <li class="active">
+          <a href="#">...</a>
+        </li>
+        {% for p in xrange(page - 3, page_count) %}
+          {% if p + 1 == page %}
+          <li class="active">
+          {% else %}
+          <li>
+          {% end %}
+          <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ p + 1 }}">{{ p + 1 }}</a>
+          </li>
+        {% end %}
+        {% if page != page_count %}
+          <li class="next">
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page + 1}}">下一页</a>
+          </li>
+        {% end %}
+      {% end %}
+    {% else %}
+      {% if page_count <= 4 %}
+        {% for p in xrange(page_count) %}
+          {% if p + 1 == page %}
+          <li class="active">
+          {% else %}
+          <li>
+          {% end %}
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ p + 1 }}">{{ p + 1 }}</a>
+          </li>
+        {% end %}
+      {% else %}
+        {% if page + 2 < page_count %}
+          {% if page != 1 %}
+            <li class="prev">
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page - 1 }}">上一页</a>
+            </li>
+          {% end %}
+          {% for p in xrange(0, page + 2) %}
+            {% if p + 1 == page %}
+            <li class="active">
+            {% else %}
+            <li>
+            {% end %}
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ p + 1 }}">{{ p + 1 }}</a>
+            </li>
+          {% end %}
+          <li class="active">
+            <a href="#">...</a>
+          </li>
+          <li>
+            <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page_count }}">{{ page_count }}</a>
+          </li>
+          {% if page != page_count %}
+            <li class="next">
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page + 1}}">下一页</a>
+            </li>
+          {% end %}
+        {% else %}
+          {% if page != 1 %}
+            <li class="prev">
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page - 1 }}">上一页</a>
+            </li>
+          {% end %}
+          <li>
+            <a href="{{ url }}">1</a>
+          </li>
+          <li class="active">
+            <a href="#">...</a>
+          </li>
+          {% for p in xrange(page - 2, page_count) %}
+            {% if p + 1 == page %}
+            <li class="active">
+            {% else %}
+            <li>
+            {% end %}
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ p + 1 }}">{{ p + 1 }}</a>
+            </li>
+          {% end %}
+          {% if page != page_count %}
+            <li class="next">
+              <a href="{{ url }}{% if url.find('?') != -1 %}&{% else %}?{% end %}page={{ page + 1}}">下一页</a>
+            </li>
+          {% end %}
+        {% end %}
+      {% end %}
+    {% end %}
+  </ul>
+</div>
+{% end %}

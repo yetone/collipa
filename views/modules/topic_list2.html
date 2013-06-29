@@ -1,0 +1,25 @@
+{% if topics %}
+<ul class="item-list">
+  {% for topic in topics %}
+  <li class="item topic_{{ topic.id }}">
+    <div class="item-content no-padding">
+      <h3 class="title">
+        <a href="{{ topic.url }}">{{ escape(topic.title) }}</a>
+      </h3>
+      <div class="meta">
+        <a class="node" href="{{ topic.node.url }}">{{ escape(topic.node.name) }}</a>
+        <a class="author-name" href="{{ topic.author.url }}">{{ escape(topic.author.nickname) }}</a>
+        创建于
+        <a class="time" href="{{ topic.url }}">{{ topic.created }}</a>
+      </div>
+    </div>
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无主题
+  </div>
+</div>
+{% end %}

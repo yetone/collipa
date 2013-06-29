@@ -1,0 +1,21 @@
+{{ xsrf_form_html() }}
+{% for field in form %}
+<div class="fm-row">
+  <div class="fm-item{% if field.required %} fm-required{% end %}">
+    {{ field.label() }} {{ field(class_='fm-text', size="30") }}
+  </div>
+  {% if field.errors or field.description %}
+  <div class="fm-explain">
+    {% if field.errors %}
+    <ul class="fm-error">
+      {% for error in field.errors %}
+      <li>{{ error }}</li>
+      {% end %}
+    </ul>
+    {% else %}
+    {{ field.description }}
+    {% end %}
+  </div>
+  {% end %}
+</div>
+{% end %}

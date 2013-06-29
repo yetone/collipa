@@ -1,0 +1,31 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+<link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('js/ext/chosen/chosen.css') }}" />
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/ext/chosen/chosen.jquery.min.js') }}"></script>
+<script src="{{ static_url('js/ext/xheditor/xheditor-1.2.1.min.js') }}"></script>
+<script src="{{ static_url('js/ext/xheditor/xheditor_lang/zh-cn.js') }}"></script>
+<script src="{{ static_url('js/topic_create.js') }}"></script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/">{{ handler.settings['site_name'] }}</a>
+  </li>
+  {% if node %}
+  <li>
+    <a href="{{ node.url }}">{{ escape(node.name) }}</a>
+  </li>
+  {% end %}
+</ul>
+<div class="organ topic-create nav-shadow">
+  <div class="organ-head">
+    主题创建
+  </div>
+  <div class="organ-body">
+    {{ modules.Form(form=form, button="发布") }}
+  </div>
+</div>
+{% end %}

@@ -1,0 +1,30 @@
+{% if message_boxes %}
+<ul class="item-list message_box">
+  {% for m in message_boxes %}
+  <li class="item message_box_{{ m.id }}">
+    <a title="{{ escape(m.receiver.nickname) }}" class="avatar fl" href="{{ m.receiver.url }}">
+      <img class="avatar" src="{{ m.receiver.get_avatar(size=48) }}">
+      <span class="avatar-name">{{ escape(m.receiver.nickname) }}</span>
+    </a>
+    {% if m.message %}
+    <div class="item-content">
+      <div class="title">
+        <a href="/messages?user_id={{ m.receiver.id }}">{{ escape(m.message.content) }}</a>
+      </div>
+      <div class="meta">
+        <a class="author-name" href="{{ m.message.author.url }}">{{ escape(m.message.author.nickname) }}</a>
+        发送于
+        <a class="time" href="/messages?user_id={{ m.receiver.id }}">{{ m.message.created }}</a>
+      </div>
+    </div>
+    {% end %}
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无私信
+  </div>
+</div>
+{% end %}

@@ -1,0 +1,43 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+节点
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/node.js') }}"></script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li class="now">
+    <a href="/users">用户</a>
+  </li>
+</ul>
+{% if not category %}
+  <div class="organ node nav-shadow">
+    <div class="organ-head">
+      活跃会员
+    </div>
+    {{ modules.UserList(hot_users) }}
+  </div>
+  <div class="organ node nav-shadow">
+    <div class="organ-head">
+      最新会员
+    </div>
+    {{ modules.UserList(new_users) }}
+  </div>
+  <div class="organ footer">
+    <a title="查看所有" href="/users?category=all">» 查看所有</a>
+  </div>
+{% else %}
+  <div class="organ node nav-shadow">
+    <div class="organ-head">
+      所有会员
+    </div>
+    {{ modules.UserList(users) }}
+  </div>
+{% end %}
+{{ modules.Page(page=page, page_count=page_count, url=url) }}
+{% end %}

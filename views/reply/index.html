@@ -1,0 +1,121 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+  {% if reply.topic.node.icon_img %}
+  <link rel="shortcut icon" href="{{ reply.topic.node.icon }}" type="image/x-icon" />
+  {% end %}
+  {% if reply.topic.node.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ reply.topic.node.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+<link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
+<script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/reply.js') }}"></script>
+{% end %}
+{% block node_id_param %}
+?node_id={{ reply.topic.node.id }}
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="{{ reply.topic.node.url }}">{{ escape(reply.topic.node.name) }}</a>
+  </li>
+</ul>
+{{ modules.TopicWrap(topic=reply.topic, classes=['reply'], key=True) }}
+<div class="organ reply-list">
+  <ul class="item-list">
+    <li data-id="{{ reply.id }}" class="item clearfix">
+      <a class="avatar fl" href="{{ reply.author.url }}">
+        <img class="avatar" src="{{ reply.author.get_avatar(size=48) }}">
+      </a>
+      <div class="item-content">
+        <div class="author-info">
+          <a class="name" data-name="{{ reply.author.name }}" href="{{ reply.author.url }}">{{ escape(reply.author.nickname) }}</a>
+          <span>{{ reply.floor }} 楼,</span>
+          <span class="time">{{ reply.created }}</span>
+          {% if reply.updated_at != reply.created_at %}
+          <a title="有 {{ reply.history_count }} 次修改记录" class="icon-edit-sign edit-count reply-edit-count" href="{{ reply.url }}/history"></a>
+          {% end %}
+        </div>
+        <div class="content">
+          {{ reply.content }}
+        </div>
+        <div class="meta">
+          {% if current_user %}
+          <ul class="vote clearfix">
+            {% if current_user.is_uped(reply=reply) %}
+            <li class="up pressed">
+              <a title="取消赞同" href="{{ reply.url }}?action=up"><i class="icon-thumbs-up"></i> 已赞同({{ reply.up_count }})</a>
+            </li>
+            {% else %}
+            <li class="up">
+              <a title="赞同" href="{{ reply.url }}?action=up"><i class="icon-thumbs-up"></i> 赞同({{ reply.up_count }})</a>
+            </li>
+            {% end %}
+            {% if current_user.is_downed(reply=reply) %}
+            <li class="down pressed">
+              <a title="取消反对" href="{{ reply.url }}?action=down"><i class="icon-thumbs-down"></i> 已反对({{ reply.down_count }})</a>
+            </li>
+            {% else %}
+            <li class="down">
+              <a title="反对" href="{{ reply.url }}?action=down"><i class="icon-thumbs-down"></i> 反对({{ reply.down_count }})</a>
+            </li>
+            {% end %}
+            {% if current_user.is_collected(reply=reply) %}
+            <li class="collect pressed">
+              <a title="取消收藏" href="{{ reply.url }}?action=collect"><i class="icon-bookmark"></i> 已收藏</a>
+            </li>
+            {% else %}
+            <li class="collect">
+              <a title="收藏" href="{{ reply.url }}?action=collect"><i class="icon-bookmark"></i> 收藏</a>
+            </li>
+            {% end %}
+            {% if current_user != reply.author %}
+              {% if current_user.is_thanked(reply=reply) %}
+              <li class="thank pressed">
+                <a href="{{ reply.url }}?action=thank"><i class="icon-heart"></i> 已感谢</a>
+              </li>
+              {% else %}
+              <li class="thank">
+                <a title="感谢" href="{{ reply.url }}?action=thank"><i class="icon-heart"></i> 感谢</a>
+              </li>
+              {% end %}
+              <li class="more">
+                <a title="更多" href="#;"><i class="icon-ellipsis-horizontal"></i></a>
+                <ul class="menu-list">
+                  {% if current_user.is_reported(reply=reply) %}
+                  <li class="collect pressed">
+                    <a title="取消举报" href="{{ reply.url }}?action=report"><i class="icon-flag"></i> 已举报</a>
+                  </li>
+                  {% else %}
+                  <li class="collect">
+                    <a title="举报" href="{{ reply.url }}?action=report"><i class="icon-flag"></i> 举报</a>
+                  </li>
+                  {% end %}
+                </ul>
+              </li>
+            {% else %}
+            <li class="edit">
+              <a title="修改" href="{{ reply.url }}/edit"><i class="icon-pencil"></i> 修改</a>
+            </li>
+            {% end %}
+          </ul>
+          {% end %}
+        </div>
+      </div>
+    </li>
+  </ul>
+  <script type="text/javascript">
+    SyntaxHighlighter.all();
+  </script>
+</div>
+{% end %}

@@ -1,0 +1,52 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+  <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
+  {% if current_user.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ current_user.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if current_user.style %}
+  <style type="text/css">
+    {{ current_user.style }}
+  </style>
+  {% end %}
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/user.js') }}"></script>
+<script>
+  var $count = $('.message .count');
+  var count = parseInt($count.html());
+  count -= 1;
+  if (count !== 0) {
+    $count.html(count);
+  } else {
+    $count.remove();
+  }
+</script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="/messages">私信</a>
+  </li>
+  <li class="now">
+    <a href="{{ message_box.receiver.url }}">
+      {{ escape(message_box.receiver.nickname) }}
+    </a>
+  </li>
+</ul>
+<div class="organ topic-list nav-shadow">
+  {{ modules.MessageList(messages=message_box.get_messages(page=page))}}
+  <div class="message-fm">
+  {{ modules.MessageForm(user=user, form=form) }}
+</div>
+</div>
+{% end %}

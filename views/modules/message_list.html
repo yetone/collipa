@@ -1,0 +1,29 @@
+{% if messages %}
+<ul class="item-list message-list clearfix">
+  {% for m in messages[::-1] %}
+  <li data-id="{{ m.id }}" class="item message clearfix{% if m.author == current_user %} me{% else %} you{% end %}">
+    <a title="{{ escape(m.author.nickname) }}" class="avatar" href="{{ m.author.url }}">
+      <img class="avatar" src="{{ m.author.get_avatar(size=48) }}">
+    </a>
+    <div class="item-content">
+      <div class="meta">
+        <span class="time">{{ m.created }}</span>
+      </div>
+      <div class="content">
+        {{ escape(m.content) }}
+        <div class="caret">
+          <div class="caret-outer"></div>
+          <div class="caret-inner"></div>
+        </div>
+      </div>
+    </div>
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无私信
+  </div>
+</div>
+{% end %}

@@ -1,0 +1,22 @@
+/*可以在这里添加你自己的css*/
+
+a {
+  color: rgb(99, 99, 99);
+  text-decoration: auto;
+}
+
+body {
+  font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei",微软雅黑 !important;
+}
+
+a.mention {
+  color: #111;
+  background: #d2e1f3;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 2px;
+  line-height: 1.3;
+  font-size: 13px;
+  display: inline-block;
+}

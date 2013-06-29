@@ -1,0 +1,137 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+{{ escape(user.nickname) }}
+{% end %}
+{% block style %}
+  <link rel="shortcut icon" href="{{ user.get_avatar(size=48) }}" type="image/x-icon" />
+  {% if user.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ user.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if user.style %}
+  <style type="text/css">
+    {{ user.style }}
+  </style>
+  {% end %}
+  <link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
+  <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/user.js') }}"></script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="/users">用户</a>
+  </li>
+  {% if view == 'followings' %}
+    <li>
+      <a href="{{ user.url }}">{{ escape(user.nickname) }}</a>
+    </li>
+    <li class="now">
+      正在关注
+    </li>
+  {% elif view == 'followers' %}
+    <li>
+      <a href="{{ user.url }}">{{ escape(user.nickname) }}</a>
+    </li>
+    <li class="now">
+      关注者
+    </li>
+  {% elif view == 'topics' %}
+    <li>
+      <a href="{{ user.url }}">{{ escape(user.nickname) }}</a>
+    </li>
+    <li class="now">
+      主题
+    </li>
+  {% elif view == 'replies' %}
+    <li>
+      <a href="{{ user.url }}">{{ escape(user.nickname) }}</a>
+    </li>
+    <li class="now">
+      评论
+    </li>
+  {% else %}
+    <li>
+      <a href="{{ user.url }}">{{ escape(user.nickname) }}</a>
+    </li>
+    <li class="now">
+      主页
+    </li>
+  {% end %}
+</ul>
+{{ modules.UserHead(user) }}
+{% if view == 'followings' %}
+  <div class="organ">
+    <div class="organ-head">
+      正在关注
+    </div>
+    {{ modules.UserList(items) }}
+  </div>
+{% elif view == 'followers' %}
+  <div class="organ">
+    <div class="organ-head">
+      关注者
+    </div>
+    {{ modules.UserList(items) }}
+  </div>
+{% else %}
+  <div class="organ topic-list">
+    <ul class="nav clearfix">
+      <li {% if view == 'index' %}class="on"{% end %}>
+        <a href="{{ user.url }}">主页</a>
+      </li>
+      <li {% if view == 'topics' %}class="on"{% end %}>
+        <a href="{{ user.url }}/topics">主题</a>
+      </li>
+      <li {% if view == 'replies' %}class="on"{% end %}>
+        <a href="{{ user.url }}/replies">评论</a>
+      </li>
+    </ul>
+    {% if view == 'index' %}
+      {% set hot_topics = user.get_topics(limit=4) %}
+      {% set hot_replies = user.get_replies(limit=4) %}
+      {% set top_border = '' %}
+      {% if hot_topics %}
+        {% set top_border = 'top-border' %}
+        <div class="organ-head">
+          热门主题
+        </div>
+        {{ modules.TopicList2(hot_topics) }}
+      {% end %}
+      {% if hot_replies %}
+      <div class="organ-head {{ top_border }}">
+          热门评论
+        </div>
+        {{ modules.ReplyList2(hot_replies) }}
+      {% end %}
+      {% if not hot_topics and not hot_replies %}
+        <div class="explain">
+          <div>
+            暂无动态
+          </div>
+        </div>
+      {% end %}
+    {% elif view == 'topics' %}
+      {{ modules.TopicList2(items) }}
+    {% elif view == 'replies' %}
+      {{ modules.ReplyList2(items) }}
+      <script type="text/javascript">
+        SyntaxHighlighter.all();
+      </script>
+    {% end %}
+  </div>
+{% end %}
+{% if view != 'index' %}
+  {{ modules.Page(page=page, page_count=page_count, url=url) }}
+{% end %}
+{% end %}

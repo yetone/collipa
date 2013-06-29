@@ -1,0 +1,29 @@
+{% if topics %}
+<ul class="item-list">
+  {% for topic in topics %}
+  <li class="item topic_{{ topic.id }}">
+    <a class="avatar fl" href="{{ topic.author.url }}">
+      <img class="avatar" src="{{ topic.author.get_avatar(size=48) }}">
+    </a>
+    <div class="item-content">
+      <h3 class="title">
+        <a href="{{ topic.url_sharp }}">{{ escape(topic.title) }}</a>
+      </h3>
+      <div class="meta">
+        <a class="node" href="{{ topic.node.url }}">{{ escape(topic.node.name) }}</a>
+        <a class="author-name" href="{{ topic.author.url }}">{{ escape(topic.author.nickname) }}</a>
+        创建于
+        <a class="time" href="{{ topic.url_sharp }}">{{ topic.created }}</a>
+        <a class="eye" href="{{ topic.url_sharp }}"><i class="icon-lightbulb"></i></a>
+      </div>
+    </div>
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无主题
+  </div>
+</div>
+{% end %}

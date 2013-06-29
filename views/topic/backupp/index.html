@@ -1,0 +1,129 @@
+{% extends "../layout.html" %}
+
+{% block style %}
+<link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/xheditor/demos/prettify/prettify.css') }}"/>
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/topic.js') }}"></script>
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/">{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="{{ topic.node.url }}">{{ escape(topic.node.name) }}</a>
+  </li>
+</ul>
+<div data-id="{{ topic.id }}" class="organ topic nav-shadow">
+  <h2 class="topic-title">
+    {{ escape(topic.title) }}
+  </h2>
+  <div class="topic-content">
+    <a class="topic-avatar" href="{{ topic.author.url }}">
+      <img class="avatar" src="{{ topic.author.get_avatar(size=60) }}">
+    </a>
+    {{ topic.content }}
+  </div>
+  <div class="meta clearfix">
+    <span class="time-wrap">
+      <a class="author" href="{{ topic.author.url }}">{{ escape(topic.author.nickname) }}</a>
+      创建于
+      <span class="time">{{ topic.created }}</span>
+    </span>
+    {% if current_user %}
+    <ul class="vote clearfix">
+      {% if current_user.is_uped(topic=topic) %}
+      <li class="up pressed">
+        <a title="取消赞同" href="{{ topic.url }}?action=up"><i class="icon-thumbs-up"></i> 已赞同({{ topic.up_count }})</a>
+      </li>
+      {% else %}
+      <li class="up">
+        <a title="赞同" href="{{ topic.url }}?action=up"><i class="icon-thumbs-up"></i> 赞同({{ topic.up_count }})</a>
+      </li>
+      {% end %}
+      {% if current_user.is_downed(topic=topic) %}
+      <li class="down pressed">
+        <a title="取消反对" href="{{ topic.url }}?action=down"><i class="icon-thumbs-down"></i> 已反对({{ topic.down_count }})</a>
+      </li>
+      {% else %}
+      <li class="down">
+        <a title="反对" href="{{ topic.url }}?action=down"><i class="icon-thumbs-down"></i> 反对({{ topic.down_count }})</a>
+      </li>
+      {% end %}
+      {% if current_user.is_collected(topic=topic) %}
+      <li class="collect pressed">
+        <a title="取消收藏" href="{{ topic.url }}?action=collect"><i class="icon-bookmark"></i> 已收藏</a>
+      </li>
+      {% else %}
+      <li class="collect">
+        <a title="收藏" href="{{ topic.url }}?action=collect"><i class="icon-bookmark"></i> 收藏</a>
+      </li>
+      {% end %}
+      {% if current_user != topic.author %}
+        {% if current_user.is_thanked(topic=topic) %}
+        <li class="thank pressed">
+          <a href="{{ topic.url }}?action=thank"><i class="icon-heart"></i> 已感谢</a>
+        </li>
+        {% else %}
+        <li class="thank">
+          <a title="感谢" href="{{ topic.url }}?action=thank"><i class="icon-heart"></i> 感谢</a>
+        </li>
+        {% end %}
+        <li class="more">
+          <a title="更多" href="#;"><i class="icon-ellipsis-horizontal"></i></a>
+          <ul class="menu-list">
+            {% if current_user.is_reported(topic=topic) %}
+            <li class="collect pressed">
+              <a title="取消举报" href="{{ topic.url }}?action=report"><i class="icon-flag"></i> 已举报</a>
+            </li>
+            {% else %}
+            <li class="collect">
+              <a title="举报" href="{{ topic.url }}?action=report"><i class="icon-flag"></i> 举报</a>
+            </li>
+            {% end %}
+          </ul>
+        </li>
+      {% else %}
+      <li class="edit">
+        <a title="修改" href="{{ topic.url }}/edit"><i class="icon-pencil"></i> 修改</a>
+      </li>
+      {% end %}
+    </ul>
+    {% end %}
+    <ul class="action clearfix">
+      <li class="reply">
+        <a title="回复" href="#;"><i class="icon-reply"></i></a>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="organ reply-list">
+  <ul class="nav clearfix">
+    <li {% if category == "index" %}class="on"{% end %}><a href="{{ topic.url }}">评论列表</a></li>
+    <li {% if category == "hot" %}class="on"{% end %}><a href="{{ topic.url }}?category=hot">热门评论</a></li>
+  </ul>
+  {{ modules.ReplyList(topic.get_replies(page=page, category=category)) }}
+</div>
+{% if current_user %}
+<div class="organ reply-create">
+  <div class="organ-head no-border">
+    评论创建
+  </div>
+  <div class="organ-body">
+    <form action="/reply/create?topic_id={{ topic.id }}" method="post" class="fm">
+      {{ xsrf_form_html() }}
+      <div class="fm-row">
+        <div class="fm-item fm-required">
+          <label class="fm-label" for="fm-content">内容</label>
+          <script id="editor" type="text/plain" name="content"></script>
+        </div>
+      </div>
+      <div class="fm-action">
+        <button data-id="{{ topic.id }}" type="submit" class="btn">发布</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% end %}
+{% end %}

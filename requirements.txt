@@ -1,0 +1,7 @@
+supervisor
+tornado
+misaka
+python-memcached
+PIL
+MySQL-python
+BeautifulSoup

@@ -1,0 +1,83 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+{{ escape(node.name) }}
+{% end %}
+{% block style %}
+  {% if node.icon_img %}
+  <link rel="shortcut icon" href="{{ node.icon }}" type="image/x-icon" />
+  {% end %}
+  {% if node.head_img %}
+  <style type="text/css">
+    #head {
+      background: url({{ node.head }});
+      background-size: 100%;
+    }
+  </style>
+  {% end %}
+  {% if node.style %}
+  <style type="text/css">
+    {{ node.style }}
+  </style>
+  {% end %}
+{% end %}
+{% block script %}
+<script src="{{ static_url('js/node.js') }}"></script>
+{% end %}
+{% block node_id_param %}
+?node_id={{ node.id }}
+{% end %}
+{% block body %}
+<ul class="body-nav">
+  <li>
+    <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
+  </li>
+  <li>
+    <a href="/nodes">节点</a>
+  </li>
+  <li class="now">
+    {{ escape(node.name) }}
+  </li>
+</ul>
+<div class="organ node nav-shadow">
+  <div class="node-name">
+    {{ escape(node.name) }}
+  </div>
+  <ul class="nav minor-nav clearfix node-tag">
+    <li class="description on"><a href="{{ node.url }}?tag=description">简介</a></li>
+    <li class="relationship"><a href="{{ node.url }}?tag=relationship">相关节点</a></li>
+  </ul>
+  <div class="node-information">
+    <div class="content node-description">
+      {{ node.description }}
+    </div>
+  </div>
+  <div class="node-data">
+    <div class="node-info-list">
+      <span class="node-info-title">统计</span>
+      <span class="node-info-topic"><i class="icon-file-alt"></i> {{ node.topic_count }} 主题</span>
+      <span class="node-info-follow"><i class="icon-eye-open"></i> {{ node.follow_count }} 关注</span>
+    </div>
+    {% if current_user %}
+    <div class="node-action">
+      {% if current_user.is_followed(node=node) %}
+      <a class="btn unfo" href="{{ node.url }}?next={{ url_escape(request.uri) }}&action=follow">已关注</a>
+      {% else %}
+      <a class="btn fo" href="{{ node.url }}?next={{ url_escape(request.uri) }}&action=follow">关注</a>
+      {% end %}
+    </div>
+    {% end %}
+  </div>
+</div>
+<div class="organ topic-list">
+  <ul class="nav clearfix">
+    <li {% if category == "all" %}class="on"{% end %}><a href="{{ node.url }}">主题列表</a></li>
+    <li {% if category == "latest" %}class="on"{% end %}><a href="{{ node.url }}/latest">最新</a></li>
+    <li {% if category == "desert" %}class="on"{% end %}><a href="{{ node.url }}/desert">荒漠</a></li>
+    <li {% if category == "hot" %}class="on"{% end %}><a href="{{ node.url }}/hot">热门</a></li>
+    <li {% if category == "dispute" %}class="on"{% end %}><a href="{{ node.url }}/dispute">争议</a></li>
+  </ul>
+  {{ modules.TopicList(topics) }}
+</div>
+{{ modules.Page(page=page, page_count=page_count, url=url) }}
+{% end %}
