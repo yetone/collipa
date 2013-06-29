@@ -30,9 +30,11 @@ _SMTPPORT = '587' # 邮箱端口
 
 ### 安装 pony
 
-`git clone https://github.com/ponyorm/pony`
-`cd pony`
-`sudo python setup.py install`
+```
+git clone https://github.com/ponyorm/pony
+cd pony
+sudo python setup.py install
+```
 
 ### 安装其他
 
