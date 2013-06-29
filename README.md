@@ -22,6 +22,11 @@ The source of <http://collipa.com>
 - _SMTPHOST = 'smtp.gmail.com' # 邮箱地址
 - _SMTPPORT = '587' # 邮箱端口
 
+### secret
+
+- cookie_secret = 'cookiesecret' # cookie secret 随机字符
+- password_secret = 'passwordsecret' # password secret 随机字符
+
 ## 安装必要扩展包
 
 ### 安装 memcached
