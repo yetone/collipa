@@ -26,7 +26,9 @@ The source of <http://collipa.com>
 
 ### 安装 memcached
 
-`sudo apt-get install memcached`
+```
+sudo apt-get install memcached
+```
 
 ### 安装 pony
 
@@ -38,12 +40,18 @@ sudo python setup.py install
 
 ### 安装其他
 
-`python setup.py --install`
+```
+python setup.py --install
+```
 
 ## 初始化数据库
 
-`python setup.py --init`
+```
+python setup.py --init
+```
 
 ## 运行
 
-`python app.py`
+```
+python app.py
+```
