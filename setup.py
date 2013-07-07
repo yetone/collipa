@@ -68,7 +68,7 @@ def main(argv):
                         base_path)
                 os.system('sudo pip install -r %s/requirements.txt' %
                         base_path)
-            except e:
+            except Exception as e:
                 print(e)
             finally:
                 print("依赖安装成功")
