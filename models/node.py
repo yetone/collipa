@@ -25,8 +25,8 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     updated_at = Required(int, default=int(time.time()))
     active = Required(int, default=int(time.time()))
 
-    description = Optional(unicode, 10000)
-    summary = Optional(unicode, 10000)
+    description = Optional(LongUnicode)
+    summary = Optional(LongUnicode)
     style = Optional(unicode, 6000)
 
     icon_img = Optional(unicode, 400)

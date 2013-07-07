@@ -5,7 +5,6 @@ import sys
 import getopt
 import MySQLdb
 from pony.orm import *
-from models import db, Node
 import config
 
 config = config.rec()
@@ -34,6 +33,7 @@ def main(argv):
                 m.close()
             except:
                 pass
+            from models import db, Node
             db.generate_mapping(create_tables=True)
             if not Node.get(id=1):
                 Node(name=u'根节点', urlname='root',
