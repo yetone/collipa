@@ -837,9 +837,6 @@ ul.child-nodes li .description {
 .single .item-content {
   padding-left: 0px;
 }
-.single .reply-content {
-  padding: 10px;
-}
 .top-border {
   border-top: 1px solid #e2e2e2;
 }
@@ -1413,4 +1410,11 @@ ul.users li a div.username span {
   font-size: 12px;
   color: rgb(156, 156, 156);
   text-align: center;
+}
+.reply-single .item-title {
+  padding: 10px 20px;
+  background: rgb(248, 248, 248);
+}
+.reply-single .item-content {
+  padding: 10px 20px 20px 20px;
 }

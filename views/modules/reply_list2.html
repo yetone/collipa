@@ -2,9 +2,11 @@
 {% if replies %}
 <ul class="item-list">
   {% for reply in replies %}
-  <li data-id="{{ reply.id }}" class="item single clearfix">
-    <div class="item-content">
+  <li data-id="{{ reply.id }}" class="item single clearfix no-padding reply-single">
+    <div class="item-title">
       <a class="title" href="{{ reply.topic.url }}">{{ escape(reply.topic.title) }}</a>
+    </div>
+    <div class="item-content">
       <div class="content reply-content">
         {{ reply.content }}
       </div>
