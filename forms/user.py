@@ -237,11 +237,6 @@ class SettingForm(BaseForm):
             if data in config.forbidden_name_list or User.get(urlname=data):
                 raise ValidationError('此域名已经被占用')
 
-    def validate_website(self, field):
-        data = field.data
-        if data and not url(data):
-                raise ValidationError('不符合 url 规范')
-
     def save(self, user=None):
         data = self.data
         user = user.update(data)

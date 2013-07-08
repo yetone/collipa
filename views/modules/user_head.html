@@ -17,7 +17,11 @@
         {% if user.website %}
         <li>
           <i class="icon-globe"></i>
+          {% if user.website.startswith('http://') %}
           <a href="{{ escape(user.website) }}">{{ escape(user.website) }}</a>
+          {% else %}
+          <a href="http://{{ escape(user.website) }}">{{ escape(user.website) }}</a>
+          {% end %}
         </li>
         {% end %}
       </ul>
