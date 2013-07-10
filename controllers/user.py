@@ -150,14 +150,14 @@ class SignupHandler(BaseHandler, EmailMixin):
         url = '%s/signup?verify=%s' % \
                 (config.site_url, token)
 
-        subject = "帐号激活"
+        subject = "帐号激活 - " + config.site_name
         template = (
-            '<div>尊敬的 <strong>%(email)s</strong> 您好！</div>'
-            '<div>您的账户尚未激活，请点击此链接：'
-            '<a href="%(url)s">this link</a>.<div><br />'
-            "<div>如果您的浏览器不能点击此链接"
-            '请复制下面的链接然后粘贴在浏览器的地址栏里进行激活：<br />'
-            '%(url)s </div>'
+            '<p>尊敬的 <strong>%(email)s</strong> 您好！</p>'
+            '<p>您的账户尚未激活，请点击此链接：'
+            '<a href="%(url)s">点我激活</a>.</p>'
+            '<p>如果您的浏览器不能点击此链接，'
+            '请复制下面的链接然后粘贴在浏览器的地址栏里进行激活：</p>'
+            '<p>%(url)s</p>'
         ) % {'email': user.name, 'url': url}
         self.send_email(self, user.email, subject, template)
         result = {'status': 'info', 'message':

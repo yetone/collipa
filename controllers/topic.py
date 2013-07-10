@@ -6,9 +6,10 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import Topic, Node
+from models import Topic, Node, User
 from forms import TopicForm, ReplyForm
 from helpers import force_int
+from .user import EmailMixin
 
 config = config.rec()
 
@@ -139,6 +140,48 @@ class EditHandler(BaseHandler):
         if self.is_ajax:
             return self.write(form.result)
         return self.render("topic/create.html", form=form, node=topic.node)
+
+class RemoveHandler(BaseHandler, EmailMixin):
+    def get(self, topic_id):
+        topic = Topic.get(id=topic_id)
+        if not topic:
+            return self.redirect_next_url()
+        subject = "主题删除通知 - " + config.site_name
+        template = (
+                '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
+                '<p>您的主题 <strong>「%(topic_title)s」</strong>'
+                '由于违反社区规定而被删除，我们以邮件的形式给您进行了备份，备份数据如下：</p>'
+                '<div class="content">%(content)s</div>'
+                ) % {'nickname': topic.author.nickname,
+                        'topic_title': topic.title,
+                        'content': topic.content}
+        self.send_email(self, topic.author.email, subject, template)
+        replies = topic.replies
+        users = []
+        content_dict = {}
+        for reply in replies:
+            if reply.author not in users:
+                users.append(reply.author)
+                content = '<li>' + reply.content + '</li>'
+            else:
+                content = content_dict.get(reply.author.name)
+                content += '<li>' + reply.content + '</li>'
+            content_dict.update({reply.author.name: content})
+        for name, content in content_dict.iteritems():
+            user = User.get(name=name)
+            subject = "主题删除通知 - " + config.site_name
+            template = (
+                    '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
+                    '<p>主题 <strong>「%(topic_title)s」</strong>'
+                    '由于某些原因被删除，您在此主题下的评论收到了牵连，遂给您以邮件的形式进行了备份，备份数据如下：</p>'
+                    '<ul class="content">%(content)s</ul>'
+                    ) % {'nickname': user.nickname, 'topic_title': topic.title,
+                            'content': content}
+            self.send_email(self, user.email, subject, template)
+        topic.remove()
+        result = {'status': 'success', 'message': '已成功删除'}
+        self.flash_message(result)
+        return self.redirect_next_url()
 
 class HistoryHandler(BaseHandler):
     def get(self, topic_id):
