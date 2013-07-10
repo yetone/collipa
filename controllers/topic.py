@@ -142,7 +142,10 @@ class EditHandler(BaseHandler):
         return self.render("topic/create.html", form=form, node=topic.node)
 
 class RemoveHandler(BaseHandler, EmailMixin):
+    @tornado.web.authenticated
     def get(self, topic_id):
+        if not self.current_user.is_admin:
+            return self.redirect_next_url()
         topic = Topic.get(id=topic_id)
         if not topic:
             return self.redirect_next_url()
