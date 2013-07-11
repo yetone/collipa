@@ -32,6 +32,7 @@ routers = [
     (r"/reply/create[/]*", reply.CreateHandler),
     (r"/reply/(\d+)[/]*", reply.HomeHandler),
     (r"/reply/(\d+)/edit[/]*", reply.EditHandler),
+    (r"/reply/(\d+)/remove[/]*", reply.RemoveHandler),
     (r"/reply/(\d+)/history[/]*", reply.HistoryHandler),
 
     (r"/image/upload[/]*", image.UploadHandler),

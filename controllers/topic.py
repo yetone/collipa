@@ -172,7 +172,7 @@ class RemoveHandler(BaseHandler, EmailMixin):
             content_dict.update({reply.author.name: content})
         for name, content in content_dict.iteritems():
             user = User.get(name=name)
-            subject = "主题删除通知 - " + config.site_name
+            subject = "评论删除通知 - " + config.site_name
             template = (
                     '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
                     '<p>主题 <strong>「%(topic_title)s」</strong>'

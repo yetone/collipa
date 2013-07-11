@@ -194,6 +194,8 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             dw.delete()
         for rp in m.Report.select(lambda rv: rv.topic_id == self.id):
             rp.delete()
+        for reply in self.replies:
+            reply.remove()
 
         if not user:
             user = self.author

@@ -9,6 +9,7 @@ from pony.orm import *
 from models import Topic, Reply
 from forms import ReplyForm
 from helpers import put_notifier
+from .user import EmailMixin
 
 config = config.rec()
 
@@ -120,6 +121,30 @@ class EditHandler(BaseHandler):
         if self.is_ajax:
             return self.write(form.result)
         return self.render("reply/edit.html", form=form, reply=reply)
+
+class RemoveHandler(BaseHandler, EmailMixin):
+    @tornado.web.authenticated
+    def get(self, reply_id):
+        if not self.current_user.is_admin:
+            return self.redirect_next_url()
+        reply = Reply.get(id=reply_id)
+        if not reply:
+            return self.redirect_next_url()
+        subject = "评论删除通知 - " + config.site_name
+        template = (
+                '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
+                '<p>您在主题 <strong><a href="%(topic_url)s">「%(topic_title)s」</a></strong>'
+                '下的评论由于违反社区规定而被删除，我们以邮件的形式给您进行了备份，备份数据如下：</p>'
+                '<div class="content">%(content)s</div>'
+                ) % {'nickname': reply.author.nickname,
+                        'topic_url': config.site_url + reply.topic.url,
+                        'topic_title': reply.topic.title,
+                        'content': reply.content}
+        self.send_email(self, reply.author.email, subject, template)
+        reply.remove()
+        result = {'status': 'success', 'message': '已成功删除'}
+        self.flash_message(result)
+        return self.redirect_next_url()
 
 class HistoryHandler(BaseHandler):
     def get(self, reply_id):
