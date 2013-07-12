@@ -60,3 +60,9 @@ python setup.py --init
 ```
 python app.py
 ```
+
+##License
+
+Released under the WTFPL license:
+
+http://www.wtfpl.net
