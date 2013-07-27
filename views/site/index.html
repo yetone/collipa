@@ -1,10 +1,17 @@
 {% extends "../layout.html" %}
 
 {% block subtitle %}
-  {% if page > 1 %}
-  第 {{ page }} 页
-  {% else %}
+  {% if page > 1 %}第 {{ page }} 页 - {% end %}
+  {% if category == "index" %}
   首页
+  {% elif category == "timeline" %}
+  时间线
+  {% elif category == "hot" %}
+  热门
+  {% elif category == "latest" %}
+  最新
+  {% elif category == "desert" %}
+  荒漠
   {% end %}
 {% end %}
 {% block script %}
