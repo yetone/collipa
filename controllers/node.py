@@ -166,6 +166,7 @@ class EditHandler(BaseHandler):
         return self.render("node/edit.html", form=form, node=node)
 
 class ImgUploadHandler(BaseHandler):
+    @db_session
     @tornado.web.authenticated
     def post(self, node_id):
         if not self.has_permission:
@@ -274,6 +275,7 @@ class ImgUploadHandler(BaseHandler):
         return
 
 class ShowHandler(BaseHandler):
+    @db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         page_count = 0
