@@ -21,7 +21,7 @@ from helpers import strip_tags, get_year, get_month, force_int
 config = config.rec()
 
 class HomeHandler(BaseHandler):
-    @with_transaction
+    @db_session
     def get(self, urlname, category='all'):
         node = Node.get(urlname=urlname)
         if not node:
@@ -83,7 +83,7 @@ class HomeHandler(BaseHandler):
                 category=category, page=page, page_count=page_count, url=url)
 
 class CreateHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def get(self):
         if not self.has_permission:
@@ -99,7 +99,7 @@ class CreateHandler(BaseHandler):
         form = NodeForm.init(Node.get_node_choices(), selected)
         return self.render("node/create.html", form=form)
 
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:
@@ -114,7 +114,7 @@ class CreateHandler(BaseHandler):
         return self.render("node/create.html", form=form)
 
 class EditHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def get(self, urlname):
         if not self.has_permission:
@@ -132,7 +132,7 @@ class EditHandler(BaseHandler):
                 node=node)
         return self.render("node/edit.html", form=form, node=node)
 
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self, urlname):
         if not self.has_permission:

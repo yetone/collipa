@@ -63,6 +63,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
     background_img = Optional(unicode, 400)
 
     @staticmethod
+    @db_session
     def init(**kargs):
         token = User.create_token(16)
         kargs.update(dict(token=token))

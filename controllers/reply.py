@@ -14,7 +14,7 @@ from .user import EmailMixin
 config = config.rec()
 
 class HomeHandler(BaseHandler):
-    @with_transaction
+    @db_session
     def get(self, reply_id):
         reply_id = int(reply_id)
         reply = Reply.get(id=reply_id)
@@ -48,7 +48,7 @@ class HomeHandler(BaseHandler):
         return self.render("reply/index.html", reply=reply)
 
 class CreateHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:
@@ -89,7 +89,7 @@ class CreateHandler(BaseHandler):
                 category='index', page=page)
 
 class EditHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def get(self, reply_id):
         if not self.has_permission:
@@ -100,7 +100,7 @@ class EditHandler(BaseHandler):
         form = ReplyForm(content=reply.content)
         return self.render("reply/edit.html", form=form, reply=reply)
 
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self, reply_id):
         if not self.has_permission:

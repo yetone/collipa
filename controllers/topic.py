@@ -14,7 +14,7 @@ from .user import EmailMixin
 config = config.rec()
 
 class HomeHandler(BaseHandler):
-    @with_transaction
+    @db_session
     def get(self, topic_id):
         topic_id = int(topic_id)
         page = force_int(self.get_argument('page', 0), 0)
@@ -66,7 +66,7 @@ class HomeHandler(BaseHandler):
                 category=category, page=page, page_count=page_count, url=url)
 
 class CreateHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def get(self):
         if not self.has_permission:
@@ -81,7 +81,7 @@ class CreateHandler(BaseHandler):
         form = TopicForm.init(choices=choices, selected=selected)
         return self.render("topic/create.html", form=form, node=node)
 
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:
@@ -103,7 +103,7 @@ class CreateHandler(BaseHandler):
         return self.render("topic/create.html", form=form, node=node)
 
 class EditHandler(BaseHandler):
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def get(self, topic_id):
         if not self.has_permission:
@@ -119,7 +119,7 @@ class EditHandler(BaseHandler):
         form = TopicForm.init(choices=choices, selected=selected, args=args)
         return self.render("topic/create.html", form=form, node=topic.node)
 
-    @with_transaction
+    @db_session
     @tornado.web.authenticated
     def post(self, topic_id):
         if not self.has_permission:

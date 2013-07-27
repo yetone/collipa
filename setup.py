@@ -13,6 +13,13 @@ m = MySQLdb.Connect(host=config.db_host, user=config.db_user, passwd=\
     config.db_pass)
 c = m.cursor()
 
+@db_session
+def init_node():
+    from models import Node
+    if not Node.get(id=1):
+        Node(name=u'根节点', urlname='root',
+                description=u'一切的根源').save()
+
 def main(argv):
     try:
         opts, args = getopt.getopt(argv, "", ["install", "init",
@@ -33,11 +40,9 @@ def main(argv):
                 m.close()
             except:
                 pass
-            from models import db, Node
+            from models import db
             db.generate_mapping(create_tables=True)
-            if not Node.get(id=1):
-                Node(name=u'根节点', urlname='root',
-                        description=u'一切的根源').save()
+            init_node()
             print("数据库表初始化成功")
         if opt == '--iwanttodropdatabase':
             key = raw_input("你确定要删除数据库？所有数据将消失，且无法恢复！！！(若确定请输入yes i do,否则直接按回车键！):\n")

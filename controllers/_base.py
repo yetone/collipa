@@ -11,6 +11,7 @@ import models as m
 config = config.rec()
 
 class BaseHandler(tornado.web.RequestHandler):
+    @db_session
     def get_current_user(self):
         user_json = self.get_secure_cookie('user')
         if user_json:
@@ -120,6 +121,7 @@ class BaseHandler(tornado.web.RequestHandler):
             self.redirect_next_url()
         return False
 
+    @db_session
     def get_error_html(self, status_code, **kwargs):
         if status_code == 404:
             return self.render("site/404.html")
