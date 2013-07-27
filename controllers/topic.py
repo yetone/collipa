@@ -187,6 +187,7 @@ class RemoveHandler(BaseHandler, EmailMixin):
         return self.redirect_next_url()
 
 class HistoryHandler(BaseHandler):
+    @db_session
     def get(self, topic_id):
         topic = Topic.get(id=topic_id)
         if not topic:
