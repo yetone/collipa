@@ -1,5 +1,6 @@
 supervisor
 tornado
+pony
 misaka
 python-memcached
 PIL

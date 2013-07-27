@@ -35,14 +35,6 @@ The source of <http://collipa.com>
 sudo apt-get install memcached
 ```
 
-### 安装 pony
-
-```
-git clone https://github.com/ponyorm/pony
-cd pony
-sudo python setup.py install
-```
-
 ### 安装其他
 
 ```
