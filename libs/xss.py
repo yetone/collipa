@@ -25,7 +25,7 @@ VALID_TAGS = {
                 'li': {'class': '.*', 'style': '.*'},
                 'br': {},
                 'a': {'class': '.*', 'style': '.*',
-                    'href': '^https?://', 'title': '.*',
+                    'href': '(^https?://|^/)', 'title': '.*',
                     'data-username': '.*'},
                 'img': {'width': '\d(px|)', 'height': '\d(px|)',
                     '_url': '(^https?://|^/static/)',
