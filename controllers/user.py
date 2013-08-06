@@ -363,8 +363,12 @@ class PasswordHandler(BaseHandler, EmailMixin):
             token = self.get_argument('verify', None)
             result = {"status": "error", "message": "两次输入的密码不匹配"}
             self.flash_message(result)
-            self.render('user/password.html', token=token)
-            return
+            return self.render('user/password.html', token=token)
+        if not password1:
+            token = self.get_argument('verify', None)
+            result = {"status": "error", "message": "新密码不能为空"}
+            self.flash_message(result)
+            return self.render('user/password.html', token=token)
         user.password = user.create_password(password1)
         user.token = user.create_token(16)
         try:
@@ -374,7 +378,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         result = {"status": "success", "message": "密码已修改"}
         self.flash_message(result)
         self.set_current_user(user)
-        self.redirect('/account/password')
+        return self.redirect('/account/password')
 
 class FindPasswordHandler(BaseHandler):
 
