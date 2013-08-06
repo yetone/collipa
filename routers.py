@@ -39,6 +39,8 @@ routers = [
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
     (r"/account/setting/avatar/crop[/]*", user.AvatarCropHandler),
     (r"/account/upload[/]*", user.ImgUploadHandler),
+    (r"/account/password[/]*", user.PasswordHandler),
+    (r"/findpassword[/]*", user.FindPasswordHandler),
 
     (r"/api/getusername[/]*", user.ApiGetUserNameHandler),
 

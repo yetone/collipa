@@ -1,5 +1,8 @@
 {% extends "../layout.html" %}
 
+{% block subtitle %}
+设置
+{% end %}
 {% block style %}
   <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
   {% if current_user.head_img %}
@@ -44,7 +47,27 @@
     <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
   </li>
 </ul>
+{% if current_user.role == 'unverify' %}
 <div class="organ signup setting hide-coat nav-shadow">
+  <div class="organ-head">
+    账户激活
+  </div>
+  <div class="organ-body">
+    <div class="description">
+      <p>您的账户尚未激活，请检查您的注册邮箱。</p>
+      <p>若为收到激活邮件，请点击下面按钮重新发送激活邮件：</p>
+      <form action="/signup" method="post">
+        {{ xsrf_form_html() }}
+        <input type="hidden" name="action" value="email">
+        <button class="btn">发送验证邮件</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="organ signup setting">
+{% else %}
+<div class="organ signup setting hide-coat nav-shadow">
+{% end %}
   <div class="organ-head">
     基本设置
   </div>
@@ -116,6 +139,16 @@
       <input type="hidden" id="category" name="category" />
       <input data-category="head" id='user-img-select' type="file" name="myimage" data-url="/account/upload" multiple />
       {{ xsrf_form_html() }}
+    </form>
+  </div>
+</div>
+<div class="organ">
+  <div class="organ-head">
+    修改密码
+  </div>
+  <div class="organ-body text-center">
+    <form action="/account/password" method="get">
+      <button class="btn">修改密码</button>
     </form>
   </div>
 </div>

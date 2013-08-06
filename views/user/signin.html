@@ -1,5 +1,8 @@
 {% extends "../layout.html" %}
 
+{% block subtitle %}
+登录
+{% end %}
 {% block style %}
 <link rel="stylesheet" type="text/css" href="{{ static_url('css/user.css') }}" />
 {% end %}
@@ -10,12 +13,13 @@
     <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
   </li>
 </ul>
-<div class="organ signin nav-shadow">
+<div class="organ signin nav-shadow clearfix">
   <div class="organ-head">
     登录
   </div>
   <div class="organ-body">
     {{ modules.Form(form=form, button="登录")}}
   </div>
+  <a class="forget-password fr" href="/findpassword" title="找回密码">忘记密码？</div>
 </div>
 {% end %}

@@ -1422,3 +1422,17 @@ ul.users li a div.username span {
 .reply-single .item-content {
   padding: 5px 20px 20px 20px;
 }
+.setting .description {
+  text-align: center;
+}
+.saying {
+  margin-top: 20px;
+  padding-top: 15px;
+  text-align: center;
+  color: rgb(145, 145, 145);
+  border-top: 2px dashed rgb(230, 230, 230);
+}
+.forget-password {
+  padding: 0 20px 15px 20px;
+  display: inline-block;
+}

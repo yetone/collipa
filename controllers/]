@@ -278,7 +278,6 @@ class PasswordHandler(BaseHandler, EmailMixin):
     - GET: 1. form view 2. verify link from email
     - POST: 1. send email to find password. 2. change password
     """
-    @db_session
     def get(self):
         token = self.get_argument('verify', None)
         if token and self._verify_token(token):
@@ -288,7 +287,6 @@ class PasswordHandler(BaseHandler, EmailMixin):
             return self.redirect('/signin')
         return self.render('user/password.html', token=None)
 
-    @db_session
     def post(self):
         action = self.get_argument('action', None)
         if action == 'email':
@@ -378,7 +376,6 @@ class PasswordHandler(BaseHandler, EmailMixin):
 
 class FindPasswordHandler(BaseHandler):
 
-    @db_session
     def get(self):
         if self.current_user:
             return self.redirect_next_url()

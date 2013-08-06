@@ -46,12 +46,6 @@ class Message(db.Entity, SessionMixin, ModelMixin):
         now = int(time.time())
         self.created_at = now
 
-        try:
-            commit()
-        except Exception, e:
-            print type(e).__name__
-            print e
-            raise
         message = super(Message, self).save()
 
         self.message_box1.updated_at = now
