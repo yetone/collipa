@@ -47,7 +47,7 @@
     <a href="/"><i class="icon-home"></i>&nbsp;{{ handler.settings['site_name'] }}</a>
   </li>
 </ul>
-{% if current_user.role == 'unverify' %}
+{% if current_user.role == 'unverify' and not current_user.is_admin %}
 <div class="organ signup setting hide-coat nav-shadow">
   <div class="organ-head">
     账户激活
@@ -55,7 +55,7 @@
   <div class="organ-body">
     <div class="description">
       <p>您的账户尚未激活，请检查您的注册邮箱。</p>
-      <p>若为收到激活邮件，请点击下面按钮重新发送激活邮件：</p>
+      <p>若未收到激活邮件，请点击下面按钮重新发送激活邮件：</p>
       <form action="/signup" method="post">
         {{ xsrf_form_html() }}
         <input type="hidden" name="action" value="email">
