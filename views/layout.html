@@ -57,7 +57,6 @@
         {% block body %}{% end %}
       </div>
     </div>
-    <span class="request_time">&#160;&#160;{% set request_time = 1000.0 * handler.request.request_time() %}{{ "%.2f ms" % request_time }}</span>
     <script type="text/javascript" src="http://tajs.qq.com/stats?sId=25280217" charset="UTF-8"></script>
   </body>
   <script src="{{ static_url('js/jquery.js') }}"></script>
