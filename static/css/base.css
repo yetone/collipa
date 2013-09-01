@@ -1439,6 +1439,9 @@ ul.users li a div.username span {
 #footer {
   padding: 16px;
 }
+#footer a {
+  text-shadow: 1px 1px 0px #ffffff;
+}
 .tc {
   text-align: center;
 }
