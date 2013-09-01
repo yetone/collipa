@@ -1436,3 +1436,9 @@ ul.users li a div.username span {
   padding: 0 20px 15px 20px;
   display: inline-block;
 }
+#footer {
+  padding: 16px;
+}
+.tc {
+  text-align: center;
+}
