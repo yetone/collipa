@@ -173,6 +173,7 @@ class ImgUploadHandler(BaseHandler):
             return
         if not self.current_user.is_admin:
             return self.redirect_next_url()
+        category = self.get_argument('category', None)
         node = Node.get(id=node_id)
         if not node:
             return self.redirect_next_url()
@@ -182,10 +183,17 @@ class ImgUploadHandler(BaseHandler):
             return
         image_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
                 'image/png', 'image/bmp', 'image/x-png']
+        icon_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
+                'image/png', 'image/bmp', 'image/x-png', 'image/ico']
         send_file = self.request.files['myimage'][0]
-        if send_file['content_type'] not in image_type_list:
+        if category != 'icon' and send_file['content_type'] not in image_type_list:
             self.write({"status": "error",
                 "message": "对不起，仅支持 jpg, jpeg, bmp, gif, png\
+                    格式的图片"})
+            return
+        if category == 'icon' and send_file['content_type'] not in icon_type_list:
+            self.write({"status": "error",
+                "message": "对不起，仅支持 ico, jpg, jpeg, bmp, gif, png\
                     格式的图片"})
             return
         if len(send_file['body']) > 6 * 1024 * 1024:
@@ -229,7 +237,6 @@ class ImgUploadHandler(BaseHandler):
         tmp_file.close()
         path = '/' +\
             '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-        category = self.get_argument('category', None)
         print category
         del_path = None
         if category == 'head':
