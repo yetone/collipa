@@ -184,7 +184,7 @@ class ImgUploadHandler(BaseHandler):
         image_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
                 'image/png', 'image/bmp', 'image/x-png']
         icon_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
-                'image/png', 'image/bmp', 'image/x-png', 'image/ico',
+                'image/png', 'image/bmp', 'image/x-png', 'image/ico .ico',
                 'image/x-icon']
         send_file = self.request.files['myimage'][0]
         if category != 'icon' and send_file['content_type'] not in image_type_list:
