@@ -30,6 +30,7 @@ pip-log.txt
 .tox
 nosetests.xml
 config.py
+supervisord.conf
 
 # Translations
 *.mo
