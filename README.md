@@ -6,6 +6,9 @@ The source of <http://collipa.com>
 
 ## 配置
 
+```
+mv config.back.py config.py
+```
 修改 collipa/config.py 文件：
 
 ### 数据库
