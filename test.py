@@ -13,7 +13,6 @@ def do_sth():
 
     for user in users:
         print user.name, user.nickname, user.email
-    """
     for ms in messages:
         print ms.id
         try:
@@ -26,6 +25,7 @@ def do_sth():
         print mb.id
         mb.delete()
         commit()
+    """
 
 
 if __name__ == '__main__':
