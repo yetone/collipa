@@ -12,7 +12,7 @@
         <a href="/messages?user_id={{ m.receiver.id }}">{{ escape(m.message.content) }}</a>
       </div>
       <div class="meta">
-        <a class="author-name" href="{{ m.message.author.url }}">{{ escape(m.message.author.nickname) }}</a>
+        <a class="author-name" href="{{ m.message.sender.url }}">{{ escape(m.message.sender.nickname) }}</a>
         发送于
         <a class="time" href="/messages?user_id={{ m.receiver.id }}">{{ m.message.created }}</a>
       </div>

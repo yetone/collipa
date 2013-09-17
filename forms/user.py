@@ -8,7 +8,6 @@ import config
 
 from models import User, Message
 from pony.orm import *
-from helpers import url
 
 config = config.rec()
 
@@ -21,10 +20,9 @@ class MessageForm(BaseForm):
     )
 
     @db_session
-    def save(self, user_id, message_box1_id, message_box2_id):
+    def save(self, **kargs):
         data = self.data
-        data.update({'user_id': user_id, 'message_box1_id': message_box1_id,
-            'message_box2_id': message_box2_id})
+        data.update(kargs)
         message = Message(**data).save()
         return message
 

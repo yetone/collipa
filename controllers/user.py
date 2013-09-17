@@ -231,11 +231,12 @@ class MessageCreateHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         user_id = force_int(self.get_argument('user_id', 0), 0)
-        current_user = self.current_user
-        user = User.get(id=user_id)
-        if user:
+        sender = self.current_user
+        receiver = User.get(id=user_id)
+        if receiver:
             form = MessageForm(self.request.arguments)
             if form.validate():
+                """
                 message_box1 = current_user.get_message_box(user=user)
                 message_box2 = user.get_message_box(user=current_user)
                 if not message_box1:
@@ -244,13 +245,13 @@ class MessageCreateHandler(BaseHandler):
                 if not message_box2:
                     message_box2 = MessageBox(sender_id=user.id,
                             receiver_id=current_user.id).save()
-                message = form.save(user_id=current_user.id,
-                        message_box1_id=message_box1.id,
-                        message_box2_id=message_box2.id)
+                """
+                message = form.save(sender_id=sender.id,
+                                    receiver_id=receiver.id)
                 result = {"status": "success", "message": "私信发送成功",
                         "content": message.content, "created": message.created,
-                        "avatar": current_user.get_avatar(size=48), "url":
-                        current_user.url, "id": message.id}
+                        "avatar": sender.get_avatar(size=48), "url":
+                        sender.url, "id": message.id}
             else:
                 result = {"status": "error", "message": "请填写至少 4 字的内容"}
             if self.is_ajax:
