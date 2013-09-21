@@ -52,7 +52,6 @@ class Message(db.Entity, SessionMixin, ModelMixin):
     def receiver(self):
         return m.User[self.receiver_id]
 
-    @db_session
     def save(self):
         now = int(time.time())
         self.created_at = now

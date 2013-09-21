@@ -19,7 +19,6 @@ class MessageForm(BaseForm):
         ],
     )
 
-    @db_session
     def save(self, **kargs):
         data = self.data
         data.update(kargs)

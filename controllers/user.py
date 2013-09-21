@@ -15,7 +15,7 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import User, MessageBox
+from models import User, MessageBox, Message
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
 from extensions import mc
 from helpers import force_int, get_year, get_month
