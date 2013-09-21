@@ -5,6 +5,7 @@ import random
 import hashlib
 import base64
 import tornado.web
+import tornado.websocket
 import os
 import sys
 import logging
@@ -15,7 +16,7 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import User, MessageBox
+from models import User, MessageBox, Message
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
 from helpers import force_int, get_year, get_month
 
@@ -226,43 +227,54 @@ class MessageHandler(BaseHandler):
         category = self.get_argument('category', 'all')
         return self.render("user/message_box.html", category=category, page=page)
 
-class MessageCreateHandler(BaseHandler):
+class MessageCreateHandler(BaseHandler, tornado.websocket.WebSocketHandler):
+    users = dict()
+
+    def allow_draft76(self):
+        # for iOS 5.0 Safari
+        return True
+
+    def open(self):
+        if self.current_user and self.current_user.id not in MessageCreateHandler.users:
+            MessageCreateHandler.users.update({self.current_user.id: self})
+
+    def on_close(self):
+        if self.current_user and self.current_user.id in MessageCreateHandler.users:
+            MessageCreateHandler.users.pop(self.current_user.id)
+
+    @classmethod
+    def send_updates(cls, uid, result):
+        user = User.get(id=uid)
+        if user:
+            this = MessageCreateHandler.users.get(uid)
+            try:
+                this.write_message(result)
+            except:
+                logging.error("Error sending message count", exc_info=True)
+
     @db_session
     @tornado.web.authenticated
-    def post(self):
-        user_id = force_int(self.get_argument('user_id', 0), 0)
+    def on_message(self, message, user_id):
+        user_id = force_int(user_id, 0)
         sender = self.current_user
         receiver = User.get(id=user_id)
         if receiver:
-            form = MessageForm(self.request.arguments)
-            if form.validate():
-                """
-                message_box1 = current_user.get_message_box(user=user)
-                message_box2 = user.get_message_box(user=current_user)
-                if not message_box1:
-                    message_box1 = MessageBox(sender_id=current_user.id,
-                            receiver_id=user.id, status=1).save()
-                if not message_box2:
-                    message_box2 = MessageBox(sender_id=user.id,
-                            receiver_id=current_user.id).save()
-                """
-                message = form.save(sender_id=sender.id,
-                                    receiver_id=receiver.id)
+            if len(message) >= 2:
+                message = Message(content=message,
+                                sender_id=sender.id,
+                                receiver_id=receiver.id).save()
                 result = {"status": "success", "message": "私信发送成功",
                         "content": message.content, "created": message.created,
                         "avatar": sender.get_avatar(size=48), "url":
-                        sender.url, "id": message.id}
+                        sender.url, "id": message.id, "count": receiver.message_count}
+                MessageCreateHandler.send_updates(sender.id, result)
+                MessageCreateHandler.send_updates(receiver.id, result)
+                return
             else:
-                result = {"status": "error", "message": "请填写至少 4 字的内容"}
-            if self.is_ajax:
+                result = {"status": "error", "message": "请填写至少 2 字的内容"}
                 return self.write(result)
-            self.flash_message(result)
-            return self.redirect_next_url()
         result = {"status": "error", "message": "没有目标用户，不能发送私信哦"}
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(result)
-        return self.redirect_next_url()
+        return self.write(result)
 
 class ApiGetUserNameHandler(BaseHandler):
     @db_session
