@@ -27,16 +27,16 @@ class OnlineCountHandler(BaseHandler, tornado.websocket.WebSocketHandler):
     @db_session
     def open(self):
         if self.current_user and self not in OnlineCountHandler.users:
+            self.user_id = self.current_user.id
             OnlineCountHandler.users.add(self)
             OnlineCountHandler.online.add(self.current_user.id)
             mc.set("online", OnlineCountHandler.online, 60 * 60 * 24)
             self.on_message("open")
 
-    @db_session
     def on_close(self):
         if self.current_user and self in OnlineCountHandler.users:
             OnlineCountHandler.users.remove(self)
-            OnlineCountHandler.online.remove(self.current_user.id)
+            OnlineCountHandler.online.remove(self.user_id)
             mc.set("online", OnlineCountHandler.online, 60 * 60 * 24)
             self.on_message("close")
 
