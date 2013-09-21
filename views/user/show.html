@@ -31,6 +31,13 @@
   <div class="organ footer">
     <a title="查看所有" href="/users?category=all">» 查看所有</a>
   </div>
+{% elif category == 'online' %}
+  <div class="organ node nav-shadow">
+    <div class="organ-head">
+      在线会员
+    </div>
+    {{ modules.UserList(users) }}
+  </div>
 {% else %}
   <div class="organ node nav-shadow">
     <div class="organ-head">

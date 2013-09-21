@@ -17,6 +17,7 @@ from pony.orm import *
 
 from models import User, MessageBox
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
+from extensions import mc
 from helpers import force_int, get_year, get_month
 
 config = config.rec()
@@ -689,6 +690,15 @@ class ShowHandler(BaseHandler):
             page_count = (user_count + config.user_paged - 1) // config.user_paged
             users = User.get_users(page=page)
             url = '/users?category=all'
+        elif category == 'online':
+            users = set()
+            online = mc.get("online") or [0]
+            online = list(online)
+            users = User.select(lambda rv: rv.id in online)
+            print users
+            user_count = len(users)
+            page_count = (user_count + config.user_paged - 1) // config.user_paged
+            url = '/users?category=online'
         return self.render("user/show.html", users=users, hot_users=hot_users,
                 new_users=new_users, page=page,
                 page_count=page_count, url=url, category=category)
