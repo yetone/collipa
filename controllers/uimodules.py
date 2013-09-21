@@ -26,6 +26,7 @@ class MessageForm(tornado.web.UIModule):
     def render(self, user, form, action=None, button="发送"):
         return self.render_string("modules/message_form.html", form=form,
                 action='/message/create?user_id=%s' % user.id,
+                user_id=user.id,
                 button=button)
 
 class NodeForm(tornado.web.UIModule):

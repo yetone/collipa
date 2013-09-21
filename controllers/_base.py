@@ -120,11 +120,3 @@ class BaseHandler(tornado.web.RequestHandler):
             self.flash_message(result)
             self.redirect_next_url()
         return False
-
-    @db_session
-    def get_error_html(self, status_code, **kwargs):
-        if status_code == 404:
-            return self.render("site/404.html")
-        if status_code == 502:
-            return self.render("site/502.html")
-        return self.redirect_next_url()

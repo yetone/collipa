@@ -60,6 +60,10 @@
     <div id="footer">
       <div class="tc">
         <a href="mailto:i@yetone.net">联系我</a>
+        &nbsp;
+        <span>·</span>
+        &nbsp;
+        <span id="online-count">1 人在线</span>
       </div>
     </div>
     <script type="text/javascript" src="http://tajs.qq.com/stats?sId=25280217" charset="UTF-8"></script>
@@ -67,6 +71,10 @@
   <script src="{{ static_url('js/jquery.js') }}"></script>
   <script src="{{ static_url('js/ext/template.min.js') }}"></script>
   <script src="{{ static_url('js/base.js') }}"></script>
+  {% if current_user %}
+    <script src="{{ static_url('js/online.js') }}"></script>
+    <script src="{{ static_url('js/message.js') }}"></script>
+  {% end %}
   {% set flash_messages = handler.flash_message() %}
   {% if flash_messages %}
     <script>

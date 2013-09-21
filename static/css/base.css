@@ -1436,9 +1436,12 @@ ul.users li a div.username span {
   padding: 0 20px 15px 20px;
   display: inline-block;
 }
+
 #footer {
   padding: 16px;
 }
+
+#footer,
 #footer a {
   color: rgb(146, 146, 146);
   text-shadow: 1px 1px 0px #ffffff;

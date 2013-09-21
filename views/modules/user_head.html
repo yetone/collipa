@@ -54,7 +54,7 @@
       {% else %}
       <a title="关注" class="btn fo" href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow">关注</a>
       {% end %}
-      <a class="btn mail" title="私信" href="/message/create?user_id={{ user.id }}"><i class="icon-envelope"></i></a>
+      <a class="btn mail" title="私信" href="/message/create?user_id={{ user.id }}" data-uid="{{ user.id }}"><i class="icon-envelope"></i></a>
     </div>
     {% end %}
   </div>

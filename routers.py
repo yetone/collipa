@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from controllers import site, user, topic, reply, node, image
+from controllers import site, user, topic, reply, node, image, api
 
 routers = [
     (r"/", site.HomeHandler),
@@ -42,7 +42,9 @@ routers = [
     (r"/account/password[/]*", user.PasswordHandler),
     (r"/findpassword[/]*", user.FindPasswordHandler),
 
-    (r"/api/getusername[/]*", user.ApiGetUserNameHandler),
+    (r"/api/getusername[/]*", api.GetUserNameHandler),
+    (r"/api/getonlinecount[/]*", api.OnlineCountHandler),
+    (r"/api/messagewebsocket[/]*", user.MessageCreateHandler),
 
     (r"/502[/]*", site.PageErrorHandler),
     (r"/302[/]*", site.OtherPageErrorHandler),
