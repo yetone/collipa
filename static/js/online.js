@@ -17,6 +17,7 @@ $(document).ready(function() {
     if (!window.console.log) window.console.log = function() {};
 
     online.start();
+    online.socket.send("online");
 });
 
 var online = {
@@ -27,8 +28,7 @@ var online = {
       var url = "ws://" + location.host + "/api/getonlinecount";
       online.socket = new WebSocket(url);
       online.socket.onmessage = function(event) {
-        console.log("is:::::")
-        console.log(event);
+        console.log("websocket is:::::")
         online.show_count(JSON.parse(event.data));
       }
       console.log("start");
