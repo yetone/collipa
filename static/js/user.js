@@ -98,6 +98,117 @@ $(function () {
     return false;
   });
 
+  $('.profile-action .mail').live('click', function() {
+    var action = $(this).attr('href');
+
+    layout =
+      '<div id="layout" class="message">'
+    +   '<div class="layout-header">'
+    +     '<div class="title">'
+    +       '发送私信'
+    +     '</div>'
+    +     '<a title="关闭" class="layout-close">'
+    +       '<i class="icon-remove"></i>'
+    +     '</a>'
+    +   '</div>'
+    +   '<div class="layout-content">'
+      +   '<form action="' + action + '" method="post">'
+      +     '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
+      +     '<div class="fm-row">'
+      +       '<div class="fm-item">'
+      +         '<textarea name="content"></textarea>'
+      +       '</div>'
+      +     '</div>'
+      +     '<div class="fm-action">'
+      +       '<button type="submit" class="btn">发送</button>'
+      +     '</div>'
+      +   '</form>'
+    +   '</div>'
+    + '</div>';
+
+    $('#layout').remove();
+    $('body').append(layout);
+    popup($('#layout'));
+    $('#layout.message textarea').focus();
+
+    return false;
+  });
+
+  $('#layout.message button').live('click', function() {
+    var $that = $(this);
+    var $layout = $(this).parents('#layout')
+    var $form = $layout.find('form');
+    var action = $form.attr('action');
+    var $textarea = $form.find('textarea');
+    var content = $textarea.val();
+
+    var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
+
+    $.post(action, $.param(args), function(data) {
+      $that.removeAttr('disabled');
+      if (data.status === 'success') {
+        $layout.fadeOut();
+        noty(data);
+
+        $textarea.val('');
+      } else {
+        noty(data);
+      }
+    });
+
+    $(this).attr('disabled', 'disabled');
+    return false;
+  });
+
+  $('.message-fm button').live('click', function() {
+    var $that = $(this);
+    var $form = $(this).parents('form');
+    var $textarea = $form.find('textarea');
+    var action = $form.attr('action');
+    var content = $textarea.val();
+    var $items = $(this).parents('.message-fm').prev('ul');
+
+    var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
+
+    $.post(action, $.param(args), function(data) {
+      $that.removeAttr('disabled');
+      if (data.status === 'success') {
+        var source =
+            '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">'
+        +     '<a class="avatar" href="<%= url %>">'
+        +       '<img class="avatar" src="<%= avatar %>">'
+        +     '</a>'
+        +     '<div class="item-content">'
+        +       '<div class="meta">'
+        +         '<span class="time"><%= created %></span>'
+        +       '</div>'
+        +       '<div class="content">'
+        +         '<%= content %>'
+        +         '<div class="caret">'
+        +           '<div class="caret-outer"></div>'
+        +           '<div class="caret-inner"></div>'
+        +         '</div>'
+        +       '</div>'
+        +     '</div>'
+        +   '</li>';
+
+        var render = template.compile(source);
+        var html = render(data);
+
+        $items.append(html);
+        var $show = $('#show-' + data.id);
+        $show.hide().fadeIn();
+
+        $textarea.val('');
+      } else {
+        noty(data);
+      }
+    });
+
+    $(this).attr('disabled', 'disabled');
+    return false;
+  });
+
   $('.more > a').live('click', function() {
     var $more = $(this).parents('.more');
     var $more_list = $more.find('.menu-list');

@@ -73,7 +73,6 @@
   <script src="{{ static_url('js/base.js') }}"></script>
   {% if current_user %}
     <script src="{{ static_url('js/online.js') }}"></script>
-    <script src="{{ static_url('js/message.js') }}"></script>
   {% end %}
   {% set flash_messages = handler.flash_message() %}
   {% if flash_messages %}
