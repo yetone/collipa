@@ -630,3 +630,8 @@ class User(db.Entity, SessionMixin, ModelMixin):
                     config.user_paged]
         else:
             return followings
+
+    @property
+    def is_online(self):
+        online = mc.get("online") or [0]
+        return self.id in online

@@ -5,6 +5,11 @@
       <img class="avatar" src="{{ user.get_avatar(size=128) }}">
     </a>
     <div class="detail">
+      {% if user.is_online %}
+      <span class="online"></span>
+      {% else %}
+      <span class="offline"></span>
+      {% end %}
       <strong>{{ escape(user.nickname) }}</strong>
       <small>第 {{ user.id }} 号会员，创建于 {{ user.created }}</small>
       <div class="description">{{ escape(user.description) }}</div>

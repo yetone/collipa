@@ -1449,3 +1449,14 @@ ul.users li a div.username span {
 .tc {
   text-align: center;
 }
+.offline,
+.online {
+  display: inline-block;
+  background-color: rgb(34, 165, 34);
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+}
+.offline {
+  background-color: rgb(167, 167, 167) !important;
+}
