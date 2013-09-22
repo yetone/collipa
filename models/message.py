@@ -72,6 +72,9 @@ class Message(db.Entity, SessionMixin, ModelMixin):
         self.message_box1_id = message_box1.id
         self.message_box2_id = message_box2.id
 
+        message_box1.updated_at = now
+        message_box2.updated_at = now
+
         message = super(Message, self).save()
 
         return message
