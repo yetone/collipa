@@ -89,6 +89,7 @@ var online = {
 
           online.message_box_area.find('ul.message-list').append(html);
         }
+        $.notifier.notify(data.avatar, "新私信 - " + data.nickname + " - Collipa", data.content);
       }
     }
 };

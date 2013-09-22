@@ -137,4 +137,27 @@ $(function() {
       fix_nav_bar();
     }
   });
+
+  if (window.webkitNotifications !== undefined && window.webkitNotifications.checkPermission() == 1) {
+    var html = '<div id="open-notification" class="tc"><a href="#;">点我开启桌面提醒</a></div>';
+    $('body').prepend(html);
+  }
+
+  $('#open-notification a').on('click', this, function() {
+    window.webkitNotifications.requestPermission(function(){
+      if (window.webkitNotifications.checkPermission() == 0) {
+        $('#open-notification').remove();
+      }
+    });
+  });
+
+  function notifier() {
+  }
+  notifier.prototype.notify = function(icon, title, message) {
+      if (window.webkitNotifications !== undefined) {
+        window.webkitNotifications.createNotification(icon, title, message).show();
+      }
+  }
+
+  $.notifier = new notifier();
 });

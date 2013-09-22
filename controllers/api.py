@@ -67,6 +67,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                                         "id": message.id,
                                         "avatar": message.sender.get_avatar(size=48),
                                         "url": message.sender.url,
+                                        "nickname": message.sender.nickname,
                                         "message_box_id": message.message_box2_id})
                 except Exception, e:
                     print e
