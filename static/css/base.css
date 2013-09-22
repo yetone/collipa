@@ -1466,3 +1466,11 @@ ul.users li a div.username span {
 #shape.mobile .message-list {
   padding: 10px 20px;
 }
+#shape.mobile ul.paren-nodes li,
+#shape.mobile ul.sibling-nodes li,
+#shape.mobile ul.child-nodes li {
+  width: 128px;
+}
+#shape.mobile ul.users li a {
+  width: 60px;
+}
