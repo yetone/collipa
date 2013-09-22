@@ -1460,3 +1460,6 @@ ul.users li a div.username span {
 .offline {
   background-color: rgb(167, 167, 167) !important;
 }
+#shape.mobile .profile-card .status {
+  display: none;
+}
