@@ -1463,3 +1463,6 @@ ul.users li a div.username span {
 #shape.mobile .profile-card .status {
   display: none;
 }
+#shap.mobile .message-list {
+  padding: 10px 20px;
+}
