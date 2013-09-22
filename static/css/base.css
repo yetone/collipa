@@ -1473,4 +1473,12 @@ ul.users li a div.username span {
 }
 #shape.mobile ul.users li a {
   width: 60px;
+  height: 60px;
+}
+#shape.mobile ul.users li a div.username span {
+  width: 50px;
+}
+#shape.mobile ul.users li a div.avatar img.avatar {
+  width: 60px;
+  height: 60px;
 }
