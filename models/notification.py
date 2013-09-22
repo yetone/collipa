@@ -64,6 +64,8 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
             elif self.reply_id:
                 self.receiver_id = self.reply.user_id
 
-        ctl.WebSocketHandler.send_notification(self.receiver_id)
+        notification = super(Notification, self).save()
 
-        return super(Notification, self).save()
+        ctl.WebSocketHandler.send_notification(notification.receiver_id)
+
+        return notification
