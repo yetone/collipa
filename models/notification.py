@@ -4,6 +4,7 @@ import time
 from pony.orm import *
 from ._base import db, SessionMixin, ModelMixin
 import models as m
+import controllers as ctl
 import config
 
 config = config.rec()
@@ -62,5 +63,7 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
                 self.receiver_id = self.topic.user_id
             elif self.reply_id:
                 self.receiver_id = self.reply.user_id
+
+        ctl.WebSocketHandler.send_notification(self.receiver_id)
 
         return super(Notification, self).save()

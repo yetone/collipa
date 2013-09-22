@@ -73,6 +73,20 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                     print e
                     logging.error("Error sending message", exc_info=True)
 
+    @classmethod
+    @db_session
+    def send_notification(cls, user_id):
+        logging.info("Notification send")
+        for this in cls.users:
+            if this.user_id == user_id:
+                try:
+                    user = User[user_id]
+                    this.write_message({"type": "notification",
+                                        "count": user.unread_notification_count})
+                except Exception, e:
+                    print e
+                    logging.error("Error sending notification", exc_info=True)
+
     def on_message(self, message):
         logging.info(message)
         WebSocketHandler.send_online()

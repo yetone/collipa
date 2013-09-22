@@ -23,6 +23,7 @@ var online = {
     socket: null,
     online_count_area: $('#footer #online-count'),
     message_count_area: $('#head .menu .message'),
+    notification_count_area: $('#head .menu .notification'),
     message_box_area: $('.organ.message-box'),
 
     start: function() {
@@ -90,6 +91,26 @@ var online = {
           online.message_box_area.find('ul.message-list').append(html);
         }
         notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+      } else if (data.type === "notification") {
+        if (online.notification_count_area.find('span.count').length) {
+          online.notification_count_area.find('span.count').html(data.count);
+        } else {
+          online.notification_count_area.append('<span class="count">' + data.count + '</span>');
+        }
+        try {
+          online.fixed_notification_count_area = $('#head .menu.fixed .notification');
+          if (online.fixed_notification_count_area.find('span.count').length) {
+            online.fixed_notification_count_area.find('span.count').html(data.count);
+          } else {
+            online.fixed_notification_count_area.append('<span class="count">' + data.count + '</span>');
+          }
+        } catch(e) {
+          console.log("no fixed");
+        }
+        var title = $('title');
+        if (title.html().indexOf('(新提醒)') === -1) {
+          title.html('(新提醒) ' + title.html());
+        }
       }
     }
 };
