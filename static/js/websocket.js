@@ -21,6 +21,7 @@ $(document).ready(function() {
 
 var online = {
     socket: null,
+    t: null,
     online_count_area: $('#footer #online-count'),
     message_count_area: $('#head .menu .message'),
     notification_count_area: $('#head .menu .notification'),
@@ -28,16 +29,24 @@ var online = {
 
     start: function() {
       var url = "ws://" + location.host + "/api/websocket";
+      online.create_socket(url);
+      online.socket.onclose = function(event) {
+        if (online.socket.readyState !== 1) {
+          console.log("::::::::websocket close::::::::");
+          clearInterval(online.t);
+          online.t = setInterval(function() {online.create_socket(url)}, 1000);
+        }
+      };
+    },
+
+    create_socket: function(url) {
       online.socket = new WebSocket(url);
       online.socket.onmessage = function(event) {
-        console.log("::::::websocket::::::");
+        clearInterval(online.t);
+        console.log("::::::::websocket start::::::::");
         online.show_message(JSON.parse(event.data));
       };
-      online.socket.onclose = function(event) {
-        console.log("::::::websocket close::::::");
-        online.socket = new WebSocket(url);
-      };
-      console.log("::::::websocket start::::::");
+      console.log("::::::::websocket::::::::");
     },
 
     show_message: function(data) {
