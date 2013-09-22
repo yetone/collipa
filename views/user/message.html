@@ -43,7 +43,7 @@
     </a>
   </li>
 </ul>
-<div class="organ topic-list nav-shadow">
+<div data-id="{{ message_box.id }}" class="organ message-box nav-shadow">
   {{ modules.MessageList(messages=message_box.get_messages(page=page))}}
   <div class="message-fm">
   {{ modules.MessageForm(user=user, form=form) }}

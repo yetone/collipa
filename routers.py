@@ -43,7 +43,7 @@ routers = [
     (r"/findpassword[/]*", user.FindPasswordHandler),
 
     (r"/api/getusername[/]*", api.GetUserNameHandler),
-    (r"/api/getonlinecount[/]*", api.OnlineCountHandler),
+    (r"/api/websocket[/]*", api.WebSocketHandler),
     (r"/api/messagewebsocket[/]*", user.MessageCreateHandler),
 
     (r"/502[/]*", site.PageErrorHandler),

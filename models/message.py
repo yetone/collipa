@@ -4,6 +4,7 @@ import time
 from pony.orm import *
 from ._base import db, SessionMixin, ModelMixin
 import models as m
+import controllers as ctl
 import config
 
 config = config.rec()
@@ -76,5 +77,7 @@ class Message(db.Entity, SessionMixin, ModelMixin):
         message_box2.updated_at = now
 
         message = super(Message, self).save()
+
+        ctl.WebSocketHandler.send_message(user_id=message.receiver_id, message=message)
 
         return message
