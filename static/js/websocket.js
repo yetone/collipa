@@ -47,6 +47,13 @@ var online = {
         online.show_message(JSON.parse(event.data));
       };
       console.log("::::::::websocket::::::::");
+      online.socket.onclose = function(event) {
+        if (online.socket.readyState !== 1) {
+          console.log("::::::::websocket close::::::::");
+          clearInterval(online.t);
+          online.t = setInterval(function() {online.create_socket(url)}, 1000);
+        }
+      };
     },
 
     show_message: function(data) {
