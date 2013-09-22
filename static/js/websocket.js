@@ -50,6 +50,10 @@ var online = {
           } else {
             online.message_count_area.append('<span class="count">' + data.count + '</span>');
           }
+          var title = $('title');
+          if (title.html().indexOf('(新私信)') === -1) {
+            title.html('(新私信) ' + title.html());
+          }
         } else if (online.message_box_area.length && online.message_box_area.attr('data-id') == data.message_box_id) {
           var source =
               '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix you">'
