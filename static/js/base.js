@@ -138,14 +138,14 @@ $(function() {
     }
   });
 
-  if (window.webkitNotifications !== undefined && window.webkitNotifications.checkPermission() == 1) {
+  if (notify.permissionLevel() === notify.PERMISSION_DEFAULT) {
     var html = '<div id="open-notification" class="tc"><a href="#;">点我开启桌面提醒</a></div>';
     $('body').prepend(html);
   }
 
   $('#open-notification a').on('click', this, function() {
-    window.webkitNotifications.requestPermission(function(){
-      if (window.webkitNotifications.checkPermission() == 0) {
+    notify.requestPermission(function(){
+      if (notify.permissionLevel() === notify.PERMISSION_GRANTED) {
         $('#open-notification').remove();
       }
     });
