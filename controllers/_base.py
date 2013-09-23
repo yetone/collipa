@@ -78,29 +78,32 @@ class BaseHandler(tornado.web.RequestHandler):
     def _(self, message, plural_message=None, count=None):
         return None
 
+    @property
+    def messages(self):
+        if not hasattr(self, '_messages'):
+            messages = self.get_secure_cookie('flash_messages')
+            self._messages = []
+            if messages:
+                self._messages = tornado.escape.json_decode(messages)
+        return self._messages
+
     def flash_message(self, kargs=None):
         def get_category_message(messages):
             for cat, msg in messages:
                 yield (cat, msg)
 
-        key = '%s_flash_message' % self.xsrf_token
-
         if not kargs:
-            messages = mc.get(key)
-            if not messages:
-                return []
-            mc.delete(key, time=0)
-            return messages
+            messages = self.messages
+            self._messages = []
+            self.clear_cookie('flash_messages')
+            return get_category_message(messages)
 
         msg = kargs.get('message', None)
         category = kargs.get('status', None)
         message = (category, msg)
-        messages = mc.get(key)
-        if isinstance(messages, list):
-            messages.append(message)
-        else:
-            messages = [message]
-        mc.set(key, messages, 600)
+        self.messages.append(message)
+        self.set_secure_cookie('flash_messages',
+                                tornado.escape.json_encode(self.messages))
         return message
 
     @property
