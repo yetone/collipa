@@ -16,6 +16,7 @@ from ._base import BaseHandler
 from pony.orm import *
 
 from models import User, MessageBox, Message
+from .api import WebSocketHandler
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
 from extensions import mc
 from helpers import force_int, get_year, get_month
@@ -256,9 +257,13 @@ class MessageCreateHandler(BaseHandler):
             else:
                 result = {"status": "error", "message": "请填写至少 4 字的内容"}
             if self.is_ajax:
-                return self.write(result)
-            self.flash_message(result)
-            return self.redirect_next_url()
+                self.write(result)
+            else:
+                self.flash_message(result)
+                self.redirect_next_url()
+            self.finish()
+            WebSocketHandler.send_message(message.receiver_id, message)
+            return
         result = {"status": "error", "message": "没有目标用户，不能发送私信哦"}
         if self.is_ajax:
             return self.write(result)
