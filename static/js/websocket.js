@@ -106,7 +106,11 @@ var online = {
 
           online.message_box_area.find('ul.message-list').append(html);
         }
-        notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+        var last_notify = window.localStorage.getItem("last_notify");
+        if (last_notify != data.id) {
+          window.localStorage.setItem("last_notify", data.id);
+          notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+        }
       } else if (data.type === "notification") {
         if (online.notification_count_area.find('span.count').length) {
           online.notification_count_area.find('span.count').html(data.count);
