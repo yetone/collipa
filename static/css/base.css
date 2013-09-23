@@ -935,7 +935,7 @@ ul.child-nodes li .description {
 #layout {
   z-index: 99;
   background-color: white;
-  width: 30%;
+  width: 32%;
   padding: 20px;
   box-shadow: 0px 0px 34px rgba(0, 0, 0, 0.35);
 }
