@@ -10,6 +10,8 @@ _SMTPPASS = 'password' # 邮箱密码
 _SMTPHOST = 'smtp.gmail.com' # 邮箱地址
 _SMTPPORT = '587' # 邮箱端口
 
+_RDPORT = 6379 # Redis port
+
 class rec:
     database = 'mysql://%s:%s@%s/%s?charset=utf8' % (_DBUSER, _DBPASS, _DBHOST, _DBNAME)
 
@@ -17,6 +19,8 @@ class rec:
     db_pass = _DBPASS
     db_host = _DBHOST
     db_name = _DBNAME
+
+    rd_port = _RDPORT
 
     cookie_secret = 'cookiesecret' # cookie secret
     password_secret = 'passwordsecret' # password secret
