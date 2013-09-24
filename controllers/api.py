@@ -45,10 +45,11 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
 
     @classmethod
     def send_online(cls):
-        logging.info("Online user count is " + unicode(len(cls.online)))
+        online = rd.smembers("online")
+        logging.info("Online user count is " + unicode(len(online)))
         for user in cls.users:
             try:
-                user.write_message({"type": "online", "count": unicode(len(cls.online))})
+                user.write_message({"type": "online", "count": unicode(len(online))})
             except:
                 logging.error("Error sending online user count", exc_info=True)
 
