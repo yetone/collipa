@@ -5,6 +5,7 @@ import re
 import config
 import memcache
 import redis
+import cPickle as pickle
 
 config = config.rec()
 
@@ -26,3 +27,21 @@ def img_convert(text):
         img_tag = '![](%s)' % url
         text = text.replace(url, img_tag)
     return text
+
+def pk(name, value=None):
+    if value:
+        try:
+            f = file('/dev/shm/' + name + '.pkl', 'wb')
+            pickle.dump(value, f, 2)
+            f.close()
+            return True
+        except Exception, e:
+            print e
+            return False
+    try:
+        f = file('/dev/shm/' + name + '.pkl', 'rb')
+        value = pickle.load(f)
+        f.close()
+        return value
+    except:
+        return None
