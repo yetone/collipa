@@ -11,7 +11,7 @@ from ._base import BaseHandler
 from pony.orm import *
 
 from models import User
-from extensions import mc
+from extensions import mc, rd
 from helpers import force_int
 
 config = config.rec()
@@ -31,7 +31,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
             if self.current_user:
                 self.user_id = self.current_user.id
                 WebSocketHandler.online.add(self.current_user.id)
-                mc.set("online", WebSocketHandler.online, 60 * 60 * 24)
+                rd.sadd("online", self.current_user.id)
             WebSocketHandler.users.add(self)
             self.on_message("online")
 
@@ -39,7 +39,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
         if self in WebSocketHandler.users:
             if self.current_user:
                 WebSocketHandler.online.remove(self.user_id)
-                mc.set("online", WebSocketHandler.online, 60 * 60 * 24)
+                rd.srem("online", self.user_id)
             WebSocketHandler.users.remove(self)
             self.on_message("offline")
 

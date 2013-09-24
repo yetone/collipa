@@ -8,7 +8,7 @@ from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 from helpers import format_date2, strip_tags
-from extensions import mc
+from extensions import mc, rd
 
 config = config.rec()
 
@@ -633,5 +633,6 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def is_online(self):
-        online = mc.get("online") or [0]
+        online = rd.smembers("online") or [0]
+        online = [int(i) for i in online]
         return self.id in online

@@ -18,7 +18,7 @@ from pony.orm import *
 from models import User, MessageBox, Message
 from .api import WebSocketHandler
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
-from extensions import mc
+from extensions import mc, rd
 from helpers import force_int, get_year, get_month
 
 config = config.rec()
@@ -697,8 +697,8 @@ class ShowHandler(BaseHandler):
             url = '/users?category=all'
         elif category == 'online':
             users = set()
-            online = mc.get("online") or [0]
-            online = list(online)
+            online = rd.smembers("online") or [0]
+            online = [int(i) for i in online]
             users = User.select(lambda rv: rv.id in online)
             print users
             user_count = len(users)
