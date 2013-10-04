@@ -20,20 +20,10 @@
     {{ topic.node.style }}
   </style>
   {% end %}
-<!--
-<link rel="stylesheet" href="{{ static_url('js/ext/redactor/redactor.css') }}" />
--->
 <link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
 <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
 {% end %}
 {% block script %}
-<!--
-<script src="{{ static_url('js/ext/redactor/zh_cn.js') }}"></script>
-<script src="{{ static_url('js/ext/redactor/redactor.min.js') }}"></script>
-<script type="text/javascript">
-  $('#editor').redactor();
-</script>
--->
 <script src="{{ static_url('js/ext/ueditor/ueditor.config.js') }}"></script>
 <script src="{{ static_url('js/ext/ueditor/ueditor.all.min.js') }}"></script>
 <script type="text/javascript">
@@ -43,16 +33,6 @@
     ue.render("editor");
   }
 </script>
-
-<!--
-<script src="{{ static_url('js/ext/ui/jquery.ui.core.js') }}"></script>
-<script src="{{ static_url('js/ext/ui/jquery.ui.widget.js') }}"></script>
-<script src="{{ static_url('js/ext/ui/jquery.ui.position.js') }}"></script>
-<script src="{{ static_url('js/ext/ui/jquery.ui.menu.js') }}"></script>
-<script src="{{ static_url('js/ext/ui/jquery.ui.autocomplete.js') }}"></script>
-<script src="{{ static_url('js/ext/triggeredAutocomplete/jquery-ui.triggeredAutocomplete.js') }}"></script>
--->
-
 <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 <script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
 <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
