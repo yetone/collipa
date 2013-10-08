@@ -4,7 +4,6 @@ import time
 from pony.orm import *
 from ._base import db, SessionMixin, ModelMixin
 import models as m
-import controllers as ctl
 import config
 
 config = config.rec()
@@ -55,6 +54,8 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
         return m.User.get(id=self.receiver_id)
 
     def save(self):
+        import controllers as ctl
+
         now = int(time.time())
         self.created_at = now
         self.updated_at = now

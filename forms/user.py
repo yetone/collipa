@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from libs.tforms import validators
-from libs.tforms.fields import TextField, TextAreaField, PasswordField, BooleanField
+from libs.tforms.fields import TextField, TextAreaField, PasswordField
 from libs.tforms.validators import ValidationError
 from ._base import BaseForm
 import config
@@ -10,6 +10,7 @@ from models import User, Message
 from pony.orm import *
 
 config = config.rec()
+
 
 class MessageForm(BaseForm):
     content = TextAreaField(

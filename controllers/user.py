@@ -15,13 +15,14 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import User, MessageBox, Message
+from models import User
 from .api import WebSocketHandler
 from forms import SignupForm, SigninForm, MessageForm, SettingForm
-from extensions import mc, rd
+from extensions import rd
 from helpers import force_int, get_year, get_month
 
 config = config.rec()
+
 
 class EmailMixin(object):
 
