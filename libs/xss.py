@@ -13,6 +13,8 @@ def search(text, regex):
     return regexcmp.search(text)
 
 VALID_TAGS = {
+                'audio': {'controls': '.*'},
+                'video': {'controls': '.*'},
                 'source': {'src': '.*', 'type': '.*'},
                 'pre': {'class': '.*', 'style': '.*'},
                 'code': {'class': '.*', 'style': '.*'},
