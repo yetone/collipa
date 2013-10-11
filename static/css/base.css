@@ -1095,7 +1095,16 @@ ul.child-nodes li .description {
 }
 
 .node-pic-edit button {
-  margin: 5px 0 20px 0;
+  margin: 5px 0 5px 0;
+  vertical-align: middle;
+}
+
+.explain-link {
+  margin-left: 10px;
+}
+
+.sep15 {
+  height: 15px;
 }
 
 .node-pic-edit img {

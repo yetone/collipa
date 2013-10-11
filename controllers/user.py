@@ -401,6 +401,16 @@ class SettingHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
     def get(self):
+        action = self.get_argument("action", None)
+        if action == 'reset_head':
+            self.current_user.head_img = ''
+            result = {"status": "success", "message": "头部背景已重置"}
+            if self.is_ajax:
+                self.write(result)
+            else:
+                self.flash_message(result)
+                self.redirect('/account/setting')
+            return
         user = self.current_user
         form = SettingForm.init(user)
         return self.render("user/setting.html", form=form)
