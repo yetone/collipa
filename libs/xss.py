@@ -13,6 +13,7 @@ def search(text, regex):
     return regexcmp.search(text)
 
 VALID_TAGS = {
+                'source': {'src': '.*', 'type': '.*'},
                 'pre': {'class': '.*', 'style': '.*'},
                 'code': {'class': '.*', 'style': '.*'},
                 'span': {'class': '.*', 'style': '.*'},
