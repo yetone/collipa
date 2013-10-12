@@ -1,5 +1,6 @@
 {% extends "../layout.html" %}
 
+{% block subtitle %}私信列表{% end %}
 {% block style %}
   <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
   {% if current_user.head_img %}
