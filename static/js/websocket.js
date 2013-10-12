@@ -110,7 +110,13 @@ var online = {
         var last_notify = window.localStorage.getItem("last_notify");
         if (last_notify != data.id) {
           window.localStorage.setItem("last_notify", data.id);
-          notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+          var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+          $('body').off('mousemove');
+          $('body').on('mousemove', function(e) {
+            if ($(document).scrollTop() + $(window).height() - e.pageY < 200 && $(window).width() - e.pageX < 350) {
+              notification.close();
+            }
+          });
         }
       } else if (data.type === "notification") {
         if (online.notification_count_area.find('span.count').length) {
