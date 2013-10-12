@@ -15,6 +15,7 @@ def do_sth():
 
     for user in users:
         print user.name, user.nickname, user.email
+
     for ms in messages:
         print ms.receiver_id
         if not ms.message_box1:
