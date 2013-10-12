@@ -38,7 +38,7 @@ var noty = function(data, static) {
     $('body').append(noty_div);
     popup($('#noty'), 'fixed');
     if (!static) {
-      setTimeout(function() {$('#noty').fadeOut(1200)}, 500);
+      setTimeout(function() {$('#noty').fadeOut(1200)}, 600);
     } else {
       $('#noty').addClass('static');
     }
