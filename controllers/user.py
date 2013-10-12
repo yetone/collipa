@@ -206,10 +206,14 @@ class MessageHandler(BaseHandler):
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         user_id = force_int(self.get_argument('user_id', 0), 0)
+        action = self.get_argument('action', None)
         current_user = self.current_user
         user = User.get(id=user_id)
         if user:
             message_box = current_user.get_message_box(user=user)
+            if action == "read":
+                message_box.status = 1
+                return self.write({"status": "success", "message": "已读"})
             if not message_box:
                 result = {"status": "error", "message": "无此私信"}
                 if self.is_ajax:

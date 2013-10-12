@@ -105,6 +105,7 @@ var online = {
           var html = render(data);
 
           online.message_box_area.find('ul.message-list').append(html);
+          $.get(window.location.href + '&action=read');
         }
         var last_notify = window.localStorage.getItem("last_notify");
         if (last_notify != data.id) {
