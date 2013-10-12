@@ -111,7 +111,6 @@ var online = {
         if (last_notify != data.id) {
           window.localStorage.setItem("last_notify", data.id);
           var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
-          $('body').off('mousemove');
           $('body').on('mousemove', function(e) {
             if ($(document).scrollTop() + $(window).height() - e.pageY < 200 && $(window).width() - e.pageX < 350) {
               notification.close();
