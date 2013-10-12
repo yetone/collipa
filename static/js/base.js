@@ -3,7 +3,10 @@ var get_cookie = function(name) {
   return r?r[1]:undefined;
   },
 
-  popup = function($popdiv) {
+  popup = function($popdiv, pos) {
+    if (!pos) {
+      pos = 'absolute';
+    }
     var _scrollHeight = $(document).scrollTop(),
         _windowHeight = $(window).height(),
         _windowWidth  = $(window).width(),
@@ -12,7 +15,7 @@ var get_cookie = function(name) {
 
     _popTop = (_windowHeight - _popdivHeight) / 2;
     _popLeft = (_windowWidth - _popdivWidth) / 2;
-    $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': 'absolute'});
+    $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': pos});
     if ($popdiv.width() + 2 >= _windowWidth) {
       $popdiv.width(_windowWidth * 0.85);
     }
@@ -33,9 +36,9 @@ var noty = function(data, static) {
 
     $('#noty').remove();
     $('body').append(noty_div);
-    popup($('#noty'));
+    popup($('#noty'), 'fixed');
     if (!static) {
-      setTimeout("$('#noty').fadeOut(1200)", "500");
+      setTimeout(function() {$('#noty').fadeOut(1200)}, 500);
     } else {
       $('#noty').addClass('static');
     }
