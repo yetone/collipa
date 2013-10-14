@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from controllers import site, user, topic, reply, node, image, api
+from controllers import site, user, topic, reply, node, image, api, upload
 
 routers = [
     (r"/", site.HomeHandler),
@@ -36,6 +36,7 @@ routers = [
     (r"/reply/(\d+)/history[/]*", reply.HistoryHandler),
 
     (r"/image/upload[/]*", image.UploadHandler),
+    (r"/upload/(\w+)[/]*", upload.UploadHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
     (r"/account/setting/avatar/crop[/]*", user.AvatarCropHandler),
     (r"/account/upload[/]*", user.ImgUploadHandler),
