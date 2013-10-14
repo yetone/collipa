@@ -43,6 +43,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                 rd.srem("online", self.user_id)
             WebSocketHandler.users.remove(self)
             logging.info("%s offline" % self.user_id)
+            WebSocketHandler.send_online()
 
     @classmethod
     def send_online(cls):
