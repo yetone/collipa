@@ -56,7 +56,7 @@ class UploadHandler(BaseHandler):
                 "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
             return
         user = self.current_user
-        upload_path = sys.path[0] + "/static/upload/" + get_year() + '/' +\
+        upload_path = sys.path[0] + "/static/upload/image/" + get_year() + '/' +\
             get_month() + "/"
         if not os.path.exists(upload_path):
             try:
