@@ -394,7 +394,7 @@ a.node:hover {
 .upload-topic-image,
 .upload-node-image,
 .upload-reply-image {
-  margin: 8px;
+  margin: 8px 0;
 }
 .reply-list .author-info {
     margin-bottom: 4px;
