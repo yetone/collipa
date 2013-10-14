@@ -41,12 +41,13 @@ var online = {
 
     create_socket: function(url) {
       online.socket = new WebSocket(url);
+      online.socket.onopen = function(event) {
+        console.log("::::::::websocket start::::::::");
+      }
       online.socket.onmessage = function(event) {
         clearInterval(online.t);
-        console.log("::::::::websocket start::::::::");
         online.show_message(JSON.parse(event.data));
       };
-      console.log("::::::::websocket::::::::");
       online.socket.onclose = function(event) {
         if (online.socket.readyState !== 1) {
           console.log("::::::::websocket close::::::::");

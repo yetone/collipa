@@ -33,7 +33,8 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                 WebSocketHandler.online.add(self.current_user.id)
                 rd.sadd("online", self.current_user.id)
             WebSocketHandler.users.add(self)
-            self.on_message("online")
+            logging.info("%s online" % self.user_id)
+            WebSocketHandler.send_online()
 
     def on_close(self):
         if self in WebSocketHandler.users:
@@ -41,7 +42,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                 WebSocketHandler.online.remove(self.user_id)
                 rd.srem("online", self.user_id)
             WebSocketHandler.users.remove(self)
-            self.on_message("offline")
+            logging.info("%s offline" % self.user_id)
 
     @classmethod
     def send_online(cls):
@@ -90,7 +91,6 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         logging.info(message)
-        WebSocketHandler.send_online()
 
 class GetUserNameHandler(BaseHandler):
     @db_session
