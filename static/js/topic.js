@@ -196,6 +196,7 @@ $(function() {
     var $d = $('.open.menu-list');
     $d.removeClass('open');
   });
+
   $('.edui-for-myinsertimage').live('click', function() {
     $('#pic-select').click();
     return false;

@@ -1494,3 +1494,6 @@ ul.users li a div.username span {
 #shape.mobile ul.users li a div.avatar {
   height: 60px;
 }
+.vm {
+  vertical-align: middle;
+}
