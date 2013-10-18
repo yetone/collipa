@@ -56,9 +56,12 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
             except Exception as e:
                 logging.error("Error sending online user count", exc_info=True)
                 if type(e).__name__ == "AttributeError":
-                    WebSocketHandler.users.remove(user)
-                    WebSocketHandler.online.remove(user.user_id)
-                    rd.srem("online", user.user_id)
+                    try:
+                        WebSocketHandler.users.remove(user)
+                        rd.srem("online", user.user_id)
+                        WebSocketHandler.online.remove(user.user_id)
+                    except:
+                        pass
 
     @classmethod
     @db_session
