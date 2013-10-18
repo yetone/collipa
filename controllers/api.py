@@ -34,6 +34,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                 rd.sadd("online", self.current_user.id)
             WebSocketHandler.users.add(self)
             logging.info("%s online" % self.user_id)
+            logging.info("ip is %s" % self.request.remote_ip)
             WebSocketHandler.send_online()
 
     def on_close(self):
