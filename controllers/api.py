@@ -34,6 +34,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                 rd.sadd("online", self.current_user.id)
             WebSocketHandler.users.add(self)
             logging.info("%s online" % self.user_id)
+            logging.info("ip is %s" % self.request.remote_ip)
             WebSocketHandler.send_online()
 
     def on_close(self):
@@ -52,8 +53,12 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
         for user in cls.users:
             try:
                 user.write_message({"type": "online", "count": unicode(len(online))})
-            except:
+            except Exception as e:
                 logging.error("Error sending online user count", exc_info=True)
+                if type(e).__name__ == "AttributeError":
+                    WebSocketHandler.users.remove(user)
+                    WebSocketHandler.online.remove(user.user_id)
+                    rd.srem("online", user.user_id)
 
     @classmethod
     @db_session

@@ -53,10 +53,12 @@ class HomeHandler(BaseHandler):
                 page=page, view=view, page_count=page_count, url='/')
 
 class PageNotFoundHandler(BaseHandler):
+    @db_session
     def get(self):
         return self.render("site/404.html")
 
 class PageErrorHandler(BaseHandler):
+    @db_session
     def get(self):
         return self.render("site/502.html")
 
