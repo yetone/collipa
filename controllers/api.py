@@ -16,6 +16,7 @@ from helpers import force_int
 
 config = config.rec()
 
+
 class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
     users = set()
     online = set()
@@ -40,7 +41,10 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
     def on_close(self):
         if self in WebSocketHandler.users:
             if self.current_user:
-                WebSocketHandler.online.remove(self.user_id)
+                try:
+                    WebSocketHandler.online.remove(self.user_id)
+                except:
+                    pass
                 rd.srem("online", self.user_id)
             WebSocketHandler.users.remove(self)
             logging.info("%s offline" % self.user_id)
@@ -100,6 +104,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         logging.info(message)
+
 
 class GetUserNameHandler(BaseHandler):
     @db_session
