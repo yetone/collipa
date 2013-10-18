@@ -545,6 +545,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
             raise
 
     @property
+    @db_session
     def unread_message_box_count(self):
         return m.MessageBox.select(lambda rv: rv.sender_id ==
                 self.id and rv.status == 0).count()
