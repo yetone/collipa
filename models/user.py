@@ -503,6 +503,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
             return False
 
     @property
+    @db_session
     def unread_notification_count(self):
         return m.Notification.select(lambda rv: rv.receiver_id ==
                 self.id and rv.status == 0 and rv.switch == 1).count()
