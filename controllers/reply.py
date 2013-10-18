@@ -123,6 +123,7 @@ class EditHandler(BaseHandler):
         return self.render("reply/edit.html", form=form, reply=reply)
 
 class RemoveHandler(BaseHandler, EmailMixin):
+    @db_session
     @tornado.web.authenticated
     def get(self, reply_id):
         if not self.current_user.is_admin:
