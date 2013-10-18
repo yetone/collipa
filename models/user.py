@@ -63,7 +63,6 @@ class User(db.Entity, SessionMixin, ModelMixin):
     background_img = Optional(unicode, 400)
 
     @staticmethod
-    @db_session
     def init(**kargs):
         token = User.create_token(16)
         kargs.update(dict(token=token))
@@ -503,7 +502,6 @@ class User(db.Entity, SessionMixin, ModelMixin):
             return False
 
     @property
-    @db_session
     def unread_notification_count(self):
         return m.Notification.select(lambda rv: rv.receiver_id ==
                 self.id and rv.status == 0 and rv.switch == 1).count()
@@ -545,7 +543,6 @@ class User(db.Entity, SessionMixin, ModelMixin):
             raise
 
     @property
-    @db_session
     def unread_message_box_count(self):
         return m.MessageBox.select(lambda rv: rv.sender_id ==
                 self.id and rv.status == 0).count()
