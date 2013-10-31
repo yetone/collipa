@@ -65,18 +65,5 @@ def main(argv):
             else:
                 print("已取消操作！")
 
-        if opt == "--install":
-            base_path = sys.path[0]
-            try:
-                print(requirements_path)
-                os.system('sudo python %s/libs/pony/setup.py install' %
-                        base_path)
-                os.system('sudo pip install -r %s/requirements.txt' %
-                        base_path)
-            except Exception as e:
-                print(e)
-            finally:
-                print("依赖安装成功")
-
 if __name__ == "__main__":
     main(sys.argv[1:])
