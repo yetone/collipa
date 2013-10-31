@@ -79,7 +79,7 @@ $(function () {
               +           '<%= parent_nodes[i].name %>'
               +         '</span>'
             +         '</div>'
-            +         '<div class="description">'
+            +         '<div class="description" tooltip="<%== parent_nodes[i].summary %>">'
             +           '<%== parent_nodes[i].summary %>'
             +         '</div>'
           +         '</a>'
@@ -99,7 +99,7 @@ $(function () {
               +           '<%= child_nodes[i].name %>'
               +         '</span>'
             +         '</div>'
-            +         '<div class="description">'
+            +         '<div class="description" data-tooltip="<%== child_nodes[i].summary %>">'
             +           '<%== child_nodes[i].summary %>'
             +         '</div>'
           +         '</a>'
@@ -119,7 +119,7 @@ $(function () {
               +           '<%= sibling_nodes[i].name %>'
               +         '</span>'
             +         '</div>'
-            +         '<div class="description">'
+            +         '<div class="description" data-tooltip="<%== sibling_nodes[i].summary %>">'
             +           '<%== sibling_nodes[i].summary %>'
             +         '</div>'
           +         '</a>'
@@ -162,4 +162,20 @@ $(function () {
     }
     return false;
   });
+  $('.node .node-tag').next('.description').tooltip();
+  /*
+  $('.node .description').on('mousemove', function(e) {
+    if (!$('.tooltip').length) {
+      var tooltip = '<div class="tooltip">' + $(this).html() + '</div>';
+      $(tooltip).hide().appendTo('body').fadeIn();
+    }
+    $('.tooltip').css({'position': 'absolute',
+                       'top': mousePosition(e).y + 15,
+                       'left': mousePosition(e).x + 15
+    });
+  }).on('mouseout', function() {
+    $('.tooltip').fadeOut(300);
+    setTimeout(function() {$('.tooltip').remove();}, 300);
+  });
+  */
 });

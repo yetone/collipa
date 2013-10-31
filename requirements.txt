@@ -1,8 +1,9 @@
 supervisor
 tornado
-pony==0.4.7
+pony
 misaka
 python-memcached
 PIL
 MySQL-python
 BeautifulSoup
+redis

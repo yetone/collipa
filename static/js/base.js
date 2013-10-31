@@ -1,6 +1,16 @@
 var get_cookie = function(name) {
-  var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-  return r?r[1]:undefined;
+    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+    return r?r[1]:undefined;
+  },
+
+  mousePosition = function(e) {
+    if (e.pageX && e.pageY) {
+      return {x: e.pageX, y: e.pageY};
+    }
+    return {
+      x: e.clientX + document.body.scrollLeft - document.body.clientX,
+      y: e.clientY + document.body.scrollTop - document.body.clientY
+    };
   },
 
   popup = function($popdiv, pos) {
@@ -166,4 +176,26 @@ $(function() {
   }
 
   $.notifier = new notifier();
+
+  $.fn.extend({
+    tooltip: function() {
+      this.each(function(i, v) {
+        $(v).off('mousemove').off('mouseout');
+        $(v).on('mousemove', function(e) {
+          var text = $(v).attr('data-tooltip');
+          if (!$('.tooltip').length) {
+            var tooltip = '<div class="tooltip"></div>';
+            $(tooltip).appendTo('body').fadeIn();
+          }
+          $('.tooltip').css({'position': 'absolute',
+                             'top': mousePosition(e).y + 15,
+                             'left': mousePosition(e).x + 15
+          }).html(text);
+        }).on('mouseout', function(e) {
+          $('.tooltip').fadeOut(150);
+          setTimeout(function() {$('.tooltip').remove();}, 150);
+        });
+      });
+    }
+  });
 });
