@@ -831,8 +831,8 @@ ul.child-nodes li span.name {
 ul.parent-nodes li .description,
 ul.sibling-nodes li .description,
 ul.child-nodes li .description {
-  height: 30px;
-  line-height: 32px;
+  white-space: nowrap;
+  line-height: 30px;
   overflow: hidden;
   text-overflow: ellipsis;
   color: #777;
