@@ -32,16 +32,28 @@ mv config.back.py config.py
 
 ## 安装必要扩展包
 
+### 安装 MySQL
+
+```
+sudo apt-get install mysql-server
+```
+
 ### 安装 memcached
 
 ```
 sudo apt-get install memcached
 ```
 
+### 安装 redis
+
+```
+sudo apt-get install redis-server
+```
+
 ### 安装其他
 
 ```
-python setup.py --install
+sudo pip install -r requirements.txt
 ```
 
 ## 初始化数据库
