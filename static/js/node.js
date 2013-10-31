@@ -145,6 +145,7 @@ $(function () {
           $node_information.html(html);
           var $show = $('#show');
           $show.hide().fadeIn();
+          $('.node .node-tag').next('.description').tooltip();
         }
       }
     });
