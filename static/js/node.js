@@ -79,7 +79,7 @@ $(function () {
               +           '<%= parent_nodes[i].name %>'
               +         '</span>'
             +         '</div>'
-            +         '<div class="description" tooltip="<%== parent_nodes[i].summary %>">'
+            +         '<div class="description" data-tooltip="<%== parent_nodes[i].summary %>">'
             +           '<%== parent_nodes[i].summary %>'
             +         '</div>'
           +         '</a>'
