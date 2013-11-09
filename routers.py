@@ -36,8 +36,8 @@ routers = [
     (r"/reply/(\d+)/history[/]*", reply.HistoryHandler),
 
     (r"/image/upload[/]*", image.UploadHandler),
-    (r"/upload/(\w+)[/]*", upload.UploadHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
+    (r"/upload/(\w+)[/]*", upload.UploadHandler),
     (r"/account/setting/avatar/crop[/]*", user.AvatarCropHandler),
     (r"/account/upload[/]*", user.ImgUploadHandler),
     (r"/account/password[/]*", user.PasswordHandler),
