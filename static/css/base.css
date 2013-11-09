@@ -1498,8 +1498,9 @@ ul.users li a div.username span {
   vertical-align: middle;
 }
 .tooltip {
-  padding: 6px 12px;
-  background-color: #fff;
-  box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.15);
+  color: #eee;
+  padding: 8px 14px;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.15);
   max-width: 300px;
 }
