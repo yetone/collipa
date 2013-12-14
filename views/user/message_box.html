@@ -3,19 +3,7 @@
 {% block subtitle %}私信列表{% end %}
 {% block style %}
   <link rel="shortcut icon" href="{{ current_user.get_avatar(size=48) }}" type="image/x-icon" />
-  {% if current_user.head_img %}
-  <style type="text/css">
-    #head {
-      background: url({{ current_user.head }});
-      background-size: 100%;
-    }
-  </style>
-  {% end %}
-  {% if current_user.style %}
-  <style type="text/css">
-    {{ current_user.style }}
-  </style>
-  {% end %}
+  {% module Template("modules/user_mixin.html", user=current_user) %}
 {% end %}
 {% block script %}
 <script src="{{ static_url('js/user.js') }}"></script>

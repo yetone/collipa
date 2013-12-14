@@ -5,19 +5,7 @@
 {% end %}
 {% block style %}
   <link rel="shortcut icon" href="{{ user.get_avatar(size=48) }}" type="image/x-icon" />
-  {% if user.head_img %}
-  <style type="text/css">
-    #head {
-      background: url({{ user.head }});
-      background-size: 100%;
-    }
-  </style>
-  {% end %}
-  {% if user.style %}
-  <style type="text/css">
-    {{ user.style }}
-  </style>
-  {% end %}
+  {% module Template("modules/user_mixin.html", user=user) %}
   <link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
   <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
 {% end %}
