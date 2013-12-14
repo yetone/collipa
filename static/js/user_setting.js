@@ -15,13 +15,14 @@ $(function() {
     autoUpload: true,
     progressall: function(e, data){
       var category = $(this).attr('data-category');
-      var progress = parseInt(data.loaded / data.total * 100, 10);
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          $status_msg;
       if (category === 'icon') {
-        var $status_msg = $('.ico-preview').next('.status-msg');
+        $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {
-        var $status_msg = $('.head-preview').next('.status-msg');
+        $status_msg = $('.head-preview').next('.status-msg');
       } else if (category == 'background') {
-        var $status_msg = $('.background-preview').next('.status-msg');
+        $status_msg = $('.background-preview').next('.status-msg');
       }
       $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
       if( progress == 100 ){
@@ -29,13 +30,14 @@ $(function() {
       }
     },
     done: function(e, result){
-      var category = $(this).attr('data-category');
+      var category = $(this).attr('data-category'),
+          $status_msg;
       if (category === 'icon') {
-        var $status_msg = $('.ico-preview').next('.status-msg');
+        $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {
-        var $status_msg = $('.head-preview').next('.status-msg');
+        $status_msg = $('.head-preview').next('.status-msg');
       } else if (category == 'background') {
-        var $status_msg = $('.background-preview').next('.status-msg');
+        $status_msg = $('.background-preview').next('.status-msg');
       }
       data = result.result;
       if(data.status == "success"){
@@ -46,6 +48,7 @@ $(function() {
           $('#head').css({'background': 'url(' + data.path + ')', 'background-size': '100%'});
         } else if (category === 'background') {
           $('.background-preview img').attr('src', data.path);
+          $('body').css({'background': 'url(' + data.path + ')', 'background-size': '100%'});
         }
         noty(data);
       } else {
