@@ -60,6 +60,11 @@
         <a title="收藏" href="{{ topic.url }}?action=collect"><i class="icon-bookmark"></i> 收藏</a>
       </li>
       {% end %}
+      {% if current_user == topic.author or current_user.is_admin %}
+      <li class="edit">
+        <a title="修改" href="{{ topic.url }}/edit"><i class="icon-pencil"></i> 修改</a>
+      </li>
+      {% end %}
       {% if current_user != topic.author %}
         {% if current_user.is_thanked(topic=topic) %}
         <li class="thank pressed">
@@ -84,10 +89,6 @@
             {% end %}
           </ul>
         </li>
-      {% else %}
-      <li class="edit">
-        <a title="修改" href="{{ topic.url }}/edit"><i class="icon-pencil"></i> 修改</a>
-      </li>
       {% end %}
     </ul>
     {% end %}
