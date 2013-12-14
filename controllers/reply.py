@@ -95,7 +95,7 @@ class EditHandler(BaseHandler):
         if not self.has_permission:
             return
         reply = Reply.get(id=reply_id)
-        if not reply:
+        if not reply or (reply.author != self.current_user and not self.current_user.is_admin):
             return self.redirect_next_url()
         form = ReplyForm(content=reply.content)
         return self.render("reply/edit.html", form=form, reply=reply)
@@ -106,7 +106,7 @@ class EditHandler(BaseHandler):
         if not self.has_permission:
             return
         reply = Reply.get(id=reply_id)
-        if not reply:
+        if not reply or (reply.author != self.current_user and not self.current_user.is_admin):
             return self.redirect_next_url()
         user = self.current_user
         form = ReplyForm(self.request.arguments)
