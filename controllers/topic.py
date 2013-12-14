@@ -109,7 +109,7 @@ class EditHandler(BaseHandler):
         if not self.has_permission:
             return
         topic = Topic.get(id=topic_id)
-        if topic:
+        if topic and (topic.author == self.current_user or self.current_user.is_admin):
             selected = topic.node.name
         else:
             return self.redirect_next_url()
@@ -125,7 +125,7 @@ class EditHandler(BaseHandler):
         if not self.has_permission:
             return
         topic = Topic.get(id=topic_id)
-        if not topic:
+        if not topic or (topic.author != self.current_user and not self.current_user.is_admin):
             return self.redirect_next_url()
         user = self.current_user
         form = TopicForm(self.request.arguments)
