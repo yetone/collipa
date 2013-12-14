@@ -142,6 +142,7 @@ class EditHandler(BaseHandler):
         return self.render("topic/create.html", form=form, node=topic.node)
 
 class RemoveHandler(BaseHandler, EmailMixin):
+    @db_session
     @tornado.web.authenticated
     def get(self, topic_id):
         if not self.current_user.is_admin:
