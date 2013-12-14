@@ -136,7 +136,8 @@
       <img src="{{ current_user.background }}">
     </div>
     <div class="status-msg"></div>
-    <button data-category="background" class="set-user-img btn">设置背景</button>
+    <button data-category="background" class="set-user-img btn vm">设置背景</button>
+    <a class="explain-link" href="/account/setting?action=reset_bg">重置</a>
     <form style="display: none;" method="post" action="/account/upload" enctype="multipart/form-data" method="post">
       <input type="hidden" id="category" name="category" />
       <input data-category="head" id='user-img-select' type="file" name="myimage" data-url="/account/upload" multiple />

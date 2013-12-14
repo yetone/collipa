@@ -406,9 +406,13 @@ class SettingHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         action = self.get_argument("action", None)
-        if action == 'reset_head':
-            self.current_user.head_img = ''
-            result = {"status": "success", "message": "头部背景已重置"}
+        if action:
+            if action == 'reset_head':
+                self.current_user.reset_img('head')
+                result = {"status": "success", "message": "头部背景已重置"}
+            elif action == 'reset_bg':
+                self.current_user.reset_img('background')
+                result = {"status": "success", "message": "背景已重置"}
             if self.is_ajax:
                 self.write(result)
             else:

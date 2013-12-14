@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import os
+import sys
 import hashlib
 from random import choice
 import time
@@ -102,6 +104,19 @@ class User(db.Entity, SessionMixin, ModelMixin):
             return self.background_img
         else:
             return config.node_background_url
+
+    def reset_img(self, category):
+        if category == 'background':
+            path = self.background_img
+            self.background_img = ''
+        elif category == 'head':
+            path = self.head_img
+            self.head_img = ''
+        try:
+            os.system('rm -f %s%s' % (sys.path[0], path))
+            return True
+        except:
+            return False
 
     @property
     def url(self):
