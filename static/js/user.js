@@ -112,23 +112,23 @@ $(function () {
     +     '</a>'
     +   '</div>'
     +   '<div class="layout-content">'
-      +   '<form action="' + action + '" method="post">'
-      +     '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
-      +     '<div class="fm-row">'
-      +       '<div class="fm-item">'
-      +         '<textarea name="content"></textarea>'
-      +       '</div>'
-      +     '</div>'
-      +     '<div class="fm-action">'
-      +       '<button type="submit" class="btn">发送</button>'
-      +     '</div>'
-      +   '</form>'
+    +      '<form action="' + action + '" method="post">'
+    +        '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
+    +        '<div class="fm-row">'
+    +          '<div class="fm-item">'
+    +            '<textarea name="content"></textarea>'
+    +          '</div>'
+    +        '</div>'
+    +        '<div class="fm-action">'
+    +          '<button type="submit" class="btn">发送</button>'
+    +        '</div>'
+    +      '</form>'
     +   '</div>'
     + '</div>';
 
     $('#layout').remove();
     $('body').append(layout);
-    popup($('#layout'));
+    popup($('#layout'), 'fixed');
     $('#layout.message textarea').focus();
 
     return false;
@@ -136,7 +136,7 @@ $(function () {
 
   $('#layout.message button').live('click', function() {
     var $that = $(this);
-    var $layout = $(this).parents('#layout')
+    var $layout = $(this).parents('#layout');
     var $form = $layout.find('form');
     var action = $form.attr('action');
     var $textarea = $form.find('textarea');
