@@ -6,6 +6,11 @@
     <title>{% block title %}{% block subtitle %}首页{% end %} - {{ handler.settings['site_title'] }}{% end %}</title>
     <link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ static_url('css/base.css') }}" />
+    {% if current_user and current_user.site_style %}
+    <style type="text/css">
+      {{ current_user.site_style }}
+    </style>
+    {% end %}
     {% block style %}{% end %}
   </head>
   <body>

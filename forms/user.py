@@ -116,54 +116,16 @@ class SigninForm(BaseForm):
         raise ValidationError('用户名或密码错误')
 
 class SettingForm(BaseForm):
-    nickname = TextField(
-        '昵称', [
-            validators.Required(),
-            validators.Length(min=4, max=16),
-        ],
-    )
-    urlname = TextField(
-        '域名', [
-            validators.Required(),
-            validators.Length(min=4, max=30),
-            validators.Regexp(
-                '^[a-zA-Z0-9_]+$',
-                message='域名只能包含英文字母和数字',
-            ),
-        ],
-        description='让您的域名具有个性'
-    )
-    address = TextField(
-        '城市', [
-            validators.Length(min=0, max=200),
-        ],
-    )
-    website = TextField(
-        '网址', [
-            validators.Length(min=1, max=200),
-        ],
-    )
-    description = TextAreaField(
-        '简介', [
-            validators.Length(min=1, max=10000),
-        ],
-    )
-    style = TextAreaField(
-        '样式', [
-            validators.Length(min=0, max=1000),
-        ],
-    )
-
-    @staticmethod
-    def init(user=None, args=None):
-        nickname = TextField(
+    @classmethod
+    def init(cls, user=None, args=None):
+        cls.nickname = TextField(
             '昵称', [
                 validators.Required(),
                 validators.Length(min=4, max=16),
             ],
             description='您还有 %s 次修改昵称的机会' % user.edit_nickname_count
         )
-        urlname = TextField(
+        cls.urlname = TextField(
             '域名', [
                 validators.Required(),
                 validators.Length(min=4, max=30),
@@ -174,53 +136,57 @@ class SettingForm(BaseForm):
             ],
             description='您还有 %s 次修改域名的机会' % user.edit_urlname_count
         )
-        address = TextField(
+        cls.address = TextField(
             '城市', [
                 validators.Length(min=0, max=200),
             ],
         )
-        website = TextField(
+        cls.website = TextField(
             '网址', [
                 validators.Length(min=0, max=200),
             ],
         )
-        description = TextAreaField(
+        cls.description = TextAreaField(
             '简介', [
                 validators.Length(min=0, max=10000),
             ],
         )
-        style = TextAreaField(
+        cls.style = TextAreaField(
             '样式', [
                 validators.Length(min=0, max=1000),
             ],
         )
-        SettingForm.nickname = nickname
-        SettingForm.urlname = urlname
-        SettingForm.address = address
-        SettingForm.website = website
-        SettingForm.description = description
-        SettingForm.style = style
+        cls.site_style = TextAreaField(
+            '全站样式', [
+                validators.Length(min=0, max=1000),
+            ],
+        )
 
         if not args:
             if user:
-                args = {'nickname': [user.nickname], 'urlname': [user.urlname],
-                        'address': [user.address], 'website': [user.website],
+                args = {
+                        'nickname': [user.nickname],
+                        'urlname': [user.urlname],
+                        'address': [user.address],
+                        'website': [user.website],
                         'description': [user.description],
-                        'style': [user.style]}
-                sf = SettingForm(args)
+                        'style': [user.style],
+                        'site_style': [user.site_style]
+                        }
+                sf = cls(args)
                 sf.edit_nickname_count = user.edit_nickname_count
                 sf.edit_urlname_count = user.edit_urlname_count
                 sf.user = user
             else:
-                sf = SettingForm()
+                sf = cls()
         else:
             if user:
-                sf = SettingForm(args)
+                sf = cls(args)
                 sf.edit_nickname_count = user.edit_nickname_count
                 sf.edit_urlname_count = user.edit_urlname_count
                 sf.user = user
             else:
-                sf = SettingForm(args)
+                sf = cls(args)
         return sf
 
     def validate_nickname(self, field):
