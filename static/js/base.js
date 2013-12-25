@@ -272,8 +272,6 @@ $(function() {
     }
   });
 
-<<<<<<< HEAD
-=======
   var cslMessage = "             ___    ___                            \n"+
                    "            /\\_ \\  /\\_ \\    __                     \n"+
                    "  ___    ___\\//\\ \\ \\//\\ \\  /\\_\\  _____      __     \n"+
@@ -285,5 +283,4 @@ $(function() {
                    "                                    \\/_/           \n"+
                    "\n联系方式：i@yetone.net";
   console.log(cslMessage);
->>>>>>> 116a8d1694dbde76e03ccc41b39729e56ee8dd81
 });
