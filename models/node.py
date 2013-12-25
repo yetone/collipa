@@ -88,7 +88,7 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     def sibling_nodes(self):
         parent_ids = self.parent_node_ids
         sibling_id_list = select(nn.child_id for nn in m.NodeNode if
-                nn.parent_id in parent_ids and nn.child_id != self.id)[:]
+                nn.parent_id in parent_ids and nn.child_id != self.id and nn.child_id != 0)[:]
         if sibling_id_list:
             nodes = Node.get_items_by_id(sibling_id_list)
             return nodes
