@@ -246,7 +246,7 @@ $(function() {
       if (window.webkitNotifications !== undefined) {
         window.webkitNotifications.createNotification(icon, title, message).show();
       }
-  }
+  };
 
   $.notifier = new notifier();
 
@@ -272,4 +272,18 @@ $(function() {
     }
   });
 
+<<<<<<< HEAD
+=======
+  var cslMessage = "             ___    ___                            \n"+
+                   "            /\\_ \\  /\\_ \\    __                     \n"+
+                   "  ___    ___\\//\\ \\ \\//\\ \\  /\\_\\  _____      __     \n"+
+                   " /'___\\ / __`\\\\ \\ \\  \\ \\ \\ \\/\\ \\/\\ '__`\\  /'__`\\   \n"+
+                   "/\\ \\__//\\ \\L\\ \\\\_\\ \\_ \\_\\ \\_\\ \\ \\ \\ \\L\\ \\/\\ \\L\\.\\_ \n"+
+                   "\\ \\____\\ \\____//\\____\\/\\____\\\\ \\_\\ \\ ,__/\\ \\__/.\\_\\\n"+
+                   " \\/____/\\/___/ \\/____/\\/____/ \\/_/\\ \\ \\/  \\/__/\\/_/\n"+
+                   "                                   \\ \\_\\           \n"+
+                   "                                    \\/_/           \n"+
+                   "\n联系方式：i@yetone.net";
+  console.log(cslMessage);
+>>>>>>> 116a8d1694dbde76e03ccc41b39729e56ee8dd81
 });

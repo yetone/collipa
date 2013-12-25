@@ -58,6 +58,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
     address = Optional(unicode, 400)
     website = Optional(unicode, 400)
     style = Optional(unicode, 6000)
+    site_style = Optional(unicode, 6000)
 
     avatar = Optional(unicode, 400)
     avatar_tmp = Optional(unicode, 400)
@@ -591,7 +592,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
             if not v and (k == 'address' or k == 'website' or k ==
                     'description' or k == 'style'):
                 v = ''
-            if k == 'style' and v:
+            if k in ['style', 'site_style'] and v:
                 v = strip_tags(v)
             setattr(self, k, v)
         try:

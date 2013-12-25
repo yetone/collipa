@@ -211,6 +211,9 @@ textarea:focus {
 .fr{float:right;}
 .hidden{display:none;}
 
+.oh{overflow:hidden;}
+.dib{display:inline-block;}
+
 a.node {
     display: inline-block;
     font-size: 10px;
