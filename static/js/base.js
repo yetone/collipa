@@ -269,5 +269,5 @@ $(function() {
                    "                                   \\ \\_\\           \n"+
                    "                                    \\/_/           \n"+
                    "\n联系方式：i@yetone.net";
-  console.log(cslMessage);
+  window.console && console.info && console.info(cslMessage);
 });
