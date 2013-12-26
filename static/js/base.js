@@ -1,3 +1,9 @@
+var superLove = function() {
+  console.log("\n%c  ", "font-size:220px; background:url(http://collipa.com/static/upload/image/2013/12/1388025973qfHmWn_1.jpg) no-repeat 0px 0px;");
+
+  return "You are my love."
+}
+
 var get_cookie = function(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r?r[1]:undefined;
