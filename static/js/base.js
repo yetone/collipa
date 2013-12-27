@@ -1,3 +1,9 @@
+var superLove = function() {
+  console.log("\n%c  ", "font-size:220px; background:url(http://collipa.com/static/upload/image/2013/12/1388025973qfHmWn_1.jpg) no-repeat 0px 0px;");
+
+  return "You are my love."
+}
+
 var love = function() {
   /*
   var loveMessage = "瓦日瓦瓦瓦瓦毋毋瓦毋毋毋毋毋瓦瓦瓦毋瓦瓦瓦瓦瓦瓦瓦瓦瓦瓦瓦瓦日日日日日日日日日日日日日日日日瓦瓦瓦己\n"+
@@ -316,5 +322,5 @@ $(function() {
                    "                                   \\ \\_\\           \n"+
                    "                                    \\/_/           \n"+
                    "\n联系方式：i@yetone.net";
-  console.log(cslMessage);
+  window.console && console.info && console.info(cslMessage);
 });
