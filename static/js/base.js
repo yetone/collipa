@@ -1,5 +1,5 @@
 var superLove = function() {
-  console.log("\n%c  ", "font-size:220px; background:url(http://collipa.com/static/upload/image/2013/12/1388025973qfHmWn_1.jpg) no-repeat 0px 0px;");
+  console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
   return "You are my love."
 }
