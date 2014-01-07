@@ -1,87 +1,91 @@
 var repel = function(data) {
+  var buff;
   if (data.parent('li').hasClass('up')) {
-    var buff = '.down a';
+    buff = '.down a';
   } else if (data.parent('li').hasClass('down')) {
-    var buff = '.up a';
+    buff = '.up a';
   } else {
     return false;
   }
-  var $that = data.parents('ul.vote').find(buff);
-  var content = $that.html();
-  var content_top = content.substr(0, content.indexOf('</i>') + 4);
-  var content_tail = content.substr(content.indexOf('</i>') + 5, content.length);
-  var count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
+  var $this = data.parents('ul.vote').find(buff);
+  var content = $this.html(),
+      content_top = content.substr(0, content.indexOf('</i>') + 4),
+      content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
+      count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
+
   if (content.indexOf('已') !== -1) {
-    $that.parent('li').removeClass('pressed');
-    content_tail = content.substr(content.indexOf('已') + 1, content.length)
+    $this.parent('li').removeClass('pressed');
+    content_tail = content.substr(content.indexOf('已') + 1, content.length);
     content = content_top + ' ' + content_tail;
     if (count > -1) {
       count -= 1;
       content_top = content.substr(0, content.indexOf('('));
       content = content_top + "(" + count + ")";
     }
-    $that.html(content);
+    $this.html(content);
   }
 };
 
-$(function () {
+$(function() {
   $('.profile-action a:first').live('click', function() {
-    var url = $(this).attr('href');
-    var $info_follow_area = $(this).parents('.profile-head').find('.status li:last a span');
+    var $this = $(this);
+    var url = $this.attr('href'),
+        $info_follow_area = $this.parents('.profile-head').find('.status li:last a span');
     var count = parseInt($info_follow_area.html());
-    var $that = $(this);
 
     $.get(url, function(data) {
       if (data.status !== 'success') {
         noty(data);
       } else {
-        $that.removeClass('onloading');
+        $this.removeClass('onloading');
         if (data.type === 1) {
-          $that.removeClass('fo').addClass('unfo');
-          $that.html('已关注');
+          $this.removeClass('fo').addClass('unfo');
+          $this.html('已关注');
           count += 1;
         } else if (data.type === 0) {
-          $that.removeClass('unfo').addClass('fo');
-          $that.html('关注');
+          $this.removeClass('unfo').addClass('fo');
+          $this.html('关注');
           count -= 1;
         }
         $info_follow_area.html(count);
       }
     });
-    $that.addClass('onloading');
-    button_content = $that.html();
-    $that.html(button_content + ' ..');
+    $this.addClass('onloading');
+    button_content = $this.html();
+    $this.html(button_content + ' ..');
     return false;
   });
 
-  $('.vote li a').live('click', function() {
-    var url = $(this).attr('href');
-    if ($(this).parent('li').hasClass('edit')) {
+  $('.vote li a').live('click', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var url = $this.attr('href');
+    if ($this.parent('li').hasClass('edit')) {
       window.location.href = url;
       return;
     }
-    var content = $(this).html();
-    var content_top = content.substr(0, content.indexOf('</i>') + 4);
-    var content_tail = content.substr(content.indexOf('</i>') + 5, content.length);
-    var count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
-    var $that = $(this);
+    var content = $this.html(),
+        content_top = content.substr(0, content.indexOf('</i>') + 4),
+        content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
+        count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
+
     $.get(url, function(data) {
       if (data.status != 'success') {
         noty(data);
       } else {
         if (data.type === 1) {
-          $that.parent('li').removeClass('pressed').addClass('pressed');
+          $this.parent('li').removeClass('pressed').addClass('pressed');
           content = content_top + ' 已' + content_tail;
           if (count > -1) {
             count += 1;
             content_top = content.substr(0, content.indexOf('('));
             content = content_top + '(' + count + ')';
           }
-          $that.html(content);
-          repel($that);
+          $this.html(content);
+          repel($this);
         } else if (data.type === 0) {
-          $that.parent('li').removeClass('pressed');
-          content_tail = content.substr(content.indexOf('已') + 1, content.length)
+          $this.parent('li').removeClass('pressed');
+          content_tail = content.substr(content.indexOf('已') + 1, content.length);
           content = content_top + ' ' + content_tail;
           if (count > -1) {
             count -= 1;
@@ -91,14 +95,14 @@ $(function () {
               content = content_top + ' 反对(' + count + ')';
             }
           }
-          $that.html(content);
+          $this.html(content);
         }
       }
     });
-    return false;
   });
 
-  $('.profile-action .mail').live('click', function() {
+  $('.profile-action .mail').live('click', function(e) {
+    e.preventDefault();
     var action = $(this).attr('href');
 
     layout =
@@ -130,12 +134,10 @@ $(function () {
     $('body').append(layout);
     popup($('#layout'), 'fixed');
     $('#layout.message textarea').focus();
-
-    return false;
   });
 
   $('#layout.message button').live('click', function() {
-    var $that = $(this);
+    var $this = $(this);
     var $layout = $(this).parents('#layout');
     var $form = $layout.find('form');
     var action = $form.attr('action');
@@ -145,7 +147,7 @@ $(function () {
     var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
 
     $.post(action, $.param(args), function(data) {
-      $that.removeAttr('disabled');
+      $this.removeAttr('disabled');
       if (data.status === 'success') {
         $layout.fadeOut();
         noty(data);
@@ -161,17 +163,17 @@ $(function () {
   });
 
   $('.message-fm button').live('click', function() {
-    var $that = $(this);
-    var $form = $(this).parents('form');
+    var $this = $(this);
+    var $form = $this.parents('form');
     var $textarea = $form.find('textarea');
-    var action = $form.attr('action');
-    var content = $textarea.val();
-    var $items = $(this).parents('.message-fm').prev('ul');
+    var action = $form.attr('action'),
+        content = $textarea.val(),
+        $items = $this.parents('.message-fm').prev('ul');
 
     var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
 
     $.post(action, $.param(args), function(data) {
-      $that.removeAttr('disabled');
+      $this.removeAttr('disabled');
       if (data.status === 'success') {
         var source =
             '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">'
