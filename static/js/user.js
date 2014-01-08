@@ -1,31 +1,3 @@
-var repel = function(data) {
-  var buff;
-  if (data.parent('li').hasClass('up')) {
-    buff = '.down a';
-  } else if (data.parent('li').hasClass('down')) {
-    buff = '.up a';
-  } else {
-    return false;
-  }
-  var $this = data.parents('ul.vote').find(buff);
-  var content = $this.html(),
-      content_top = content.substr(0, content.indexOf('</i>') + 4),
-      content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
-      count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
-
-  if (content.indexOf('已') !== -1) {
-    $this.parent('li').removeClass('pressed');
-    content_tail = content.substr(content.indexOf('已') + 1, content.length);
-    content = content_top + ' ' + content_tail;
-    if (count > -1) {
-      count -= 1;
-      content_top = content.substr(0, content.indexOf('('));
-      content = content_top + "(" + count + ")";
-    }
-    $this.html(content);
-  }
-};
-
 $(function() {
   $('.profile-action a:first').live('click', function() {
     var $this = $(this);

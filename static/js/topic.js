@@ -1,64 +1,39 @@
-var repel = function(data) {
-  if (data.parent('li').hasClass('up')) {
-    var buff = '.down a';
-  } else if (data.parent('li').hasClass('down')) {
-    var buff = '.up a';
-  } else {
-    return false;
-  }
-  var $that = data.parents('ul.vote').find(buff);
-  var content = $that.html();
-  var content_top = content.substr(0, content.indexOf('</i>') + 4);
-  var content_tail = content.substr(content.indexOf('</i>') + 5, content.length);
-  var count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
-  if (content.indexOf('已') !== -1) {
-    $that.parent('li').removeClass('pressed');
-    content_tail = content.substr(content.indexOf('已') + 1, content.length)
-    content = content_top + ' ' + content_tail;
-    if (count > -1) {
-      count -= 1;
-      content_top = content.substr(0, content.indexOf('('));
-      content = content_top + "(" + count + ")";
-    }
-    $that.html(content);
-  }
-};
-
 $(function() {
-  $('.item').live('mouseover', function() {
+  $D.on('mouseover', '.item', function() {
     $(this).find('.hidden').css('display', 'inline');
-  }).live('mouseout', function () {
+  }).on('mouseout', '.item', function () {
     $(this).find('.hidden').css('display', 'none');
   });
 
-  $('.vote li a').live('click', function() {
-    var url = $(this).attr('href');
-    if ($(this).parent('li').hasClass('edit')) {
+  $D.on('click', '.vote li a', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var url = $this.attr('href');
+    if ($this.parent('li').hasClass('edit')) {
       window.location.href = url;
       return;
     }
-    var content = $(this).html();
-    var content_top = content.substr(0, content.indexOf('</i>') + 4);
-    var content_tail = content.substr(content.indexOf('</i>') + 5, content.length);
-    var count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
-    var $that = $(this);
+    var content = $this.html();
+    var content_top = content.substr(0, content.indexOf('</i>') + 4),
+        content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
+        count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
     $.get(url, function(data) {
       if (data.status != 'success') {
         noty(data);
       } else {
         if (data.type === 1) {
-          $that.parent('li').removeClass('pressed').addClass('pressed');
+          $this.parent('li').removeClass('pressed').addClass('pressed');
           content = content_top + ' 已' + content_tail;
           if (count > -1) {
             count += 1;
             content_top = content.substr(0, content.indexOf('('));
             content = content_top + '(' + count + ')';
           }
-          $that.html(content);
-          repel($that);
+          $this.html(content);
+          repel($this);
         } else if (data.type === 0) {
-          $that.parent('li').removeClass('pressed');
-          content_tail = content.substr(content.indexOf('已') + 1, content.length)
+          $this.parent('li').removeClass('pressed');
+          content_tail = content.substr(content.indexOf('已') + 1, content.length);
           content = content_top + ' ' + content_tail;
           if (count > -1) {
             count -= 1;
@@ -68,46 +43,44 @@ $(function() {
               content = content_top + ' 反对(' + count + ')';
             }
           }
-          $that.html(content);
+          $this.html(content);
         }
       }
     });
-    return false;
   });
 
-  $('.reply-list .action .reply a').live('click', function() {
-    var $name_area = $(this).parents('.item').find('a.name');
-    var name = $name_area.attr('data-name');
-    var nickname = $name_area.html();
-    var user_url = $name_area.attr('href');
-
-    var $textarea = $('#ueditor_0').contents().find('body');
+  $D.on('click', '.reply-list .action .reply a', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $name_area = $this.parents('.item').find('a.name');
+    var name = $name_area.attr('data-name'),
+        nickname = $name_area.html(),
+        user_url = $name_area.attr('href'),
+        $textarea = $('#ueditor_0').contents().find('body');
 
     $textarea.focus();
     ue.execCommand('inserthtml', '&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
-
-    return false;
   });
 
-  $('.topic .action .reply a').click(function() {
+  $D.on('click', '.topic .action .reply a', function(e) {
+    e.preventDefault();
     var top = $('#editor').offset().top;
     $("html, body").animate({scrollTop: top}, 500);
     ue.focus();
   });
 
-  $('.reply-create button').live('click', function() {
-    var $that = $(this);
-    var topic_id = $(this).attr('data-id');
-    var url = '/reply/create?topic_id=' + topic_id;
-    var $textarea = $('#ueditor_0').contents().find('body');
-
-    var xsrf = get_cookie('_xsrf');
-    var content = ue.getContent();
-
-    var args = {"content": content, "_xsrf": xsrf};
+  $D.on('click', '.reply-create button', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var topic_id = $this.attr('data-id');
+    var url = '/reply/create?topic_id=' + topic_id,
+      $textarea = $('#ueditor_0').contents().find('body'),
+      xsrf = get_cookie('_xsrf'),
+      content = ue.getContent(),
+      args = {"content": content, "_xsrf": xsrf};
 
     $.post(url, $.param(args), function(data) {
-      $that.removeAttr('disabled');
+      $this.removeAttr('disabled');
       if (data.status !== 'success') {
         noty(data);
       } else {
@@ -163,8 +136,9 @@ $(function() {
         + '</li>';
 
         var render = template.compile(source);
-        var html = render(data);
-        var $explain = $('.reply-list .explain');
+        var html = render(data),
+            $explain = $('.reply-list .explain');
+
         if ($explain.length > 0) {
           $explain.remove();
           $('.reply-list').append('<ul class="item-list"></ul>');
@@ -178,28 +152,28 @@ $(function() {
         SyntaxHighlighter.all();
       }
     });
-    $(this).attr('disabled', 'disabled');
-    return false;
+    $this.attr('disabled', 'disabled');
   });
 
-  $('.more > a').live('click', function() {
-    var $more = $(this).parents('.more');
+  $D.on('click', '.more > a', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $more = $this.parents('.more');
     var $more_list = $more.find('.menu-list');
     if ($more_list.hasClass('open')) {
       $more_list.removeClass('open');
     } else {
       $more_list.addClass('open');
     }
-    return false;
   });
-  $(document).click(function() {
+  $D.on('click', this, function() {
     var $d = $('.open.menu-list');
     $d.removeClass('open');
   });
 
-  $('.edui-for-myinsertimage').live('click', function() {
+  $D.on('click', '.edui-for-myinsertimage', function(e) {
+    e.preventDefault();
     $('#pic-select').click();
-    return false;
   });
   $('#pic-select').fileupload({
     url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
@@ -207,21 +181,22 @@ $(function() {
     dataType: 'json',
     sequentialUploads: true,
     autoUpload: true,
-    progressall: function(e, data){
-      var progress = parseInt(data.loaded / data.total * 100, 10);
-      var status_msg = $('.status-msg');
+    progressall: function(e, data) {
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          status_msg = $('.status-msg');
       status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
-      if( progress == 100 ){
+      if (progress == 100) {
         status_msg.removeClass('loader-bar').html('图片上传完毕');
-        setTimeout("status_msg.html('')", "500");
+        setTimeout(function() {status_msg.html('');}, 500);
       }
     },
-    done: function(e, result){
-      var status_msg = $('.status-msg');
-      var waterfall = $('#post-page-waterfall');
-      var post_id = $('#post_id').val();
-      data = result.result;
-      if(data.status == "success"){
+    done: function(e, result) {
+      var status_msg = $('.status-msg'),
+          waterfall = $('#post-page-waterfall'),
+          post_id = $('#post_id').val(),
+          data = result.result;
+
+      if (data.status === "success") {
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-reply-image" src="' + data.path + '" style="max-width:480px;">');
       } else {
