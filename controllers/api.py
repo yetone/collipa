@@ -75,15 +75,18 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
             if this.user_id == user_id:
                 try:
                     user = User[user_id]
-                    this.write_message({"type": "message",
-                                        "count": user.unread_message_box_count,
-                                        "content": message.content,
-                                        "created": message.created,
-                                        "id": message.id,
-                                        "avatar": message.sender.get_avatar(size=48),
-                                        "url": message.sender.url,
-                                        "nickname": message.sender.nickname,
-                                        "message_box_id": message.message_box2_id})
+                    this.write_message({
+                        "type": "message",
+                        "count": user.unread_message_box_count,
+                        "content": message.content,
+                        "created": message.created,
+                        "id": message.id,
+                        "avatar": message.sender.get_avatar(size=48),
+                        "sender_id": message.sender.id,
+                        "url": message.sender.url,
+                        "nickname": message.sender.nickname,
+                        "message_box_id": message.message_box2_id
+                        })
                 except Exception, e:
                     print e
                     logging.error("Error sending message", exc_info=True)
