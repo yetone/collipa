@@ -1,3 +1,9 @@
+var superLove = function() {
+  console.log("\n%c  ", "font-size:220px; background:url(http://collipa.com/static/upload/image/2013/12/1388025973qfHmWn_1.jpg) no-repeat 0px 0px;");
+
+  return "You are my love."
+}
+
 var get_cookie = function(name) {
     var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
     return r?r[1]:undefined;
@@ -29,30 +35,62 @@ var get_cookie = function(name) {
     if ($popdiv.width() + 2 >= _windowWidth) {
       $popdiv.width(_windowWidth * 0.85);
     }
-  };
+  },
+
+  repel = function(data) {
+    var buff;
+    if (data.parent('li').hasClass('up')) {
+      buff = '.down a';
+    } else if (data.parent('li').hasClass('down')) {
+      buff = '.up a';
+    } else {
+      return false;
+    }
+    var $this = data.parents('ul.vote').find(buff),
+        content = $this.html(),
+        content_top = content.substr(0, content.indexOf('</i>') + 4),
+        content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
+        count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
+
+    if (content.indexOf('已') !== -1) {
+      $this.parent('li').removeClass('pressed');
+      content_tail = content.substr(content.indexOf('已') + 1, content.length);
+      content = content_top + ' ' + content_tail;
+      if (count > -1) {
+        count -= 1;
+        content_top = content.substr(0, content.indexOf('('));
+        content = content_top + "(" + count + ")";
+      }
+      $this.html(content);
+    }
+  },
+
+  $D = $(document),
+  $W = $(window);
 
 var noty = function(data, static) {
-    if (!data) {
-      var noty_div =
-        '<div id="noty" class="info">'
-      +   "您操作过快，服务器未响应"
-      + '</div>';
-    } else if (data.status) {
-      var noty_div =
-        '<div id="noty" class="' + data.status + '">'
-      +   data.message
-      + '</div>';
-    }
+  var noty_div;
+  if (!data) {
+    noty_div =
+      '<div id="noty" class="info">'
+    +   "您操作过快，服务器未响应"
+    + '</div>';
+  } else if (data.status) {
+    noty_div =
+      '<div id="noty" class="' + data.status + '">'
+    +   data.message
+    + '</div>';
+  }
 
-    $('#noty').remove();
-    $('body').append(noty_div);
-    popup($('#noty'), 'fixed');
-    if (!static) {
-      setTimeout(function() {$('#noty').fadeOut(1200)}, 600);
-    } else {
-      $('#noty').addClass('static');
-    }
-  };
+  $('#noty').remove();
+  $('body').append(noty_div);
+  popup($('#noty'), 'fixed');
+  if (!static) {
+    setTimeout(function() {$('#noty').fadeOut(1200);}, 600);
+  } else {
+    $('#noty').addClass('static');
+  }
+};
 
 var $body_nav = $('.body-nav');
 if ($body_nav.length) {
@@ -61,22 +99,23 @@ if ($body_nav.length) {
 
 $(function() {
   var fix_nav_bar = function() {
-    var top = $(document).scrollTop();
-    var $shape = $('#shape');
-    var $nav = $('.body-nav');
-    var $nav_fixed = $('.body-nav.fixed');
-    var $menu = $('#head .menu');
-    var $menu_fixed = $('#head .menu.fixed');
-    var $head = $('#head');
-    var nav_width = $nav.width();
-    var nav_height = $nav.height();
-    var menu_left = $menu.offset().left;
-    var menu_height = $menu.height();
-    var head_left = $head.offset().left;
+    var top = $(document).scrollTop(),
+        menu_top,
+        $shape = $('#shape'),
+        $nav = $('.body-nav'),
+        $nav_fixed = $('.body-nav.fixed'),
+        $menu = $('#head .menu'),
+        $menu_fixed = $('#head .menu.fixed'),
+        $head = $('#head'),
+        nav_width = $nav.width(),
+        nav_height = $nav.height(),
+        menu_left = $menu.offset().left,
+        menu_height = $menu.height(),
+        head_left = $head.offset().left;
 
     if (top >= nav_top) {
       if (!$nav_fixed.length) {
-        var menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
+        menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
         $nav_fixed = $nav.clone();
         $menu_fixed = $menu.clone();
         $nav_fixed.addClass('fixed').css({'width': nav_width});
@@ -90,10 +129,10 @@ $(function() {
     }
   },
   shape_resize = function(data) {
-    var window_height = $(window).height();
-    var window_width = $(window).width();
-    var shape_width = $('#shape').width();
-    var min_width = window_width <= shape_width ? window_width : shape_width;
+    var window_height = $(window).height(),
+        window_width = $(window).width(),
+        shape_width = $('#shape').width(),
+        min_width = window_width <= shape_width ? window_width : shape_width;
 
     if (window_width === min_width) {
       $('#shape').addClass('mobile').css({'width': window_width});
@@ -107,10 +146,10 @@ $(function() {
       $('#shape').removeClass('mobile').css({'width': '720px'});
     }
     if (data) {
-      var $head = $('#head');
-      var $menu_fixed = $('#head > .menu.fixed');
-      var $nav = $('.nav');
-      var head_left = $head.offset().left;
+      var $head = $('#head'),
+          $menu_fixed = $('#head > .menu.fixed'),
+          $nav = $('.nav'),
+          head_left = $head.offset().left;
       $nav.css({'width': min_width - 20 + 'px'});
       $menu_fixed.css({'right': +head_left + 20 + 'px'});
     }
@@ -123,7 +162,7 @@ $(function() {
 
   shape_resize();
 
-  $(window).resize(function (){
+  $(window).resize(function() {
     if ($('#head > .menu.fixed').length) {
       shape_resize(true);
     } else {
@@ -131,24 +170,23 @@ $(function() {
     }
   });
 
-  $('.layout-close').live('click', function() {
+  $D.on('click', '.layout-close', function(e) {
+    e.preventDefault();
     $('#layout').fadeOut();
-
-    return false;
   });
 
-  $(document).live('keypress', function(e) {
+  $D.live('keypress', function(e) {
     if (e.ctrlKey && e.which == 13 || e.which == 10) {
       $('form button').click();
     }
   });
 
-  $(document).click(function() {
+  $D.click(function() {
     var $d = $('#noty.static');
     $d.fadeOut(1200);
   });
 
-  $(document).scroll(function() {
+  $D.scroll(function() {
     if ($body_nav.length) {
       fix_nav_bar();
     }
@@ -159,7 +197,7 @@ $(function() {
     $('body').prepend(html);
   }
 
-  $('#open-notification a').on('click', this, function() {
+  $D.on('click', '#open-notification a', function() {
     notify.requestPermission(function(){
       if (notify.permissionLevel() === notify.PERMISSION_GRANTED) {
         $('#open-notification').remove();
@@ -167,21 +205,28 @@ $(function() {
     });
   });
 
-  function notifier() {
+  function Notifier() {
   }
-  notifier.prototype.notify = function(icon, title, message) {
-      if (window.webkitNotifications !== undefined) {
-        window.webkitNotifications.createNotification(icon, title, message).show();
-      }
+  Notifier.prototype.notify = function(title, options) {
+    var n;
+    if (window.webkitNotifications) {
+      n = window.webkitNotifications.createNotification(options.icon, title, options.body);
+      n.onclick = function() {
+        window.focus();
+        this.cancel();
+      };
+      n.show();
+    } else if (navigator.mozNotification) {
+    }
   };
-
-  $.notifier = new notifier();
+  notifier = new Notifier();
 
   $.fn.extend({
     tooltip: function() {
       this.each(function(i, v) {
-        $(v).off('mousemove').off('mouseout');
-        $(v).on('mousemove', function(e) {
+        var $v = $(v);
+        $v.off('mousemove').off('mouseout');
+        $v.on('mousemove', function(e) {
           var text = $(v).attr('data-tooltip');
           if (!$('.tooltip').length) {
             var tooltip = '<div class="tooltip"></div>';
@@ -199,6 +244,11 @@ $(function() {
     }
   });
 
+  $D.click(function() {
+    var $d = $('.open.menu-list');
+    $d.removeClass('open');
+  });
+
   var cslMessage = "             ___    ___                            \n"+
                    "            /\\_ \\  /\\_ \\    __                     \n"+
                    "  ___    ___\\//\\ \\ \\//\\ \\  /\\_\\  _____      __     \n"+
@@ -209,5 +259,5 @@ $(function() {
                    "                                   \\ \\_\\           \n"+
                    "                                    \\/_/           \n"+
                    "\n联系方式：i@yetone.net";
-  console.log(cslMessage);
+  window.console && console.info && console.info(cslMessage);
 });

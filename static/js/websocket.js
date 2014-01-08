@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-$(document).ready(function() {
+$(function() {
     if (!window.console) window.console = {};
     if (!window.console.log) window.console.log = function() {};
 
@@ -34,7 +34,7 @@ var online = {
         if (online.socket.readyState !== 1) {
           console.log("::::::::websocket close::::::::");
           clearInterval(online.t);
-          online.t = setInterval(function() {online.create_socket(url)}, 1000);
+          online.t = setInterval(function() {online.create_socket(url);}, 1000);
         }
       };
     },
@@ -43,7 +43,7 @@ var online = {
       online.socket = new WebSocket(url);
       online.socket.onopen = function(event) {
         console.log("::::::::websocket start::::::::");
-      }
+      };
       online.socket.onmessage = function(event) {
         clearInterval(online.t);
         online.show_message(JSON.parse(event.data));
@@ -52,7 +52,7 @@ var online = {
         if (online.socket.readyState !== 1) {
           console.log("::::::::websocket close::::::::");
           clearInterval(online.t);
-          online.t = setInterval(function() {online.create_socket(url)}, 1000);
+          online.t = setInterval(function() {online.create_socket(url);}, 1000);
         }
       };
     },
@@ -112,12 +112,22 @@ var online = {
         if (last_notify != data.id) {
           window.localStorage.setItem("last_notify", data.id);
           var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+          /*
+          var notification = window.webkitNotifications.createNotification(data.avatar, '新私信', data.content);
+          notification.onclick = function() {
+            window.focus();
+            this.cancel();
+          };
+          notification.show();
+          */
+          /*
           $('body').off('mousemove');
           $('body').on('mousemove', function(e) {
             if ($(document).scrollTop() + $(window).height() - e.pageY < 200 && $(window).width() - e.pageX < 350) {
               notification.close();
             }
           });
+          */
         }
       } else if (data.type === "notification") {
         if (online.notification_count_area.find('span.count').length) {

@@ -1,8 +1,9 @@
 $(function() {
-  $('.edui-for-myinsertimage').live('click', function() {
+  $D.on('click', '.edui-for-myinsertimage', function(e) {
+    e.preventDefault();
     $('#pic-select').click();
-    return false;
   });
+
   $('#pic-select').fileupload({
     url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
     type: 'POST',
@@ -10,20 +11,21 @@ $(function() {
     sequentialUploads: true,
     autoUpload: true,
     progressall: function(e, data){
-      var progress = parseInt(data.loaded / data.total * 100, 10);
-      var status_msg = $('.status-msg');
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          status_msg = $('.status-msg');
       status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
       if( progress == 100 ){
         status_msg.removeClass('loader-bar').html('图片上传完毕');
-        setTimeout("status_msg.html('')", "500");
+        setTimeout(function() {status_msg.html('');}, 500);
       }
     },
     done: function(e, result){
-      var status_msg = $('.status-msg');
-      var waterfall = $('#post-page-waterfall');
-      var post_id = $('#post_id').val();
-      data = result.result;
-      if(data.status == "success"){
+      var status_msg = $('.status-msg'),
+          waterfall = $('#post-page-waterfall'),
+          post_id = $('#post_id').val(),
+          data = result.result;
+
+      if (data.status === "success") {
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-reply-image" src="' + data.path + '" style="max-width:480px;">');
       } else {
@@ -41,13 +43,13 @@ $(function() {
     });
   });
 
-  $('.reply-create button').live('click', function() {
-    var url = window.location.href;
-
-    var xsrf = get_cookie('_xsrf');
-    var content = ue.getContent();
-
-    var args = {"content": content, "_xsrf": xsrf};
+  $D.on('click', '.reply-create button', function(e) {
+    e.preventDefault();
+    var $this = $(this),
+        url = window.location.href,
+        xsrf = get_cookie('_xsrf'),
+        content = ue.getContent(),
+        args = {"content": content, "_xsrf": xsrf};
 
     $.post(url, $.param(args), function(data) {
       if (data.status !== 'success') {
@@ -57,6 +59,5 @@ $(function() {
         return;
       }
     });
-    return false;
   });
 });
