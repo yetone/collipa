@@ -11,8 +11,8 @@ $(function() {
     sequentialUploads: true,
     autoUpload: true,
     progressall: function(e, data){
-      var progress = parseInt(data.loaded / data.total * 100, 10);
-      var status_msg = $('.status-msg');
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          status_msg = $('.status-msg');
       status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
       if( progress == 100 ){
         status_msg.removeClass('loader-bar').html('图片上传完毕');

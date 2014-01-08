@@ -1,11 +1,11 @@
 $(function () {
   $D.on('click', '.node-action a.btn', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var url = $this.attr('href'),
-        $info_follow_area = $this.parents('.node-data').find('.node-info-follow');
-    var content = $info_follow_area.html();
-    var count = parseInt(content.substr(content.indexOf('</i>') + 4, content.length)),
+    var $this = $(this),
+        url = $this.attr('href'),
+        $info_follow_area = $this.parents('.node-data').find('.node-info-follow'),
+        content = $info_follow_area.html(),
+        count = parseInt(content.substr(content.indexOf('</i>') + 4, content.length)),
         content_top = content.substr(0, content.indexOf('</i>') + 4);
 
     $.get(url, function(data) {
@@ -34,8 +34,8 @@ $(function () {
 
   $D.on('click', '.node-tag li a', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var url = $this.attr('href'),
+    var $this = $(this),
+        url = $this.attr('href'),
         $node_information = $('.node-information'),
         $node_data = $('.node-data');
 
@@ -45,12 +45,11 @@ $(function () {
       } else {
         if ($this.parent('li').hasClass('description')) {
           var source =
-            '<div id="show" class="node-description">'
-          +   '<%== node_description %>'
-          + '</div>';
-
-          var render = template.compile(source);
-          var html = render(data),
+                '<div id="show" class="node-description">'
+              +   '<%== node_description %>'
+              + '</div>',
+              render = template.compile(source),
+              html = render(data),
               $description = $('div.node-description'),
               $relationship = $('div.node-relationship');
 
@@ -68,71 +67,70 @@ $(function () {
           $show.hide().fadeIn();
         } else if ($this.parent('li').hasClass('relationship')) {
           var source =
-            '<div id="show" class="node-relationship">'
-          +   '<% if (parent_nodes.length > 0) { %>'
-          +   '<div class="parent-nodes title">父节点</div>'
-          +   '<ul class="parent-nodes">'
-          +     '<% for (i=0; i < parent_nodes.length; i++) { %>'
-          +       '<li id="<%= parent_nodes[i].urlname %>">'
-          +         '<a href="<%= parent_nodes[i].url %>">'
-          +           '<div class="node-tag">'
-            +           '<img class="icon" align="absmiddle" src="<%= parent_nodes[i].icon %>">'
-              +         '<span class="name">'
-              +           '<%= parent_nodes[i].name %>'
-              +         '</span>'
-            +         '</div>'
-            +         '<div class="description" data-tooltip="<%== parent_nodes[i].summary %>">'
-            +           '<%== parent_nodes[i].summary %>'
-            +         '</div>'
-          +         '</a>'
-          +       '</li>'
-          +     '<% } %>'
-          +   '</ul>'
-          +   '<% } %>'
-          +   '<% if (child_nodes.length > 0) { %>'
-          +   '<div class="child-nodes title">子节点</div>'
-          +   '<ul class="child-nodes">'
-          +     '<% for (i=0; i < child_nodes.length; i++) { %>'
-          +       '<li id="<%= child_nodes[i].urlname %>">'
-          +         '<a href="<%= child_nodes[i].url %>">'
-          +           '<div class="node-tag">'
-            +           '<img class="icon" align="absmiddle" src="<%= child_nodes[i].icon %>">'
-              +         '<span class="name">'
-              +           '<%= child_nodes[i].name %>'
-              +         '</span>'
-            +         '</div>'
-            +         '<div class="description" data-tooltip="<%== child_nodes[i].summary %>">'
-            +           '<%== child_nodes[i].summary %>'
-            +         '</div>'
-          +         '</a>'
-          +       '</li>'
-          +     '<% } %>'
-          +   '</ul>'
-          +   '<% } %>'
-          +   '<% if (sibling_nodes.length > 0) { %>'
-          +   '<div class="sibling-nodes title">兄弟节点</div>'
-          +   '<ul class="sibling-nodes">'
-          +     '<% for (i=0; i < sibling_nodes.length; i++) { %>'
-          +       '<li id="<%= sibling_nodes[i].urlname %>">'
-          +         '<a href="<%= sibling_nodes[i].url %>">'
-          +           '<div class="node-tag">'
-            +           '<img class="icon" align="absmiddle" src="<%= sibling_nodes[i].icon %>">'
-              +         '<span class="name">'
-              +           '<%= sibling_nodes[i].name %>'
-              +         '</span>'
-            +         '</div>'
-            +         '<div class="description" data-tooltip="<%== sibling_nodes[i].summary %>">'
-            +           '<%== sibling_nodes[i].summary %>'
-            +         '</div>'
-          +         '</a>'
-          +       '</li>'
-          +     '<% } %>'
-          +   '</ul>'
-          +   '<% } %>'
-          + '</div>';
-
-          var render = template.compile(source);
-          var html = render(data),
+                '<div id="show" class="node-relationship">'
+              +   '<% if (parent_nodes.length > 0) { %>'
+              +   '<div class="parent-nodes title">父节点</div>'
+              +   '<ul class="parent-nodes">'
+              +     '<% for (i=0; i < parent_nodes.length; i++) { %>'
+              +       '<li id="<%= parent_nodes[i].urlname %>">'
+              +         '<a href="<%= parent_nodes[i].url %>">'
+              +           '<div class="node-tag">'
+                +           '<img class="icon" align="absmiddle" src="<%= parent_nodes[i].icon %>">'
+                  +         '<span class="name">'
+                  +           '<%= parent_nodes[i].name %>'
+                  +         '</span>'
+                +         '</div>'
+                +         '<div class="description" data-tooltip="<%== parent_nodes[i].summary %>">'
+                +           '<%== parent_nodes[i].summary %>'
+                +         '</div>'
+              +         '</a>'
+              +       '</li>'
+              +     '<% } %>'
+              +   '</ul>'
+              +   '<% } %>'
+              +   '<% if (child_nodes.length > 0) { %>'
+              +   '<div class="child-nodes title">子节点</div>'
+              +   '<ul class="child-nodes">'
+              +     '<% for (i=0; i < child_nodes.length; i++) { %>'
+              +       '<li id="<%= child_nodes[i].urlname %>">'
+              +         '<a href="<%= child_nodes[i].url %>">'
+              +           '<div class="node-tag">'
+                +           '<img class="icon" align="absmiddle" src="<%= child_nodes[i].icon %>">'
+                  +         '<span class="name">'
+                  +           '<%= child_nodes[i].name %>'
+                  +         '</span>'
+                +         '</div>'
+                +         '<div class="description" data-tooltip="<%== child_nodes[i].summary %>">'
+                +           '<%== child_nodes[i].summary %>'
+                +         '</div>'
+              +         '</a>'
+              +       '</li>'
+              +     '<% } %>'
+              +   '</ul>'
+              +   '<% } %>'
+              +   '<% if (sibling_nodes.length > 0) { %>'
+              +   '<div class="sibling-nodes title">兄弟节点</div>'
+              +   '<ul class="sibling-nodes">'
+              +     '<% for (i=0; i < sibling_nodes.length; i++) { %>'
+              +       '<li id="<%= sibling_nodes[i].urlname %>">'
+              +         '<a href="<%= sibling_nodes[i].url %>">'
+              +           '<div class="node-tag">'
+                +           '<img class="icon" align="absmiddle" src="<%= sibling_nodes[i].icon %>">'
+                  +         '<span class="name">'
+                  +           '<%= sibling_nodes[i].name %>'
+                  +         '</span>'
+                +         '</div>'
+                +         '<div class="description" data-tooltip="<%== sibling_nodes[i].summary %>">'
+                +           '<%== sibling_nodes[i].summary %>'
+                +         '</div>'
+              +         '</a>'
+              +       '</li>'
+              +     '<% } %>'
+              +   '</ul>'
+              +   '<% } %>'
+              + '</div>',
+              render = template.compile(source),
+              html = render(data),
               $description = $('div.node-description'),
               $relationship = $('div.node-relationship');
 

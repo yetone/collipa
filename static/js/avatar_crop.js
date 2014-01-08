@@ -1,19 +1,17 @@
 $(function(){
   var xsrf=document.cookie.match("\\b" + "_xsrf" + "=([^;]*)\\b")[1];
-  function updateCoords(c)
-  {
+  function updateCoords(c) {
     $('#x').val(c.x);
     $('#y').val(c.y);
     $('#w').val(c.w);
     $('#h').val(c.h);
-  };
+  }
 
-  function checkCoords()
-  {
+  function checkCoords() {
     if (parseInt($('#w').val())) return true;
     alert('请在大图截取一部分作为头像');
     return false;
-  };
+  }
 
   function showPreview(coords) {
     var rx = 100 / coords.w;
@@ -25,13 +23,13 @@ $(function(){
         marginLeft: '-' + Math.round(rx * coords.x) + 'px',
         marginTop: '-' + Math.round(ry * coords.y) + 'px'
         });
-  };
+  }
 
   function hidePreview() {
     $('#preview').stop().fadeOut('fast');
-  };
+  }
 
-  $('#btn-avatar-cancel').click(function(){
+  $D.on('click', '#btn-avatar-cancel', function() {
     $('.jcrop-holder').remove();
     $('#target').remove();
     $('#img-select').html("<img id='target'>");
@@ -40,25 +38,25 @@ $(function(){
     $('.avatar-show img').show();
     $('#avatar-status').hide();
   });
-  $('#btn-avatar-done').click(function(){
-    var $that = $(this);
 
-    var x = parseInt($('#x').val());
-    var y = parseInt($('#y').val());
-    var w = parseInt($('#w').val());
-    var h = parseInt($('#h').val());
-    var src = $('#src').val();
-    var args = {
-      "x": x,
-      "y": y,
-      "w": w,
-      "h": h,
-      "src": src
-    };
+  $D.on('click', '#btn-avatar-done', function() {
+    var $this = $(this),
+        x = parseInt($('#x').val()),
+        y = parseInt($('#y').val()),
+        w = parseInt($('#w').val()),
+        h = parseInt($('#h').val()),
+        src = $('#src').val(),
+        args = {
+          "x": x,
+          "y": y,
+          "w": w,
+          "h": h,
+          "src": src
+        };
     args._xsrf = xsrf;
-    $.post('/account/setting/avatar/crop', $.param(args), function(data){
-      if(data.status == 'success'){
-        $that.html('确认');
+    $.post('/account/setting/avatar/crop', $.param(args), function(data) {
+      if (data.status == 'success') {
+        $this.html('确认');
         $('.jcrop-holder').remove();
         $('#target').remove();
         $('#img-select').html("<img id='target'>");
@@ -71,7 +69,7 @@ $(function(){
         $('#avatar-src').val(data.src);
       }
     });
-    $that.html('正在保存..');
+    $this.html('正在保存..');
   });
   $('#pic-select').fileupload({
     url: '/upload/avatar?_xsrf=' + xsrf,
@@ -90,11 +88,11 @@ $(function(){
       if(data.status == "success"){
         $('.hide-coat').hide();
         $('#avatar-cropper').show();
-        var width = parseInt(data.width);
-        var height = parseInt(data.height);
-        var c_width = 200;
-        var c_height = c_width;
-        var shape_width = $('#avatar-cropper').width();
+        var width = parseInt(data.width),
+            height = parseInt(data.height),
+            c_width = 200,
+            c_height = c_width,
+            shape_width = $('#avatar-cropper').width();
         if( width > shape_width ){
           height = parseInt(height / width * shape_width);
           width = shape_width;
@@ -117,10 +115,9 @@ $(function(){
       }
     },
   });
-  $('#set-avatar-btn').click(function() {
+  $D.on('click', '#set-avatar-btn', function(e) {
+    e.preventDefault();
     $('#pic-select').click();
-    return false;
-    });
-
+  });
 });
 

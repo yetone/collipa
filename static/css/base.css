@@ -933,13 +933,26 @@ ul.child-nodes li .description {
   padding: 10px 60px 30px 60px;
   overflow: hidden;
 }
+.message-fm .fm-row {
+  *zoom: 1;
+}
+.message-fm .fm-row:before,
+.message-fm .fm-row:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.message-fm .fm-row:after {
+  clear: both;
+}
 .message-fm textarea {
-  width: 70%;
+  width: 386px;
   height: 100px;
+  float: left;
 }
 .message-fm .fm-action {
   padding-top: 0px;
-  margin-right: 95px;
   float: right;
 }
 

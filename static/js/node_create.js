@@ -13,17 +13,17 @@ $(function () {
     sequentialUploads: true,
     autoUpload: true,
     progressall: function(e, data) {
-      var progress = parseInt(data.loaded / data.total * 100, 10);
-      var $status_msg = $('.status-msg');
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          $status_msg = $('.status-msg');
       $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
       if (progress === 100) {
         $status_msg.removeClass('loader-bar').html('图片上传完毕');
       }
     },
     done: function(e, result) {
-      var $status_msg = $('.status-msg');
-      data = result.result;
-      if (data.status == "success") {
+      var $status_msg = $('.status-msg'),
+          data = result.result;
+      if (data.status === "success") {
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-node-image" src="' + data.path + '" style="max-width:480px;">');
       } else {
@@ -35,8 +35,8 @@ $(function () {
 
   $D.on('click', 'button.set-node-img', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var category = $this.attr('data-category'),
+    var $this = $(this),
+        category = $this.attr('data-category'),
         $select = $('#node-img-select');
     $select.attr('data-category', category);
     $('input#category').val(category);
@@ -49,8 +49,8 @@ $(function () {
     sequentialUploads: true,
     autoUpload: true,
     progressall: function(e, data) {
-      var $this = $(this);
-      var progress = parseInt(data.loaded / data.total * 100, 10),
+      var $this = $(this),
+          progress = parseInt(data.loaded / data.total * 100, 10),
           category = $this.attr('data-category'),
           $status_msg;
 
@@ -67,10 +67,11 @@ $(function () {
       }
     },
     done: function(e, result) {
-      var $this = $(this);
-      var category = $this.attr('data-category'),
+      var $this = $(this),
+          category = $this.attr('data-category'),
           $status_msg,
           data = result.result;
+
       if (category === 'icon') {
         $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {

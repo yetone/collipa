@@ -46,8 +46,8 @@ var get_cookie = function(name) {
     } else {
       return false;
     }
-    var $this = data.parents('ul.vote').find(buff);
-    var content = $this.html(),
+    var $this = data.parents('ul.vote').find(buff),
+        content = $this.html(),
         content_top = content.substr(0, content.indexOf('</i>') + 4),
         content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
         count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
@@ -106,9 +106,8 @@ $(function() {
         $nav_fixed = $('.body-nav.fixed'),
         $menu = $('#head .menu'),
         $menu_fixed = $('#head .menu.fixed'),
-        $head = $('#head');
-
-    var nav_width = $nav.width(),
+        $head = $('#head'),
+        nav_width = $nav.width(),
         nav_height = $nav.height(),
         menu_left = $menu.offset().left,
         menu_height = $menu.height(),
@@ -132,8 +131,8 @@ $(function() {
   shape_resize = function(data) {
     var window_height = $(window).height(),
         window_width = $(window).width(),
-        shape_width = $('#shape').width();
-    var min_width = window_width <= shape_width ? window_width : shape_width;
+        shape_width = $('#shape').width(),
+        min_width = window_width <= shape_width ? window_width : shape_width;
 
     if (window_width === min_width) {
       $('#shape').addClass('mobile').css({'width': window_width});
@@ -149,8 +148,8 @@ $(function() {
     if (data) {
       var $head = $('#head'),
           $menu_fixed = $('#head > .menu.fixed'),
-          $nav = $('.nav');
-      var head_left = $head.offset().left;
+          $nav = $('.nav'),
+          head_left = $head.offset().left;
       $nav.css({'width': min_width - 20 + 'px'});
       $menu_fixed.css({'right': +head_left + 20 + 'px'});
     }
@@ -206,15 +205,21 @@ $(function() {
     });
   });
 
-  function notifier() {
+  function Notifier() {
   }
-  notifier.prototype.notify = function(icon, title, message) {
-      if (window.webkitNotifications !== undefined) {
-        window.webkitNotifications.createNotification(icon, title, message).show();
-      }
+  Notifier.prototype.notify = function(title, options) {
+    var n;
+    if (window.webkitNotifications) {
+      n = window.webkitNotifications.createNotification(options.icon, title, options.body);
+      n.onclick = function() {
+        window.focus();
+        this.cancel();
+      };
+      n.show();
+    } else if (navigator.mozNotification) {
+    }
   };
-
-  $.notifier = new notifier();
+  notifier = new Notifier();
 
   $.fn.extend({
     tooltip: function() {
