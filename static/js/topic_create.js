@@ -11,8 +11,9 @@ $(function () {
         content = ue.getContent(),
         args = {"node_name": node_name, "title": title, "content": content, "_xsrf": xsrf};
 
+    $(this).attr('disabled', 'disabled').addClass('onloading').html("正在创建...");
     $.post(url, $.param(args), function(data) {
-      $this.removeAttr('disabled');
+      $this.removeAttr('disabled').removeClass("onloading").html("创建");
       if (data.status !== 'success') {
         noty(data);
       } else {
@@ -20,7 +21,6 @@ $(function () {
         return;
       }
     });
-    $(this).attr('disabled', 'disabled');
   });
 
   $D.on('click', '.edui-for-myinsertimage', function(e) {

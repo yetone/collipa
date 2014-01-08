@@ -1,18 +1,18 @@
-var nav_top = $('.index-nav').offset().top;
 $(function() {
-  var fix_nav_bar = function() {
-    var top = $(document).scrollTop();
-    var $shape = $('#shape');
-    var $nav = $('.index-nav');
-    var $nav_fixed = $('.index-nav.fixed');
-    var $menu = $('#head .menu');
-    var $menu_fixed = $('#head .menu.fixed');
-    var $head = $('#head');
-    var nav_width = $nav.width();
-    var nav_height = $nav.height();
-    var menu_left = $menu.offset().left;
-    var menu_height = $menu.height();
-    var head_left = $head.offset().left;
+  var nav_top = $('.index-nav').offset().top,
+  fix_nav_bar = function() {
+    var top = $(document).scrollTop(),
+        $shape = $('#shape'),
+        $nav = $('.index-nav'),
+        $nav_fixed = $('.index-nav.fixed'),
+        $menu = $('#head .menu'),
+        $menu_fixed = $('#head .menu.fixed'),
+        $head = $('#head'),
+        nav_width = $nav.width(),
+        nav_height = $nav.height(),
+        menu_left = $menu.offset().left,
+        menu_height = $menu.height(),
+        head_left = $head.offset().left;
 
     if (top >= nav_top) {
       if (!$nav_fixed.length) {
@@ -32,7 +32,7 @@ $(function() {
 
   fix_nav_bar();
 
-  $(document).scroll(function() {
+  $D.scroll(function() {
     fix_nav_bar();
   });
 });

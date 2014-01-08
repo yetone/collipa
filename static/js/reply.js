@@ -27,9 +27,9 @@ $(function() {
 
   $D.on('click', '.vote li a', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var content = $this.html();
-    var content_top = content.substr(0, content.indexOf('</i>') + 4),
+    var $this = $(this),
+        content = $this.html(),
+        content_top = content.substr(0, content.indexOf('</i>') + 4),
         content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
         count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')'))),
         url = $this.attr('href');
@@ -72,9 +72,9 @@ $(function() {
 
   $D.on('click', '.more > a', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var $more = $this.parents('.more');
-    var $more_list = $more.find('.menu-list');
+    var $this = $(this),
+        $more = $this.parents('.more'),
+        $more_list = $more.find('.menu-list');
     if ($more_list.hasClass('open')) {
       $more_list.removeClass('open');
     } else {

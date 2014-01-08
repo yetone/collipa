@@ -1,11 +1,11 @@
 $(function() {
-  $('button.set-user-img').live('click', function() {
+  $D.on('click', 'button.set-user-img', function(e) {
+    e.preventDefault();
     var category = $(this).attr('data-category');
     $select = $('#user-img-select');
     $select.attr('data-category', category);
     $('input#category').val(category);
     $select.click();
-    return false;
   });
 
   $('#user-img-select').fileupload({
@@ -14,9 +14,10 @@ $(function() {
     sequentialUploads: true,
     autoUpload: true,
     progressall: function(e, data){
-      var category = $(this).attr('data-category');
-      var progress = parseInt(data.loaded / data.total * 100, 10),
+      var category = $(this).attr('data-category'),
+          progress = parseInt(data.loaded / data.total * 100, 10),
           $status_msg;
+
       if (category === 'icon') {
         $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {
@@ -25,7 +26,7 @@ $(function() {
         $status_msg = $('.background-preview').next('.status-msg');
       }
       $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
-      if( progress == 100 ){
+      if (progress === 100) {
         $status_msg.removeClass('loader-bar').html('图片上传完毕');
       }
     },
@@ -40,7 +41,7 @@ $(function() {
         $status_msg = $('.background-preview').next('.status-msg');
       }
       data = result.result;
-      if(data.status == "success"){
+      if (data.status === "success") {
         if (category === 'icon') {
           $('.ico-preview img').attr('src', data.path);
         } else if (category === 'head') {

@@ -1,9 +1,9 @@
 $(function() {
   $('.profile-action a:first').live('click', function() {
-    var $this = $(this);
-    var url = $this.attr('href'),
-        $info_follow_area = $this.parents('.profile-head').find('.status li:last a span');
-    var count = parseInt($info_follow_area.html());
+    var $this = $(this),
+        url = $this.attr('href'),
+        $info_follow_area = $this.parents('.profile-head').find('.status li:last a span'),
+        count = parseInt($info_follow_area.html());
 
     $.get(url, function(data) {
       if (data.status !== 'success') {
@@ -30,17 +30,17 @@ $(function() {
 
   $('.vote li a').live('click', function(e) {
     e.preventDefault();
-    var $this = $(this);
-    var url = $this.attr('href');
-    if ($this.parent('li').hasClass('edit')) {
-      window.location.href = url;
-      return;
-    }
-    var content = $this.html(),
+    var $this = $(this),
+        url = $this.attr('href'),
+        content = $this.html(),
         content_top = content.substr(0, content.indexOf('</i>') + 4),
         content_tail = content.substr(content.indexOf('</i>') + 5, content.length),
         count = parseInt(content.substr(content.indexOf('(') + 1, content.indexOf(')')));
 
+    if ($this.parent('li').hasClass('edit')) {
+      window.location.href = url;
+      return;
+    }
     $.get(url, function(data) {
       if (data.status != 'success') {
         noty(data);
@@ -75,32 +75,31 @@ $(function() {
 
   $('.profile-action .mail').live('click', function(e) {
     e.preventDefault();
-    var action = $(this).attr('href');
-
-    layout =
-      '<div id="layout" class="message">'
-    +   '<div class="layout-header">'
-    +     '<div class="title">'
-    +       '发送私信'
-    +     '</div>'
-    +     '<a title="关闭" class="layout-close">'
-    +       '<i class="icon-remove"></i>'
-    +     '</a>'
-    +   '</div>'
-    +   '<div class="layout-content">'
-    +      '<form action="' + action + '" method="post">'
-    +        '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
-    +        '<div class="fm-row">'
-    +          '<div class="fm-item">'
-    +            '<textarea name="content"></textarea>'
-    +          '</div>'
-    +        '</div>'
-    +        '<div class="fm-action">'
-    +          '<button type="submit" class="btn">发送</button>'
-    +        '</div>'
-    +      '</form>'
-    +   '</div>'
-    + '</div>';
+    var action = $(this).attr('href'),
+        layout =
+          '<div id="layout" class="message">'
+        +   '<div class="layout-header">'
+        +     '<div class="title">'
+        +       '发送私信'
+        +     '</div>'
+        +     '<a title="关闭" class="layout-close">'
+        +       '<i class="icon-remove"></i>'
+        +     '</a>'
+        +   '</div>'
+        +   '<div class="layout-content">'
+        +      '<form action="' + action + '" method="post">'
+        +        '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
+        +        '<div class="fm-row">'
+        +          '<div class="fm-item">'
+        +            '<textarea name="content"></textarea>'
+        +          '</div>'
+        +        '</div>'
+        +        '<div class="fm-action">'
+        +          '<button type="submit" class="btn">发送</button>'
+        +        '</div>'
+        +      '</form>'
+        +   '</div>'
+        + '</div>';
 
     $('#layout').remove();
     $('body').append(layout);
@@ -108,18 +107,19 @@ $(function() {
     $('#layout.message textarea').focus();
   });
 
-  $('#layout.message button').live('click', function() {
-    var $this = $(this);
-    var $layout = $(this).parents('#layout');
-    var $form = $layout.find('form');
-    var action = $form.attr('action');
-    var $textarea = $form.find('textarea');
-    var content = $textarea.val();
+  $('#layout.message button').live('click', function(e) {
+    e.preventDefault();
+    var $this = $(this),
+        $layout = $this.parents('#layout'),
+        $form = $layout.find('form'),
+        action = $form.attr('action'),
+        $textarea = $form.find('textarea'),
+        content = $textarea.val(),
+        args = {'content': content, '_xsrf': get_cookie('_xsrf')};
 
-    var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
-
+    $this.attr('disabled', 'disabled').addClass('onloading').html("发送中...");
     $.post(action, $.param(args), function(data) {
-      $this.removeAttr('disabled');
+      $this.removeAttr('disabled').removeClass('onloading').html("发送");
       if (data.status === 'success') {
         $layout.fadeOut();
         noty(data);
@@ -129,45 +129,42 @@ $(function() {
         noty(data);
       }
     });
-
-    $(this).attr('disabled', 'disabled');
-    return false;
   });
 
-  $('.message-fm button').live('click', function() {
-    var $this = $(this);
-    var $form = $this.parents('form');
-    var $textarea = $form.find('textarea');
-    var action = $form.attr('action'),
+  $('.message-fm button').live('click', function(e) {
+    e.preventDefault();
+    var $this = $(this),
+        $form = $this.parents('form'),
+        $textarea = $form.find('textarea'),
+        action = $form.attr('action'),
         content = $textarea.val(),
-        $items = $this.parents('.message-fm').prev('ul');
+        $items = $this.parents('.message-fm').prev('ul'),
+        args = {'content': content, '_xsrf': get_cookie('_xsrf')};
 
-    var args = {'content': content, '_xsrf': get_cookie('_xsrf')};
-
+    $this.attr('disabled', 'disabled').addClass('onloading').html("发送中...");
     $.post(action, $.param(args), function(data) {
-      $this.removeAttr('disabled');
+      $this.removeAttr('disabled').removeClass("onloading").html("发送");
       if (data.status === 'success') {
         var source =
-            '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">'
-        +     '<a class="avatar" href="<%= url %>">'
-        +       '<img class="avatar" src="<%= avatar %>">'
-        +     '</a>'
-        +     '<div class="item-content">'
-        +       '<div class="meta">'
-        +         '<span class="time"><%= created %></span>'
-        +       '</div>'
-        +       '<div class="content">'
-        +         '<%= content %>'
-        +         '<div class="caret">'
-        +           '<div class="caret-outer"></div>'
-        +           '<div class="caret-inner"></div>'
-        +         '</div>'
-        +       '</div>'
-        +     '</div>'
-        +   '</li>';
-
-        var render = template.compile(source);
-        var html = render(data);
+                '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">'
+            +     '<a class="avatar" href="<%= url %>">'
+            +       '<img class="avatar" src="<%= avatar %>">'
+            +     '</a>'
+            +     '<div class="item-content">'
+            +       '<div class="meta">'
+            +         '<span class="time"><%= created %></span>'
+            +       '</div>'
+            +       '<div class="content">'
+            +         '<%= content %>'
+            +         '<div class="caret">'
+            +           '<div class="caret-outer"></div>'
+            +           '<div class="caret-inner"></div>'
+            +         '</div>'
+            +       '</div>'
+            +     '</div>'
+            +   '</li>',
+            render = template.compile(source),
+            html = render(data);
 
         $items.append(html);
         var $show = $('#show-' + data.id);
@@ -178,23 +175,16 @@ $(function() {
         noty(data);
       }
     });
-
-    $(this).attr('disabled', 'disabled');
-    return false;
   });
 
-  $('.more > a').live('click', function() {
-    var $more = $(this).parents('.more');
-    var $more_list = $more.find('.menu-list');
+  $('.more > a').live('click', function(e) {
+    e.preventDefault();
+    var $more = $(this).parents('.more'),
+        $more_list = $more.find('.menu-list');
     if ($more_list.hasClass('open')) {
       $more_list.removeClass('open');
     } else {
       $more_list.addClass('open');
     }
-    return false;
-  });
-  $(document).click(function() {
-    var $d = $('.open.menu-list');
-    $d.removeClass('open');
   });
 });
