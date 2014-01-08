@@ -111,7 +111,7 @@ var online = {
         var last_notify = window.localStorage.getItem("last_notify");
         if (last_notify != data.id) {
           window.localStorage.setItem("last_notify", data.id);
-          var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar});
+          var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar, url: "/messages?user_id=" + data.sender_id});
           /*
           var notification = window.webkitNotifications.createNotification(data.avatar, '新私信', data.content);
           notification.onclick = function() {
