@@ -1,28 +1,29 @@
 $(function () {
   $('select.fm-text').chosen({width: '45%', no_results_text: '无此节点'});
 
-  $('.edui-for-myinsertimage').live('click', function() {
+  $D.on('click', '.edui-for-myinsertimage', function(e) {
+    e.preventDefault();
     $('#pic-select').click();
-    return false;
   });
+
   $('#pic-select').fileupload({
     url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
     type: 'POST',
     dataType: 'json',
     sequentialUploads: true,
     autoUpload: true,
-    progressall: function(e, data){
+    progressall: function(e, data) {
       var progress = parseInt(data.loaded / data.total * 100, 10);
       var $status_msg = $('.status-msg');
       $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
-      if( progress == 100 ){
+      if (progress === 100) {
         $status_msg.removeClass('loader-bar').html('图片上传完毕');
       }
     },
-    done: function(e, result){
+    done: function(e, result) {
       var $status_msg = $('.status-msg');
       data = result.result;
-      if(data.status == "success"){
+      if (data.status == "success") {
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-node-image" src="' + data.path + '" style="max-width:480px;">');
       } else {
@@ -31,13 +32,15 @@ $(function () {
       }
     }
   });
-  $('button.set-node-img').live('click', function() {
-    var category = $(this).attr('data-category');
-    $select = $('#node-img-select');
+
+  $D.on('click', 'button.set-node-img', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var category = $this.attr('data-category'),
+        $select = $('#node-img-select');
     $select.attr('data-category', category);
     $('input#category').val(category);
     $select.click();
-    return false;
   });
 
   $('#node-img-select').fileupload({
@@ -45,32 +48,37 @@ $(function () {
     dataType: 'json',
     sequentialUploads: true,
     autoUpload: true,
-    progressall: function(e, data){
-      var progress = parseInt(data.loaded / data.total * 100, 10);
-      var category = $(this).attr('data-category');
+    progressall: function(e, data) {
+      var $this = $(this);
+      var progress = parseInt(data.loaded / data.total * 100, 10),
+          category = $this.attr('data-category'),
+          $status_msg;
+
       if (category === 'icon') {
-        var $status_msg = $('.ico-preview').next('.status-msg');
+        $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {
-        var $status_msg = $('.head-preview').next('.status-msg');
+        $status_msg = $('.head-preview').next('.status-msg');
       } else if (category == 'background') {
-        var $status_msg = $('.background-preview').next('.status-msg');
+        $status_msg = $('.background-preview').next('.status-msg');
       }
       $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
-      if( progress == 100 ){
+      if (progress === 100) {
         $status_msg.removeClass('loader-bar').html('图片上传完毕');
       }
     },
-    done: function(e, result){
-      var category = $(this).attr('data-category');
+    done: function(e, result) {
+      var $this = $(this);
+      var category = $this.attr('data-category'),
+          $status_msg,
+          data = result.result;
       if (category === 'icon') {
-        var $status_msg = $('.ico-preview').next('.status-msg');
+        $status_msg = $('.ico-preview').next('.status-msg');
       } else if (category == 'head') {
-        var $status_msg = $('.head-preview').next('.status-msg');
+        $status_msg = $('.head-preview').next('.status-msg');
       } else if (category == 'background') {
-        var $status_msg = $('.background-preview').next('.status-msg');
+        $status_msg = $('.background-preview').next('.status-msg');
       }
-      data = result.result;
-      if(data.status == "success"){
+      if (data.status === "success") {
         if (category === 'icon') {
           $('.ico-preview img').attr('src', data.path);
         } else if (category === 'head') {

@@ -1,57 +1,59 @@
 $(function () {
-  $('.node-action a.btn').live('click', function() {
-    var url = $(this).attr('href');
-    var $info_follow_area = $(this).parents('.node-data').find('.node-info-follow');
+  $D.on('click', '.node-action a.btn', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var url = $this.attr('href'),
+        $info_follow_area = $this.parents('.node-data').find('.node-info-follow');
     var content = $info_follow_area.html();
-    var count = parseInt(content.substr(content.indexOf('</i>') + 4, content.length));
-    var content_top = content.substr(0, content.indexOf('</i>') + 4);
-    var $that = $(this);
+    var count = parseInt(content.substr(content.indexOf('</i>') + 4, content.length)),
+        content_top = content.substr(0, content.indexOf('</i>') + 4);
 
     $.get(url, function(data) {
       if (data.status !== 'success') {
         noty(data);
       } else {
-        $that.removeClass('onloading');
+        $this.removeClass('onloading');
         if (data.type === 1) {
-          $that.removeClass('fo').addClass('unfo');
-          $that.html('已关注');
+          $this.removeClass('fo').addClass('unfo');
+          $this.html('已关注');
           count += 1;
           content = content_top + ' ' + count + ' 关注';
         } else if (data.type === 0) {
-          $that.removeClass('unfo').addClass('fo');
-          $that.html('关注');
+          $this.removeClass('unfo').addClass('fo');
+          $this.html('关注');
           count -= 1;
           content = content_top + ' ' + count + ' 关注';
         }
         $info_follow_area.html(content);
       }
     });
-    $that.addClass('onloading');
-    button_content = $that.html();
-    $that.html(button_content + ' ..');
-    return false;
+    $this.addClass('onloading');
+    button_content = $this.html();
+    $this.html(button_content + ' ..');
   });
 
-  $('.node-tag li a').live('click', function() {
-    var url = $(this).attr('href');
-    var $node_information = $('.node-information');
-    var $node_data = $('.node-data');
-    var $that = $(this);
+  $D.on('click', '.node-tag li a', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var url = $this.attr('href'),
+        $node_information = $('.node-information'),
+        $node_data = $('.node-data');
 
     $.get(url, function(data) {
       if (data.status !== 'success') {
         noty(data);
       } else {
-        if ($that.parent('li').hasClass('description')) {
+        if ($this.parent('li').hasClass('description')) {
           var source =
             '<div id="show" class="node-description">'
           +   '<%== node_description %>'
           + '</div>';
 
           var render = template.compile(source);
-          var html = render(data);
-          var $description = $('div.node-description');
-          var $relationship = $('div.node-relationship');
+          var html = render(data),
+              $description = $('div.node-description'),
+              $relationship = $('div.node-relationship');
+
           if ($description.length > 0) {
             $description.remove();
           }
@@ -64,7 +66,7 @@ $(function () {
           $node_information.html(html);
           var $show = $('#show');
           $show.hide().fadeIn();
-        } else if ($that.parent('li').hasClass('relationship')) {
+        } else if ($this.parent('li').hasClass('relationship')) {
           var source =
             '<div id="show" class="node-relationship">'
           +   '<% if (parent_nodes.length > 0) { %>'
@@ -130,9 +132,10 @@ $(function () {
           + '</div>';
 
           var render = template.compile(source);
-          var html = render(data);
-          var $description = $('div.node-description');
-          var $relationship = $('div.node-relationship');
+          var html = render(data),
+              $description = $('div.node-description'),
+              $relationship = $('div.node-relationship');
+
           if ($description.length > 0) {
             $description.remove();
           }
@@ -149,10 +152,10 @@ $(function () {
         }
       }
     });
-    if (!$that.hasClass('on')) {
-      $that.parent('li').prev('li').removeClass('on');
-      $that.parent('li').next('li').removeClass('on');
-      $that.parent('li').addClass('on');
+    if (!$this.hasClass('on')) {
+      $this.parent('li').prev('li').removeClass('on');
+      $this.parent('li').next('li').removeClass('on');
+      $this.parent('li').addClass('on');
       var height = $node_information.height();
       if ($('.loading').length) {
         $('.loading').remove();
@@ -161,22 +164,6 @@ $(function () {
       var margin_height = (height - 24) / 2;
       $('.loading').css({'margin-top': margin_height, 'margin-bottom': margin_height});
     }
-    return false;
   });
   $('.node .node-tag').next('.description').tooltip();
-  /*
-  $('.node .description').on('mousemove', function(e) {
-    if (!$('.tooltip').length) {
-      var tooltip = '<div class="tooltip">' + $(this).html() + '</div>';
-      $(tooltip).hide().appendTo('body').fadeIn();
-    }
-    $('.tooltip').css({'position': 'absolute',
-                       'top': mousePosition(e).y + 15,
-                       'left': mousePosition(e).x + 15
-    });
-  }).on('mouseout', function() {
-    $('.tooltip').fadeOut(300);
-    setTimeout(function() {$('.tooltip').remove();}, 300);
-  });
-  */
 });
