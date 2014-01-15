@@ -318,6 +318,7 @@ $(function() {
   };
 
   $('.body-nav').fix();
+  $('.nav li').navBottomPosition();
 
   shape_resize();
 

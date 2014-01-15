@@ -496,6 +496,10 @@ a.node:hover {
   height: 4px;
   background-color: #09C;
 }
+.topic-list .nav-bottom-span,
+.reply-list .nav-bottom-span {
+  background-color: #bbb;
+}
 .nav li.on a, .nav li.on:hover a {
     color: #222;
 }
