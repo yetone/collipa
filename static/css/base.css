@@ -441,9 +441,6 @@ a.node:hover {
 }
 .nav {
     padding-left: 20px;
-    border-top: 1px solid #e2e2e2;
-    border-bottom: 1px solid #e2e2e2;
-    background-color: white;
 }
 .nav li {
     float: left;
@@ -469,14 +466,35 @@ a.node:hover {
     padding: 8px 12px 4px 12px;
     color: #555;
 }
+/*
 .nav li:hover {
     border-bottom: 4px solid #90CBE9;
 }
+*/
 .nav li:hover a {
     color: #333;
 }
+/*
 .nav li.on, .nav li.on:hover {
     border-bottom: 4px solid #09C;
+}
+*/
+.nav-wrap {
+  position: relative;
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
+  background-color: white;
+}
+.nav-bottom {
+  height: 4px;
+}
+.nav-bottom-span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 4px;
+  background-color: #09C;
 }
 .nav li.on a, .nav li.on:hover a {
     color: #222;

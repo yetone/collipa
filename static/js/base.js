@@ -173,69 +173,124 @@ var get_cookie = function(name) {
   },
 
   $D = $(document),
-  $W = $(window);
+  $W = $(window),
 
-var noty = function(data, static) {
-  var noty_div;
-  if (!data) {
-    noty_div =
-      '<div id="noty" class="info">'
-    +   "您操作过快，服务器未响应"
-    + '</div>';
-  } else if (data.status) {
-    noty_div =
-      '<div id="noty" class="' + data.status + '">'
-    +   data.message
-    + '</div>';
-  }
+  noty = function(data, static) {
+    var noty_div;
+    if (!data) {
+      noty_div =
+        '<div id="noty" class="info">'
+      +   "您操作过快，服务器未响应"
+      + '</div>';
+    } else if (data.status) {
+      noty_div =
+        '<div id="noty" class="' + data.status + '">'
+      +   data.message
+      + '</div>';
+    }
 
-  $('#noty').remove();
-  $('body').append(noty_div);
-  popup($('#noty'), 'fixed');
-  if (!static) {
-    setTimeout(function() {$('#noty').fadeOut(1200);}, 600);
-  } else {
-    $('#noty').addClass('static');
-  }
-};
-
-var $body_nav = $('.body-nav');
-if ($body_nav.length) {
-  var nav_top = $body_nav.offset().top;
-}
+    $('#noty').remove();
+    $('body').append(noty_div);
+    popup($('#noty'), 'fixed');
+    if (!static) {
+      setTimeout(function() {$('#noty').fadeOut(1200);}, 600);
+    } else {
+      $('#noty').addClass('static');
+    }
+  };
 
 $(function() {
-  var fix_nav_bar = function() {
-    var top = $(document).scrollTop(),
-        menu_top,
-        $shape = $('#shape'),
-        $nav = $('.body-nav'),
-        $nav_fixed = $('.body-nav.fixed'),
-        $menu = $('#head .menu'),
-        $menu_fixed = $('#head .menu.fixed'),
-        $head = $('#head'),
-        nav_width = $nav.width(),
-        nav_height = $nav.height(),
-        menu_left = $menu.offset().left,
-        menu_height = $menu.height(),
-        head_left = $head.offset().left;
-
-    if (top >= nav_top) {
-      if (!$nav_fixed.length) {
-        menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
-        $nav_fixed = $nav.clone();
-        $menu_fixed = $menu.clone();
-        $nav_fixed.addClass('fixed').css({'width': nav_width});
-        $nav.after($nav_fixed);
-        $menu_fixed.addClass('fixed').css({'right': +head_left + 20 + 'px', 'top': menu_top + 'px'});
-        $menu_fixed.insertAfter($menu).hide().fadeIn(600);
+  $.fn.extend({
+    fix: function() {
+      var $nav = this,
+          make_fix = function($nav) {
+            var top = $(document).scrollTop(),
+                menu_top,
+                $shape = $('#shape'),
+                $nav_fixed = $($nav.selector + '.fixed'),
+                $menu = $('#head .menu'),
+                $menu_fixed = $('#head .menu.fixed'),
+                $head = $('#head'),
+                nav_top = $nav.offset().top,
+                nav_width = $nav.width(),
+                nav_height = $nav.height(),
+                menu_left = $menu.offset().left,
+                menu_height = $menu.height(),
+                head_left = $head.offset().left;
+            if (top >= nav_top) {
+              if (!$nav_fixed.length) {
+                menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
+                $nav_fixed = $nav.clone();
+                $menu_fixed = $menu.clone();
+                $nav_fixed.addClass('fixed').css({'width': nav_width});
+                $nav.after($nav_fixed);
+                $menu_fixed.addClass('fixed').css({'right': +head_left + 20 + 'px', 'top': menu_top + 'px'});
+                $menu_fixed.insertAfter($menu).hide().fadeIn(600);
+              }
+            } else {
+              $nav_fixed.remove();
+              $menu_fixed.remove();
+            }
+          };
+      if (!$nav || $nav.length === 0) {
+        return;
+      } else {
+        make_fix($nav);
+        $(document).scroll(function() {
+          make_fix($nav);
+        });
       }
-    } else {
-      $nav_fixed.remove();
-      $menu_fixed.remove();
+    },
+    tooltip: function() {
+      this.each(function(i, v) {
+        var $v = $(v);
+        $v.off('mousemove').off('mouseout');
+        $v.on('mousemove', function(e) {
+          var text = $(v).attr('data-tooltip');
+          if (!$('.tooltip').length) {
+            var tooltip = '<div class="tooltip"></div>';
+            $(tooltip).appendTo('body').fadeIn();
+          }
+          $('.tooltip').css({'position': 'absolute',
+                             'top': mousePosition(e).y + 15,
+                             'left': mousePosition(e).x + 15
+          }).html(text);
+        }).on('mouseout', function(e) {
+          $('.tooltip').fadeOut(150);
+          setTimeout(function() {$('.tooltip').remove();}, 150);
+        });
+      });
+    },
+    navBottomPosition: function(duration) {
+      var fp = function($nav) {
+        var w = $nav.width(),
+            l = $nav.position().left,
+            $navSpan = $nav.parents('.nav-wrap').find('.nav-bottom-span'),
+            nw = $navSpan.width(),
+            nl = $navSpan.position().left;
+        // duration = Math.abs((nl + nw) - (l + w)) * 2;
+        duration = 300;
+        if (nw === 0) {
+          $navSpan.hide().css({'left': l, 'width': w}).fadeIn(300);
+        } else {
+          $navSpan.stop();
+          $navSpan.animate({'left': l, 'width': w}, duration);
+        }
+      },
+      timer;
+
+      fp($(this.selector + '.on'));
+      $(document).on('mouseover', this.selector, function() {
+        clearTimeout(timer);
+        fp($(this));
+      }).on('mouseout', this.selector, function() {
+        timer = setTimeout(function() {
+          fp($($(this).selector + '.on'));
+        }, 130);
+      });
     }
-  },
-  shape_resize = function(data) {
+  });
+  var shape_resize = function(data) {
     var window_height = $(window).height(),
         window_width = $(window).width(),
         shape_width = $('#shape').width(),
@@ -260,12 +315,9 @@ $(function() {
       $nav.css({'width': min_width - 20 + 'px'});
       $menu_fixed.css({'right': +head_left + 20 + 'px'});
     }
-
-
   };
 
-
-  fix_nav_bar();
+  $('.body-nav').fix();
 
   shape_resize();
 
@@ -291,12 +343,6 @@ $(function() {
   $D.click(function() {
     var $d = $('#noty.static');
     $d.fadeOut(1200);
-  });
-
-  $D.scroll(function() {
-    if ($body_nav.length) {
-      fix_nav_bar();
-    }
   });
 
   if (notify.permissionLevel() === notify.PERMISSION_DEFAULT) {
@@ -327,29 +373,6 @@ $(function() {
     }
   };
   notifier = new Notifier();
-
-  $.fn.extend({
-    tooltip: function() {
-      this.each(function(i, v) {
-        var $v = $(v);
-        $v.off('mousemove').off('mouseout');
-        $v.on('mousemove', function(e) {
-          var text = $(v).attr('data-tooltip');
-          if (!$('.tooltip').length) {
-            var tooltip = '<div class="tooltip"></div>';
-            $(tooltip).appendTo('body').fadeIn();
-          }
-          $('.tooltip').css({'position': 'absolute',
-                             'top': mousePosition(e).y + 15,
-                             'left': mousePosition(e).x + 15
-          }).html(text);
-        }).on('mouseout', function(e) {
-          $('.tooltip').fadeOut(150);
-          setTimeout(function() {$('.tooltip').remove();}, 150);
-        });
-      });
-    }
-  });
 
   $D.click(function() {
     var $d = $('.open.menu-list');
