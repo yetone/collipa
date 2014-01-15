@@ -500,6 +500,9 @@ a.node:hover {
 .reply-list .nav-bottom-span {
   background-color: #bbb;
 }
+.index-nav .nav-bottom-span {
+  background-color: #09C;
+}
 .nav li.on a, .nav li.on:hover a {
     color: #222;
 }
