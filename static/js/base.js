@@ -309,7 +309,7 @@ $(function() {
               success: function(d) {
                 var state = {
                       title: '',
-                      url: opt.url,
+                      html: $pjaxContent.html(),
                     },
                     $ploading = $('.ploading');
                 $ploading.animate(
@@ -321,22 +321,30 @@ $(function() {
                 $pjaxContent.html($(d).find('#pjax-content').html());
                 $('#script-block').html($(d).find('#script-block').html());
                 //$('title').text($(d).find('title').text());
-                window.history.pushState(state, document.title, opt.url);
+                History.pushState(state, document.title, opt.url);
+                window.addEventListener('popstate', function(e) {
+                  var state = History.getState();
+                  console.log(state);
+                  if (state.data.html) {
+                    $('#pjax-content').html(state.data.html);
+                  }
+                });
                 if (opt.cbk) {
                   opt.cbk(d);
                 }
               }
             });
           };
-      func(opt);
-      window.addEventListener('popstate', function(e) {
-        var state = e.state;
-        if (state) {
-          func({
-            url: state.url
+          /*
+          History.Adapter.bind(window, 'popstate', function() {
+            var state = History.getState();
+            console.log(state);
+            if (state) {
+              $('#pjax-content').html(state.data.html);
+            }
           });
-        }
-      }, false);
+          */
+      func(opt);
     }
   });
   var shape_resize = function(data) {
