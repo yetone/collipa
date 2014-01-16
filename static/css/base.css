@@ -1554,3 +1554,48 @@ ul.users li a div.username span {
   box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.15);
   max-width: 300px;
 }
+/* timer */
+.ploading {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  display: inline-block;
+  border-width: 20px;
+  border-radius: 50%;
+  -webkit-animation: spin 0.3s linear infinite;
+     -moz-animation: spin 0.3s linear infinite;
+       -o-animation: spin 0.3s linear infinite;
+          animation: spin 0.3s linear infinite;
+  }
+
+.style-1 {
+  border-style: solid;
+  border-color: #444 transparent;
+  }
+
+.style-2 {
+  border-style: double;
+  border-color: #444 transparent;
+  }
+
+.style-3 {
+  border-style: double;
+  border-color: #444 #fff #fff;
+  }
+
+@-webkit-keyframes spin {
+  100% { -webkit-transform: rotate(359deg); }
+  }
+
+@-moz-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
+
+@-o-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
+
+@keyframes spin {
+  100% {  transform: rotate(359deg); }
+  }
+
