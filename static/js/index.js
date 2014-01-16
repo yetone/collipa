@@ -7,7 +7,11 @@ $(function() {
         $ul = $this.parents('ul.nav'),
         $navWrap = $('.nav-wrap'),
         $pjaxContent = $('#pjax-content'),
-        url = $this.attr('href');
+        url = $this.attr('href'),
+        hbk = function() {
+          $this.parents('ul').find('li.on').addClass('on');
+          $this.parent('li').removeClass('on');
+        },
         cbk = function(d) {
           var $page = $('.pagination'),
               $nodeTag = $('.node .node-tag'),
@@ -25,7 +29,12 @@ $(function() {
             $nodeTag.next('.description').tooltip();
           }
         };
-    $pjaxContent.pjaxHandler({url: url, ele: $this}, cbk);
+    $pjaxContent.pjaxHandler({
+      url: url,
+      ele: $this,
+      cbk: cbk,
+      hbk: hbk
+    });
     $ul.find('li').removeClass('on');
     $parent.addClass('on');
   });

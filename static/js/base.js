@@ -295,9 +295,9 @@ $(function() {
         }, 130);
       });
     },
-    pjaxHandler: function(opt, cbk) {
+    pjaxHandler: function(opt) {
       var $pjaxContent = this,
-          func = function(opt, cbk) {
+          func = function(opt) {
             var $ploading = $('<span class="ploading style-2"></span>');
             if (!$('.ploading').length) {
               $('body').append($ploading);
@@ -309,7 +309,7 @@ $(function() {
               success: function(d) {
                 var state = {
                       title: '',
-                      url: opt.url
+                      url: opt.url,
                     },
                     $ploading = $('.ploading');
                 $ploading.animate(
@@ -322,19 +322,19 @@ $(function() {
                 $('#script-block').html($(d).find('#script-block').html());
                 //$('title').text($(d).find('title').text());
                 window.history.pushState(state, document.title, opt.url);
-                if (cbk) {
-                  cbk(d);
+                if (opt.cbk) {
+                  opt.cbk(d);
                 }
               }
             });
           };
-      func(opt, cbk);
+      func(opt);
       window.addEventListener('popstate', function(e) {
         var state = e.state;
         if (state) {
           func({
             url: state.url
-          }, cbk);
+          });
         }
       }, false);
     }
