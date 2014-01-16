@@ -11,6 +11,9 @@
       <span class="offline"></span>
       {% end %}
       <strong>{{ escape(user.nickname) }}</strong>
+      {% if user.is_admin %}
+      <span class="role admin">Admin</span>
+      {% end %}
       <small>第 {{ user.id }} 号会员，创建于 {{ user.created }}</small>
       <div class="description">{{ escape(user.description) }}</div>
       <ul class="profile-list">

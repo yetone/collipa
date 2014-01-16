@@ -66,10 +66,15 @@
 </ul>
 {{ modules.TopicWrap(topic) }}
 <div class="organ reply-list">
-  <ul class="nav clearfix">
-    <li {% if category == 'all' %}class="on"{% end %}><a href="{{ topic.url }}">评论列表</a></li>
-    <li {% if category == 'hot' %}class="on"{% end %}><a href="{{ topic.url }}?category=hot">热门评论</a></li>
-  </ul>
+  <div class="nav-wrap">
+    <ul class="nav clearfix">
+      <li {% if category == 'all' %}class="on"{% end %}><a href="{{ topic.url }}">评论列表</a></li>
+      <li {% if category == 'hot' %}class="on"{% end %}><a href="{{ topic.url }}?category=hot">热门评论</a></li>
+    </ul>
+    <div class="nav-bottom">
+      <div class="nav-bottom-span"></div>
+    </div>
+  </div>
   {{ modules.ReplyList(replies) }}
   <script type="text/javascript">
     SyntaxHighlighter.all();
