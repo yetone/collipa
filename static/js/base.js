@@ -221,9 +221,12 @@ $(function() {
               if (!$nav_fixed.length) {
                 menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
                 $nav_fixed = $nav.clone();
-                $menu_fixed = $menu.clone();
                 $nav_fixed.addClass('fixed').css({'width': nav_width});
                 $nav.after($nav_fixed);
+                if ($('#head .menu.fixed').length) {
+                  $('#head .menu.fixed').remove();
+                }
+                $menu_fixed = $menu.clone();
                 $menu_fixed.addClass('fixed').css({'right': +head_left + 20 + 'px', 'top': menu_top + 'px'});
                 $menu_fixed.insertAfter($menu).hide().fadeIn(600);
               }
@@ -236,7 +239,7 @@ $(function() {
         return;
       } else {
         make_fix($nav);
-        $(document).scroll(function() {
+        $(document).on('scroll', function() {
           make_fix($nav);
         });
       }
@@ -263,6 +266,9 @@ $(function() {
     },
     navBottomPosition: function(duration) {
       var fp = function($nav) {
+        if (!$nav || $nav.length ===0) {
+          return;
+        }
         var w = $nav.width(),
             l = $nav.position().left,
             $navSpan = $nav.parents('.nav-wrap').find('.nav-bottom-span'),
@@ -288,6 +294,49 @@ $(function() {
           fp($($(this).selector + '.on'));
         }, 130);
       });
+    },
+    pjaxHandler: function(opt, cbk) {
+      var $pjaxContent = this,
+          func = function(opt, cbk) {
+            var $ploading = $('<span class="ploading style-2"></span>');
+            if (!$('.ploading').length) {
+              $('body').append($ploading);
+            }
+            $.ajax({
+              url: opt.url,
+              type: 'GET',
+              dataType: 'html',
+              success: function(d) {
+                var state = {
+                      title: '',
+                      url: opt.url
+                    },
+                    $ploading = $('.ploading');
+                $ploading.animate(
+                  {opacity: 0},
+                  function() {
+                    $ploading.remove();
+                  }
+                );
+                $pjaxContent.html($(d).find('#pjax-content').html());
+                $('#script-block').html($(d).find('#script-block').html());
+                //$('title').text($(d).find('title').text());
+                window.history.pushState(state, document.title, opt.url);
+                if (cbk) {
+                  cbk(d);
+                }
+              }
+            });
+          };
+      func(opt, cbk);
+      window.addEventListener('popstate', function(e) {
+        var state = e.state;
+        if (state) {
+          func({
+            url: state.url
+          }, cbk);
+        }
+      }, false);
     }
   });
   var shape_resize = function(data) {

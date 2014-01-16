@@ -15,6 +15,7 @@
     <a href="/nodes">节点</a>
   </li>
 </ul>
+<span id="pjax-content">
 {% if not category %}
   <div class="organ node nav-shadow">
     <div class="organ-head">
@@ -39,5 +40,6 @@
     {{ modules.NodeList(nodes) }}
   </div>
 {% end %}
+</span>
 {{ modules.Page(page=page, page_count=page_count, url=url) }}
 {% end %}

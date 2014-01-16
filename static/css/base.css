@@ -1555,103 +1555,47 @@ ul.users li a div.username span {
   max-width: 300px;
 }
 /* timer */
-body, html {
-  height: 100%; }
+.ploading {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  display: inline-block;
+  border-width: 20px;
+  border-radius: 50%;
+  -webkit-animation: spin 0.3s linear infinite;
+     -moz-animation: spin 0.3s linear infinite;
+       -o-animation: spin 0.3s linear infinite;
+          animation: spin 0.3s linear infinite;
+  }
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #cc3333;
-  overflow: hidden;
-}
+.style-1 {
+  border-style: solid;
+  border-color: #444 transparent;
+  }
 
-.timer {
-  width: 81px;
-  height: 81px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: .5em solid #f5f5f5;
-  border-radius: 100%;
-  position: relative; }
-  .timer:before, .timer:after {
-    content: '';
-    display: block;
-    position: absolute; }
-  .timer:before {
-    height: 12px;
-    width: 12px;
-    top: -26px;
-    border-radius: 100%;
-    left: 48%;
-    margin-left: -0.75em;
-    background: #cc3333;
-    border: 7px solid #f5f5f5; }
-  .timer:after {
-    width: 1em;
-    height: 1em;
-    background: #f5f5f5;
-    right: 0;
-    top: -0.25em;
-    border-radius: 100%; }
+.style-2 {
+  border-style: double;
+  border-color: #444 transparent;
+  }
 
-.hand {
-  background: #cc3333;
-  height: 17px;
-  width: 17px;
-  display: flex;
-  justify-content: center;
-  border-radius: 100%;
-  border: 1.4em solid #f5f5f5; }
-  .hand:before, .hand:after {
-    content: '';
-    display: block;
-    position: relative; }
-  .hand:before {
-    width: .325em;
-height: 1.54em;
-top: -1.40em;
-background: #cc3333;
--webkit-animation: countdown 1s linear infinite;
--moz-animation: countdown 1s linear infinite;
--ms-animation: countdown 1s linear infinite;
--o-animation: countdown 1s linear infinite;
-animation: countdown 1s linear infinite;
--webkit-transform-origin: 50% 125%;
--moz-transform-origin: 50% 125%;
--ms-transform-origin: 50% 125%;
--o-transform-origin: 50% 125%;
-transform-origin: 50% 125%;
-}
+.style-3 {
+  border-style: double;
+  border-color: #444 #fff #fff;
+  }
 
-@-webkit-keyframes countdown {
-  0% {
-    -webkit-transform: rotate(0deg); }
+@-webkit-keyframes spin {
+  100% { -webkit-transform: rotate(359deg); }
+  }
 
-  100% {
-    -webkit-transform: rotate(360deg); } }
-@-moz-keyframes countdown {
-  0% {
-    -webkit-transform: rotate(0deg); }
+@-moz-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
 
-  100% {
-    -webkit-transform: rotate(360deg); } }
-@-ms-keyframes countdown {
-  0% {
-    -webkit-transform: rotate(0deg); }
+@-o-keyframes spin {
+  100% { -moz-transform: rotate(359deg); }
+  }
 
-  100% {
-    -webkit-transform: rotate(360deg); } }
-@-o-keyframes countdown {
-  0% {
-    -webkit-transform: rotate(0deg); }
+@keyframes spin {
+  100% {  transform: rotate(359deg); }
+  }
 
-  100% {
-    -webkit-transform: rotate(360deg); } }
-@keyframes countdown {
-  0% {
-    -webkit-transform: rotate(0deg); }
-
-  100% {
-    -webkit-transform: rotate(360deg); } }
