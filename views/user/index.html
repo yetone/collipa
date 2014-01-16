@@ -74,17 +74,22 @@
   </div>
 {% else %}
   <div class="organ topic-list">
-    <ul class="nav clearfix">
-      <li {% if view == 'index' %}class="on"{% end %}>
-        <a href="{{ user.url }}">主页</a>
-      </li>
-      <li {% if view == 'topics' %}class="on"{% end %}>
-        <a href="{{ user.url }}/topics">主题</a>
-      </li>
-      <li {% if view == 'replies' %}class="on"{% end %}>
-        <a href="{{ user.url }}/replies">评论</a>
-      </li>
-    </ul>
+    <div class="nav-wrap">
+      <ul class="nav clearfix">
+        <li {% if view == 'index' %}class="on"{% end %}>
+          <a href="{{ user.url }}">主页</a>
+        </li>
+        <li {% if view == 'topics' %}class="on"{% end %}>
+          <a href="{{ user.url }}/topics">主题</a>
+        </li>
+        <li {% if view == 'replies' %}class="on"{% end %}>
+          <a href="{{ user.url }}/replies">评论</a>
+        </li>
+      </ul>
+      <div class="nav-bottom">
+        <div class="nav-bottom-span"></div>
+      </div>
+    </div>
     {% if view == 'index' %}
       {% set hot_topics = user.get_topics(limit=4) %}
       {% set hot_replies = user.get_replies(limit=4) %}
