@@ -305,6 +305,7 @@ $(function() {
       $(document).on(opt.event, this.selector, function(e) {
         e.preventDefault();
         var $this = $(this),
+            url = $this.attr('href'),
             $pjaxContent = $(opt.container),
             func = function(opt) {
               var $ploading = $('<span class="ploading style-2"></span>');
@@ -312,7 +313,7 @@ $(function() {
                 $('body').append($ploading);
               }
               $.ajax({
-                url: $this.attr('href'),
+                url: url,
                 type: 'GET',
                 dataType: 'html',
                 success: function(d) {
@@ -330,7 +331,7 @@ $(function() {
                   $pjaxContent.html($(d).find(opt.part).html());
                   //$('#script-block').html($(d).find('#script-block').html());
                   //$('title').text($(d).find('title').text());
-                  History.pushState(state, document.title, opt.url);
+                  History.pushState(state, document.title, url);
                   if (opt.success) {
                     opt.success(d);
                   }
@@ -345,7 +346,7 @@ $(function() {
           }
         });
         if (opt.cbk) {
-          opt.cbk();
+          opt.cbk($(this));
         }
         func(opt);
       });

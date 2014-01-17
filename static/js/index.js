@@ -4,9 +4,8 @@ $(function() {
     container: '#pjax-content',
     part: '#pjax-content',
     event: 'click',
-    cbk: function() {
-      var $this = $(this),
-          $parent = $this.parent('li'),
+    cbk: function($this) {
+      var $parent = $this.parent('li'),
           $ul = $this.parents('ul.nav');
       $ul.find('li').removeClass('on');
       $parent.addClass('on');
