@@ -6,6 +6,10 @@ html,body,div,p,ol,ul,li,dl,dt,dd,h1,h2,h3,h4,h5,h6,form,input,select,button,tex
   padding: 0;
 }
 
+html, body {
+  min-height: 101%;
+}
+
 ol, ul, li {
   list-style: none;
 }
