@@ -1561,8 +1561,8 @@ ul.users li a div.username span {
 /* timer */
 .ploading {
   position: fixed;
-  left: 10px;
-  bottom: 10px;
+  left: 20px;
+  bottom: 20px;
   display: inline-block;
   border-width: 20px;
   border-radius: 50%;
