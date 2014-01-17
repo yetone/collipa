@@ -295,46 +295,60 @@ $(function() {
         }, 130);
       });
     },
-    pjaxHandler: function(opt) {
-      var $pjaxContent = this,
-          func = function(opt) {
-            var $ploading = $('<span class="ploading style-2"></span>');
-            if (!$('.ploading').length) {
-              $('body').append($ploading);
-            }
-            $.ajax({
-              url: opt.url,
-              type: 'GET',
-              dataType: 'html',
-              success: function(d) {
-                var state = {
-                      title: '',
-                      html: $pjaxContent.html(),
-                    },
-                    $ploading = $('.ploading');
-                $ploading.animate(
-                  {opacity: 0},
-                  function() {
-                    $ploading.remove();
-                  }
-                );
-                $pjaxContent.html($(d).find('#pjax-content').html());
-                $('#script-block').html($(d).find('#script-block').html());
-                //$('title').text($(d).find('title').text());
-                History.pushState(state, document.title, opt.url);
-                window.addEventListener('popstate', function(e) {
-                  var state = History.getState();
-                  console.log(state);
-                  if (state.data.html) {
-                    $('#pjax-content').html(state.data.html);
-                  }
-                });
-                if (opt.cbk) {
-                  opt.cbk(d);
-                }
+    pjax: function(opt) {
+      opt = $.extend({
+        event: 'click',
+        container: '#pjax-content',
+        part: '#pjax-content'
+      }, opt);
+
+      $(document).on(opt.event, this.selector, function(e) {
+        e.preventDefault();
+        var $this = $(this),
+            $pjaxContent = $(opt.container),
+            func = function(opt) {
+              var $ploading = $('<span class="ploading style-2"></span>');
+              if (!$('.ploading').length) {
+                $('body').append($ploading);
               }
-            });
-          };
+              $.ajax({
+                url: $this.attr('href'),
+                type: 'GET',
+                dataType: 'html',
+                success: function(d) {
+                  var state = {
+                        title: '',
+                        html: $pjaxContent.html(),
+                      },
+                      $ploading = $('.ploading');
+                  $ploading.animate(
+                    {opacity: 0},
+                    function() {
+                      $ploading.remove();
+                    }
+                  );
+                  $pjaxContent.html($(d).find(opt.part).html());
+                  //$('#script-block').html($(d).find('#script-block').html());
+                  //$('title').text($(d).find('title').text());
+                  History.pushState(state, document.title, opt.url);
+                  if (opt.success) {
+                    opt.success(d);
+                  }
+                }
+              });
+            };
+        window.addEventListener('popstate', function(e) {
+          var state = History.getState();
+          console.log(state);
+          if (state.data.html) {
+            $('#pjax-content').html(state.data.html);
+          }
+        });
+        if (opt.cbk) {
+          opt.cbk();
+        }
+        func(opt);
+      });
           /*
           History.Adapter.bind(window, 'popstate', function() {
             var state = History.getState();
@@ -344,7 +358,6 @@ $(function() {
             }
           });
           */
-      func(opt);
     }
   });
   var shape_resize = function(data) {
