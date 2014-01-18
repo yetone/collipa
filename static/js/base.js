@@ -202,45 +202,50 @@ var get_cookie = function(name) {
 $(function() {
   $.fn.extend({
     fix: function() {
-      var $nav = this,
+      var navSelector = this.selector,
           make_fix = function($nav) {
+            if (!$nav.length) {
+              return;
+            }
             var top = $(document).scrollTop(),
                 menu_top,
                 $shape = $('#shape'),
-                $nav_fixed = $($nav.selector + '.fixed'),
                 $menu = $('#head .menu'),
-                $menu_fixed = $('#head .menu.fixed'),
                 $head = $('#head'),
-                nav_top = $nav.offset().top,
+                $fixFill = $('<div class="fix-fill"></div>'),
+                nav_top = $('.fix-fill').length ? $('.fix-fill').offset().top : $nav.offset().top,
                 nav_width = $nav.width(),
                 nav_height = $nav.height(),
                 menu_left = $menu.offset().left,
                 menu_height = $menu.height(),
                 head_left = $head.offset().left;
             if (top >= nav_top) {
-              if (!$nav_fixed.length) {
-                menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
-                $nav_fixed = $nav.clone();
-                $nav_fixed.addClass('fixed').css({'width': nav_width});
-                $nav.after($nav_fixed);
-                if ($('#head .menu.fixed').length) {
-                  $('#head .menu.fixed').remove();
-                }
-                $menu_fixed = $menu.clone();
-                $menu_fixed.addClass('fixed').css({'right': +head_left + 20 + 'px', 'top': menu_top + 'px'});
-                $menu_fixed.insertAfter($menu).hide().fadeIn(600);
+              menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
+              $nav.addClass('fixed').css({'width': nav_width});
+              if (!$('.fix-fill').length) {
+                $nav.before($fixFill.css({'height': nav_height + 2, 'width': nav_width}));
+              } else {
+                $('.fix-fill').css({'height': nav_height + 2, 'width': nav_width});
+              }
+              if (!$menu.hasClass('fixed')) {
+                $menu.addClass('fixed').css({'right': +head_left + 20, 'top': menu_top}).hide().fadeIn(600);
               }
             } else {
-              $nav_fixed.remove();
-              $menu_fixed.remove();
+              $nav.removeClass('fixed');
+              $menu.removeClass('fixed').css({'right': 20, 'bottom': 10, 'top': 'auto'});
+              if ($('.fix-fill').length) {
+                $('.fix-fill').css({'height': 0, 'width': nav_width});
+              } else {
+                $nav.before($fixFill.css({'height': 0, 'width': nav_width}));
+              }
             }
           };
-      if (!$nav || $nav.length === 0) {
+      if (!$(navSelector) || $(navSelector).length === 0) {
         return;
       } else {
-        make_fix($nav);
+        make_fix($(navSelector));
         $(document).on('scroll', function() {
-          make_fix($nav);
+          make_fix($(navSelector));
         });
       }
     },
@@ -269,9 +274,12 @@ $(function() {
         if (!$nav || $nav.length ===0) {
           return;
         }
+        var $navSpan = $nav.parents('.nav-wrap').find('.nav-bottom-span');
+        if (!$navSpan.length) {
+          return;
+        }
         var w = $nav.width(),
             l = $nav.position().left,
-            $navSpan = $nav.parents('.nav-wrap').find('.nav-bottom-span'),
             nw = $navSpan.width(),
             nl = $navSpan.position().left;
         // duration = Math.abs((nl + nw) - (l + w)) * 2;
@@ -342,7 +350,7 @@ $(function() {
           var state = History.getState();
           console.log(state);
           if (state.data.html) {
-            $('#pjax-content').html(state.data.html);
+            $(opt.container).html(state.data.html);
           }
         });
         if (opt.cbk) {

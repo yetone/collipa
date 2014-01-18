@@ -68,16 +68,6 @@ var online = {
           } else {
             online.message_count_area.append('<span class="count">' + data.count + '</span>');
           }
-          try {
-            online.fixed_message_count_area = $('#head .menu.fixed .message');
-            if (online.fixed_message_count_area.find('span.count').length) {
-              online.fixed_message_count_area.find('span.count').html(data.count);
-            } else {
-              online.fixed_message_count_area.append('<span class="count">' + data.count + '</span>');
-            }
-          } catch(e) {
-            console.log("no fixed");
-          }
           var title = $('title');
           if (title.html().indexOf('(新私信)') === -1) {
             title.html('(新私信) ' + title.html());
@@ -134,16 +124,6 @@ var online = {
           online.notification_count_area.find('span.count').html(data.count);
         } else {
           online.notification_count_area.append('<span class="count">' + data.count + '</span>');
-        }
-        try {
-          online.fixed_notification_count_area = $('#head .menu.fixed .notification');
-          if (online.fixed_notification_count_area.find('span.count').length) {
-            online.fixed_notification_count_area.find('span.count').html(data.count);
-          } else {
-            online.fixed_notification_count_area.append('<span class="count">' + data.count + '</span>');
-          }
-        } catch(e) {
-          console.log("no fixed");
         }
         var title = $('title');
         if (title.html().indexOf('(新提醒)') === -1) {

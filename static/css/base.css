@@ -248,7 +248,7 @@ a.node:hover {
 #head .menu {
     position: absolute;
     right: 20px;
-    top: 128px;
+    bottom: 10px;
 }
 #head .menu li {
     float: left;
@@ -1223,12 +1223,14 @@ ul.child-nodes li .description {
   z-index: 10004;
   margin: 0 0 10px 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
-  top: 0px;
+  top: 0;
 }
 #head .menu.fixed {
   position: fixed;
+  bottom: auto;
   top: 7.5px;
   z-index: 10005;
+  height: 30px;
 }
 #head .menu.fixed a {
   color: rgb(253, 253, 253);
@@ -1240,7 +1242,7 @@ ul.child-nodes li .description {
   z-index: 10004;
   margin: 0 0 10px 0;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.15);
-  top: 0px;
+  top: 0;
   border-bottom: 0;
 }
 .status-msg {
