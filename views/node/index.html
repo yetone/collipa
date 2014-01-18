@@ -70,13 +70,18 @@
   </div>
 </div>
 <div class="organ topic-list">
-  <ul class="nav clearfix">
-    <li {% if category == "all" %}class="on"{% end %}><a href="{{ node.url }}">主题列表</a></li>
-    <li {% if category == "latest" %}class="on"{% end %}><a href="{{ node.url }}/latest">最新</a></li>
-    <li {% if category == "desert" %}class="on"{% end %}><a href="{{ node.url }}/desert">荒漠</a></li>
-    <li {% if category == "hot" %}class="on"{% end %}><a href="{{ node.url }}/hot">热门</a></li>
-    <li {% if category == "dispute" %}class="on"{% end %}><a href="{{ node.url }}/dispute">争议</a></li>
-  </ul>
+  <div class="nav-wrap">
+    <ul class="nav clearfix">
+      <li {% if category == "all" %}class="on"{% end %}><a href="{{ node.url }}">主题列表</a></li>
+      <li {% if category == "latest" %}class="on"{% end %}><a href="{{ node.url }}/latest">最新</a></li>
+      <li {% if category == "desert" %}class="on"{% end %}><a href="{{ node.url }}/desert">荒漠</a></li>
+      <li {% if category == "hot" %}class="on"{% end %}><a href="{{ node.url }}/hot">热门</a></li>
+      <li {% if category == "dispute" %}class="on"{% end %}><a href="{{ node.url }}/dispute">争议</a></li>
+    </ul>
+    <div class="nav-bottom">
+      <div class="nav-bottom-span"></div>
+    </div>
+  </div>
   {{ modules.TopicList(topics) }}
 </div>
 {{ modules.Page(page=page, page_count=page_count, url=url) }}
