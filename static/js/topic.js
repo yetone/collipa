@@ -1,4 +1,8 @@
 $(function() {
+  $('.nav-wrap li a').pjax({
+    container: '.reply-list',
+    part: '.reply-list'
+  });
   $D.on('mouseover', '.item', function() {
     $(this).find('.hidden').css('display', 'inline');
   }).on('mouseout', '.item', function () {
