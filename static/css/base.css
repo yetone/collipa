@@ -500,6 +500,7 @@ a.node:hover {
   height: 4px;
   background-color: #09C;
 }
+.nav-bottom-span.gray,
 .topic-list .nav-bottom-span,
 .reply-list .nav-bottom-span {
   background-color: rgb(209, 209, 209);
