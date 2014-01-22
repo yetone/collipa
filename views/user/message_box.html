@@ -24,14 +24,19 @@
   </li>
 </ul>
 <div class="organ message-box-list nav-shadow">
-  <ul class="nav clearfix no-top-border">
-    <li {% if category == 'unread' %}class="on"{% end %}>
-      <a href="/messages?category=unread">未读</a>
-    </li>
-    <li {% if category == 'all' %}class="on"{% end %}>
-      <a href="/messages">全部</a>
-    </li>
-  </ul>
+  <div class="nav-wrap no-top-border">
+    <ul class="nav clearfix">
+      <li {% if category == 'unread' %}class="on"{% end %}>
+        <a href="/messages?category=unread">未读</a>
+      </li>
+      <li {% if category == 'all' %}class="on"{% end %}>
+        <a href="/messages">全部</a>
+      </li>
+    </ul>
+    <div class="nav-bottom">
+      <div class="nav-bottom-span gray"></div>
+    </div>
+  </div>
   {{ modules.MessageBoxList(message_boxes=current_user.get_message_boxes(category=category, page=page))}}
 </div>
 {% end %}
