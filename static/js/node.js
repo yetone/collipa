@@ -106,4 +106,21 @@ $(function () {
     }
   });
   $('.node .node-tag').next('.description').tooltip();
+  $('.nav-wrap li a, .pagination li a').pjax({
+    container: '#pjax-content',
+    part: '#pjax-content',
+    success: function() {
+      var $no = $('.nav-wrap li.on'),
+          $nbs;
+      if ($no.length) {
+        $nbs = $no.parents('.nav-wrap').find('.nav-bottom-span');
+        setTimeout(function() {
+          $no.trigger('mouseover');
+          if ($nbs.length) {
+            $nbs.css({'opacity': 1});
+          }
+        }, 300);
+      }
+    }
+  });
 });
