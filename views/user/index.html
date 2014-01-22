@@ -10,6 +10,31 @@
   <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
 {% end %}
 {% block script %}
+<script id="action-template" type="text/template">
+ <div id="layout" class="message">
+   <div class="layout-header">
+     <div class="title">
+       发送私信
+     </div>
+     <a title="关闭" class="layout-close">
+       <i class="icon-remove"></i>
+     </a>
+   </div>
+   <div class="layout-content">
+     <form action="<%= action %>" method="post">
+        {{ xsrf_form_html() }}
+        <div class="fm-row">
+          <div class="fm-item">
+            <textarea name="content"></textarea>
+          </div>
+        </div>
+        <div class="fm-action">
+          <button type="submit" class="btn">发送</button>
+        </div>
+      </form>
+   </div>
+ </div>
+</script>
 <script src="{{ static_url('js/user.js') }}"></script>
 {% end %}
 {% block body %}
@@ -90,6 +115,7 @@
         <div class="nav-bottom-span"></div>
       </div>
     </div>
+    <div id="pjax-content">
     {% if view == 'index' %}
       {% set hot_topics = user.get_topics(limit=4) %}
       {% set hot_replies = user.get_replies(limit=4) %}
@@ -122,9 +148,10 @@
         SyntaxHighlighter.all();
       </script>
     {% end %}
+    {% if view != 'index' %}
+      {{ modules.Page(page=page, page_count=page_count, url=url) }}
+    {% end %}
+    </div>
   </div>
-{% end %}
-{% if view != 'index' %}
-  {{ modules.Page(page=page, page_count=page_count, url=url) }}
 {% end %}
 {% end %}
