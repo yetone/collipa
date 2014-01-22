@@ -289,7 +289,7 @@ $(function() {
           $navSpan.hide().css({'left': l, 'width': w}).fadeIn(300);
         } else {
           $navSpan.stop();
-          $navSpan.animate({'left': l, 'width': w}, duration);
+          $navSpan.animate({'left': l, 'width': w, 'opacity': 1}, duration);
         }
       },
       timer;
