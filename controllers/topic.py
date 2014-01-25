@@ -21,8 +21,31 @@ class HomeHandler(BaseHandler):
         topic = Topic.get(id=topic_id)
         if not topic:
             raise tornado.web.HTTPError(404)
-        action = self.get_argument('action', None)
         category = self.get_argument('category', None)
+        if not category:
+            category = 'all'
+        if category == 'all':
+            reply_count = topic.reply_count
+            url = topic.url
+        elif category == 'hot':
+            reply_count = count(topic.get_replies(page=None,
+                    category=category))
+            url = topic.url + '?category=hot'
+        page_count = (reply_count + config.reply_paged - 1) // config.reply_paged
+        if page == 0:
+            page = page_count
+        replies = topic.get_replies(page=page, category=category)
+        form = ReplyForm()
+        return self.render("topic/index.html", topic=topic, replies=replies, form=form,
+                category=category, page=page, page_count=page_count, url=url)
+
+    @db_session
+    def put(self, topic_id):
+        topic_id = int(topic_id)
+        topic = Topic.get(id=topic_id)
+        if not topic:
+            raise tornado.web.HTTPError(404)
+        action = self.get_argument('action', None)
         user = self.current_user
         if action and user:
             if action == 'up':
@@ -48,22 +71,7 @@ class HomeHandler(BaseHandler):
             else:
                 self.flash_message(result)
                 return self.redirect_next_url()
-        if not category:
-            category = 'all'
-        if category == 'all':
-            reply_count = topic.reply_count
-            url = topic.url
-        elif category == 'hot':
-            reply_count = count(topic.get_replies(page=None,
-                    category=category))
-            url = topic.url + '?category=hot'
-        page_count = (reply_count + config.reply_paged - 1) // config.reply_paged
-        if page == 0:
-            page = page_count
-        replies = topic.get_replies(page=page, category=category)
-        form = ReplyForm()
-        return self.render("topic/index.html", topic=topic, replies=replies, form=form,
-                category=category, page=page, page_count=page_count, url=url)
+
 
 class CreateHandler(BaseHandler):
     @db_session
@@ -101,6 +109,7 @@ class CreateHandler(BaseHandler):
         if self.is_ajax:
             return self.write(form.result)
         return self.render("topic/create.html", form=form, node=node)
+
 
 class EditHandler(BaseHandler):
     @db_session
@@ -140,6 +149,7 @@ class EditHandler(BaseHandler):
         if self.is_ajax:
             return self.write(form.result)
         return self.render("topic/create.html", form=form, node=topic.node)
+
 
 class RemoveHandler(BaseHandler, EmailMixin):
     @db_session
@@ -186,6 +196,7 @@ class RemoveHandler(BaseHandler, EmailMixin):
         result = {'status': 'success', 'message': '已成功删除'}
         self.flash_message(result)
         return self.redirect_next_url()
+
 
 class HistoryHandler(BaseHandler):
     @db_session

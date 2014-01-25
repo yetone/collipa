@@ -13,9 +13,18 @@ from .user import EmailMixin
 
 config = config.rec()
 
+
 class HomeHandler(BaseHandler):
     @db_session
     def get(self, reply_id):
+        reply_id = int(reply_id)
+        reply = Reply.get(id=reply_id)
+        if not reply:
+            raise tornado.web.HTTPError(404)
+        return self.render("reply/index.html", reply=reply)
+
+    @db_session
+    def put(self, reply_id):
         reply_id = int(reply_id)
         reply = Reply.get(id=reply_id)
         if not reply:
@@ -45,7 +54,7 @@ class HomeHandler(BaseHandler):
                 return self.write(result)
             self.flash_message(result)
             return self.redirect_next_url()
-        return self.render("reply/index.html", reply=reply)
+
 
 class CreateHandler(BaseHandler):
     @db_session
@@ -88,6 +97,7 @@ class CreateHandler(BaseHandler):
         return self.render("topic/index.html", form=form, topic=topic,
                 category='index', page=page)
 
+
 class EditHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
@@ -122,6 +132,7 @@ class EditHandler(BaseHandler):
             return self.write(form.result)
         return self.render("reply/edit.html", form=form, reply=reply)
 
+
 class RemoveHandler(BaseHandler, EmailMixin):
     @db_session
     @tornado.web.authenticated
@@ -146,6 +157,7 @@ class RemoveHandler(BaseHandler, EmailMixin):
         result = {'status': 'success', 'message': '已成功删除'}
         self.flash_message(result)
         return self.redirect_next_url()
+
 
 class HistoryHandler(BaseHandler):
     @db_session
