@@ -40,18 +40,24 @@ $(function () {
         $node_data = $('.node-data');
 
     $.get(url, function(data) {
+      var source,
+          render,
+          html,
+          $description,
+          $relationship,
+          $show = $('#show');
       if (data.status !== 'success') {
         noty(data);
       } else {
         if ($this.parent('li').hasClass('description')) {
-          var source =
-                '<div id="show" class="node-description">'
-              +   '<%== node_description %>'
-              + '</div>',
-              render = template.compile(source),
-              html = render(data),
-              $description = $('div.node-description'),
-              $relationship = $('div.node-relationship');
+          source =
+                '<div id="show" class="node-description">'+
+                   '<%== node_description %>'+
+                 '</div>';
+          render = template.compile(source);
+          html = render(data);
+          $description = $('div.node-description');
+          $relationship = $('div.node-relationship');
 
           if ($description.length > 0) {
             $description.remove();
@@ -63,76 +69,13 @@ $(function () {
             $('.loading').remove();
           }
           $node_information.html(html);
-          var $show = $('#show');
           $show.hide().fadeIn();
         } else if ($this.parent('li').hasClass('relationship')) {
-          var source =
-                '<div id="show" class="node-relationship">'
-              +   '<% if (parent_nodes.length > 0) { %>'
-              +   '<div class="parent-nodes title">父节点</div>'
-              +   '<ul class="parent-nodes">'
-              +     '<% for (i=0; i < parent_nodes.length; i++) { %>'
-              +       '<li id="<%= parent_nodes[i].urlname %>">'
-              +         '<a href="<%= parent_nodes[i].url %>">'
-              +           '<div class="node-tag">'
-                +           '<img class="icon" align="absmiddle" src="<%= parent_nodes[i].icon %>">'
-                  +         '<span class="name">'
-                  +           '<%= parent_nodes[i].name %>'
-                  +         '</span>'
-                +         '</div>'
-                +         '<div class="description" data-tooltip="<%== parent_nodes[i].summary %>">'
-                +           '<%== parent_nodes[i].summary %>'
-                +         '</div>'
-              +         '</a>'
-              +       '</li>'
-              +     '<% } %>'
-              +   '</ul>'
-              +   '<% } %>'
-              +   '<% if (child_nodes.length > 0) { %>'
-              +   '<div class="child-nodes title">子节点</div>'
-              +   '<ul class="child-nodes">'
-              +     '<% for (i=0; i < child_nodes.length; i++) { %>'
-              +       '<li id="<%= child_nodes[i].urlname %>">'
-              +         '<a href="<%= child_nodes[i].url %>">'
-              +           '<div class="node-tag">'
-                +           '<img class="icon" align="absmiddle" src="<%= child_nodes[i].icon %>">'
-                  +         '<span class="name">'
-                  +           '<%= child_nodes[i].name %>'
-                  +         '</span>'
-                +         '</div>'
-                +         '<div class="description" data-tooltip="<%== child_nodes[i].summary %>">'
-                +           '<%== child_nodes[i].summary %>'
-                +         '</div>'
-              +         '</a>'
-              +       '</li>'
-              +     '<% } %>'
-              +   '</ul>'
-              +   '<% } %>'
-              +   '<% if (sibling_nodes.length > 0) { %>'
-              +   '<div class="sibling-nodes title">兄弟节点</div>'
-              +   '<ul class="sibling-nodes">'
-              +     '<% for (i=0; i < sibling_nodes.length; i++) { %>'
-              +       '<li id="<%= sibling_nodes[i].urlname %>">'
-              +         '<a href="<%= sibling_nodes[i].url %>">'
-              +           '<div class="node-tag">'
-                +           '<img class="icon" align="absmiddle" src="<%= sibling_nodes[i].icon %>">'
-                  +         '<span class="name">'
-                  +           '<%= sibling_nodes[i].name %>'
-                  +         '</span>'
-                +         '</div>'
-                +         '<div class="description" data-tooltip="<%== sibling_nodes[i].summary %>">'
-                +           '<%== sibling_nodes[i].summary %>'
-                +         '</div>'
-              +         '</a>'
-              +       '</li>'
-              +     '<% } %>'
-              +   '</ul>'
-              +   '<% } %>'
-              + '</div>',
-              render = template.compile(source),
-              html = render(data),
-              $description = $('div.node-description'),
-              $relationship = $('div.node-relationship');
+          source = $('#node-template').html();
+          render = template.compile(source);
+          html = render(data);
+          $description = $('div.node-description');
+          $relationship = $('div.node-relationship');
 
           if ($description.length > 0) {
             $description.remove();
@@ -144,7 +87,6 @@ $(function () {
             $('.loading').remove();
           }
           $node_information.html(html);
-          var $show = $('#show');
           $show.hide().fadeIn();
           $('.node .node-tag').next('.description').tooltip();
         }
@@ -164,4 +106,21 @@ $(function () {
     }
   });
   $('.node .node-tag').next('.description').tooltip();
+  $('.nav-wrap li a, .pagination li a').pjax({
+    container: '#pjax-content',
+    part: '#pjax-content',
+    success: function() {
+      var $no = $('.nav-wrap li.on'),
+          $nbs;
+      if ($no.length) {
+        $nbs = $no.parents('.nav-wrap').find('.nav-bottom-span');
+        setTimeout(function() {
+          $no.trigger('mouseover');
+          if ($nbs.length) {
+            $nbs.css({'opacity': 1});
+          }
+        }, 300);
+      }
+    }
+  });
 });
