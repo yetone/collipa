@@ -101,7 +101,7 @@ $(function() {
 
   $D.on('click', '.reply-create button', function(e) {
     e.preventDefault();
-    var $this = $(this);
+    var $this = $(this),
         topic_id = $this.attr('data-id'),
         url = '/reply/create?topic_id=' + topic_id,
         $textarea = $('#ueditor_0').contents().find('body'),
@@ -115,56 +115,7 @@ $(function() {
       if (data.status !== 'success') {
         noty(data);
       } else {
-        var source =
-              '<li id="show-<%= id %>" data-id="<%= id %>" class="item clearfix">'
-            +   '<a class="avatar fl" href="<%= author_url %>">'
-            +     '<img class="avatar" src="<%= author_avatar %>">'
-            +   '</a>'
-            +   '<div class="item-content">'
-            +     '<div class="author-info">'
-            +       '<a class="name" data-name="<%= author_name %>"><%= author_nickname %></a>'
-            +       '<span><%= floor %> 楼,</span>'
-            +       '<a class="time" href="<%= reply_url %>"><%= created %></a>'
-            +     '</div>'
-            +   '<div class="content reply-content">'
-            +     '<%== content %>'
-            +   '</div>'
-            +   '<div class="meta">'
-            +     '<ul class="vote clearfix hidden">'
-            +       '<li class="up">'
-            +         '<a title="赞同" href="<%= reply_url %>?action=up">'
-            +           '<i class="icon-thumbs-up"></i>'
-            +           ' 赞同(0)'
-            +         '</a>'
-            +       '</li>'
-            +       '<li class="down">'
-            +         '<a title="反对" href="<%= reply_url %>?action=down">'
-            +           '<i class="icon-thumbs-down"></i>'
-            +           ' 反对(0)'
-            +         '</a>'
-            +       '</li>'
-            +       '<li class="collect">'
-            +         '<a title="收藏" href="<%= reply_url %>?action=collect">'
-            +           '<i class="icon-bookmark"></i>'
-            +           ' 收藏'
-            +         '</a>'
-            +       '</li>'
-            +       '<li class="edit">'
-            +         '<a title="修改" href="<%= reply_url %>/edit">'
-            +           '<i class="icon-pencil"></i>'
-            +           ' 修改'
-            +         '</a>'
-            +       '</li>'
-            +     '</ul>'
-            +     '<ul class="action clearfix">'
-            +       '<li class="reply">'
-            +         '<a title="回复" href="#;">'
-            +           '<i class="icon-reply"></i>'
-            +         '</a>'
-            +       '</li>'
-            +     '</ul>'
-            +   '</div>'
-            + '</li>',
+        var source = $('#reply-template').html(),
             render = template.compile(source),
             html = render(data),
             $explain = $('.reply-list .explain');

@@ -16,3 +16,22 @@
   {{ user.style }}
 {% end %}
 </style>
+<script id="message-template" type="text/template">
+  <li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">
+    <a class="avatar" href="<%= url %>">
+      <img class="avatar" src="<%= avatar %>">
+    </a>
+    <div class="item-content">
+      <div class="meta">
+        <span class="time"><%= created %></span>
+      </div>
+      <div class="content">
+        <%= content %>
+        <div class="caret">
+          <div class="caret-outer"></div>
+          <div class="caret-inner"></div>
+        </div>
+      </div>
+    </div>
+  </li>
+</script>

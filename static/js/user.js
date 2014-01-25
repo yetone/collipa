@@ -1,5 +1,6 @@
 $(function() {
-  $('.profile-action a:first').live('click', function() {
+  $D.on('click', '.profile-action a:first', function(e) {
+    e.preventDefault();
     var $this = $(this),
         url = $this.attr('href'),
         $info_follow_area = $this.parents('.profile-head').find('.status li:last a span'),
@@ -25,10 +26,9 @@ $(function() {
     $this.addClass('onloading');
     button_content = $this.html();
     $this.html(button_content + ' ..');
-    return false;
   });
 
-  $('.vote li a').live('click', function(e) {
+  $D.on('click', '.vote li a', function(e) {
     e.preventDefault();
     var $this = $(this),
         url = $this.attr('href'),
@@ -73,41 +73,20 @@ $(function() {
     });
   });
 
-  $('.profile-action .mail').live('click', function(e) {
+  $D.on('click', '.profile-action .mail', function(e) {
     e.preventDefault();
     var action = $(this).attr('href'),
-        layout =
-          '<div id="layout" class="message">'
-        +   '<div class="layout-header">'
-        +     '<div class="title">'
-        +       '发送私信'
-        +     '</div>'
-        +     '<a title="关闭" class="layout-close">'
-        +       '<i class="icon-remove"></i>'
-        +     '</a>'
-        +   '</div>'
-        +   '<div class="layout-content">'
-        +      '<form action="' + action + '" method="post">'
-        +        '<input type="hidden" name="_xsrf" value="' + get_cookie('_xsrf') + '">'
-        +        '<div class="fm-row">'
-        +          '<div class="fm-item">'
-        +            '<textarea name="content"></textarea>'
-        +          '</div>'
-        +        '</div>'
-        +        '<div class="fm-action">'
-        +          '<button type="submit" class="btn">发送</button>'
-        +        '</div>'
-        +      '</form>'
-        +   '</div>'
-        + '</div>';
+        source = $('#action-template').html(),
+        render = template.compile(source),
+        html = render({action: action});
 
     $('#layout').remove();
-    $('body').append(layout);
+    $('body').append(html);
     popup($('#layout'), 'fixed');
     $('#layout.message textarea').focus();
   });
 
-  $('#layout.message button').live('click', function(e) {
+  $D.on('click', '#layout.message button', function(e) {
     e.preventDefault();
     var $this = $(this),
         $layout = $this.parents('#layout'),
@@ -131,7 +110,7 @@ $(function() {
     });
   });
 
-  $('.message-fm button').live('click', function(e) {
+  $D.on('click', '.message-fm button', function(e) {
     e.preventDefault();
     var $this = $(this),
         $form = $this.parents('form'),
@@ -145,24 +124,7 @@ $(function() {
     $.post(action, $.param(args), function(data) {
       $this.removeAttr('disabled').removeClass("onloading").html("发送");
       if (data.status === 'success') {
-        var source =
-                '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix me">'
-            +     '<a class="avatar" href="<%= url %>">'
-            +       '<img class="avatar" src="<%= avatar %>">'
-            +     '</a>'
-            +     '<div class="item-content">'
-            +       '<div class="meta">'
-            +         '<span class="time"><%= created %></span>'
-            +       '</div>'
-            +       '<div class="content">'
-            +         '<%= content %>'
-            +         '<div class="caret">'
-            +           '<div class="caret-outer"></div>'
-            +           '<div class="caret-inner"></div>'
-            +         '</div>'
-            +       '</div>'
-            +     '</div>'
-            +   '</li>',
+        var source = $('#message-template').html(),
             render = template.compile(source),
             html = render(data);
 
@@ -177,7 +139,7 @@ $(function() {
     });
   });
 
-  $('.more > a').live('click', function(e) {
+  $D.on('click', '.more > a', function(e) {
     e.preventDefault();
     var $more = $(this).parents('.more'),
         $more_list = $more.find('.menu-list');
@@ -185,6 +147,29 @@ $(function() {
       $more_list.removeClass('open');
     } else {
       $more_list.addClass('open');
+    }
+  });
+
+  $D.on('click', '.nav-wrap li', function() {
+    var $this = $(this);
+    $this.siblings().removeClass('on');
+    $this.addClass('on');
+  });
+  $('.nav-wrap li a, .pagination li a').pjax({
+    container: '#pjax-content',
+    part: '#pjax-content',
+    success: function() {
+      var $no = $('.nav-wrap li.on'),
+          $nbs;
+      if ($no.length) {
+        $nbs = $no.parents('.nav-wrap').find('.nav-bottom-span');
+        setTimeout(function() {
+          $no.trigger('mouseover');
+          if ($nbs.length) {
+            $nbs.css({'opacity': 1});
+          }
+        }, 300);
+      }
     }
   });
 });

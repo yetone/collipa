@@ -22,6 +22,70 @@
   {% end %}
 {% end %}
 {% block script %}
+<script id="node-template" type="text/template">
+  <div id="show" class="node-relationship">
+    <% if (parent_nodes.length > 0) { %>
+    <div class="parent-nodes title">父节点</div>
+    <ul class="parent-nodes">
+      <% for (i=0; i < parent_nodes.length; i++) { %>
+        <li id="<%= parent_nodes[i].urlname %>">
+          <a href="<%= parent_nodes[i].url %>">
+            <div class="node-tag">
+              <img class="icon" align="absmiddle" src="<%= parent_nodes[i].icon %>">
+              <span class="name">
+                <%= parent_nodes[i].name %>
+              </span>
+            </div>
+            <div class="description" data-tooltip="<%== parent_nodes[i].summary %>">
+              <%== parent_nodes[i].summary %>
+            </div>
+          </a>
+        </li>
+      <% } %>
+    </ul>
+    <% } %>
+    <% if (child_nodes.length > 0) { %>
+    <div class="child-nodes title">子节点</div>
+    <ul class="child-nodes">
+      <% for (i=0; i < child_nodes.length; i++) { %>
+        <li id="<%= child_nodes[i].urlname %>">
+          <a href="<%= child_nodes[i].url %>">
+            <div class="node-tag">
+              <img class="icon" align="absmiddle" src="<%= child_nodes[i].icon %>">
+              <span class="name">
+                <%= child_nodes[i].name %>
+              </span>
+            </div>
+            <div class="description" data-tooltip="<%== child_nodes[i].summary %>">
+              <%== child_nodes[i].summary %>
+            </div>
+          </a>
+        </li>
+      <% } %>
+    </ul>
+    <% } %>
+    <% if (sibling_nodes.length > 0) { %>
+    <div class="sibling-nodes title">兄弟节点</div>
+    <ul class="sibling-nodes">
+      <% for (i=0; i < sibling_nodes.length; i++) { %>
+        <li id="<%= sibling_nodes[i].urlname %>">
+          <a href="<%= sibling_nodes[i].url %>">
+            <div class="node-tag">
+              <img class="icon" align="absmiddle" src="<%= sibling_nodes[i].icon %>">
+              <span class="name">
+                <%= sibling_nodes[i].name %>
+              </span>
+            </div>
+            <div class="description" data-tooltip="<%== sibling_nodes[i].summary %>">
+              <%== sibling_nodes[i].summary %>
+            </div>
+          </a>
+        </li>
+      <% } %>
+    </ul>
+    <% } %>
+  </div>
+</script>
 <script src="{{ static_url('js/node.js') }}"></script>
 {% end %}
 {% block node_id_param %}
@@ -69,20 +133,22 @@
     {% end %}
   </div>
 </div>
-<div class="organ topic-list">
-  <div class="nav-wrap">
-    <ul class="nav clearfix">
-      <li {% if category == "all" %}class="on"{% end %}><a href="{{ node.url }}">主题列表</a></li>
-      <li {% if category == "latest" %}class="on"{% end %}><a href="{{ node.url }}/latest">最新</a></li>
-      <li {% if category == "desert" %}class="on"{% end %}><a href="{{ node.url }}/desert">荒漠</a></li>
-      <li {% if category == "hot" %}class="on"{% end %}><a href="{{ node.url }}/hot">热门</a></li>
-      <li {% if category == "dispute" %}class="on"{% end %}><a href="{{ node.url }}/dispute">争议</a></li>
-    </ul>
-    <div class="nav-bottom">
-      <div class="nav-bottom-span"></div>
+<div id="pjax-content">
+  <div class="organ topic-list">
+    <div class="nav-wrap">
+      <ul class="nav clearfix">
+        <li {% if category == "all" %}class="on"{% end %}><a href="{{ node.url }}">主题列表</a></li>
+        <li {% if category == "latest" %}class="on"{% end %}><a href="{{ node.url }}/latest">最新</a></li>
+        <li {% if category == "desert" %}class="on"{% end %}><a href="{{ node.url }}/desert">荒漠</a></li>
+        <li {% if category == "hot" %}class="on"{% end %}><a href="{{ node.url }}/hot">热门</a></li>
+        <li {% if category == "dispute" %}class="on"{% end %}><a href="{{ node.url }}/dispute">争议</a></li>
+      </ul>
+      <div class="nav-bottom">
+        <div class="nav-bottom-span"></div>
+      </div>
     </div>
+    {{ modules.TopicList(topics) }}
   </div>
-  {{ modules.TopicList(topics) }}
+  {{ modules.Page(page=page, page_count=page_count, url=url) }}
 </div>
-{{ modules.Page(page=page, page_count=page_count, url=url) }}
 {% end %}
