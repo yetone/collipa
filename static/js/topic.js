@@ -40,6 +40,18 @@ $(function() {
       return;
     }
 
+    if ($this.parent('li').hasClass('more')) {
+      var $more = $this.parents('.more'),
+          $more_list = $more.find('.menu-list');
+
+      if ($more_list.hasClass('open')) {
+        $more_list.removeClass('open');
+      } else {
+        $more_list.addClass('open');
+      }
+      return;
+    }
+
     $this.addClass('disabled');
     $.ajax({
       url: url,
@@ -133,23 +145,6 @@ $(function() {
         SyntaxHighlighter.all();
       }
     });
-  });
-
-  $D.on('click', '.more > a', function(e) {
-    e.preventDefault();
-    var $this = $(this),
-        $more = $this.parents('.more'),
-        $more_list = $more.find('.menu-list');
-
-    if ($more_list.hasClass('open')) {
-      $more_list.removeClass('open');
-    } else {
-      $more_list.addClass('open');
-    }
-  });
-  $D.on('click', this, function() {
-    var $d = $('.open.menu-list');
-    $d.removeClass('open');
   });
 
   $D.on('click', '.edui-for-myinsertimage', function(e) {

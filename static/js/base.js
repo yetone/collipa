@@ -455,11 +455,6 @@ $(function() {
   };
   notifier = new Notifier();
 
-  $D.click(function() {
-    var $d = $('.open.menu-list');
-    $d.removeClass('open');
-  });
-
   var cslMessage = "             ___    ___                            \n"+
                    "            /\\_ \\  /\\_ \\    __                     \n"+
                    "  ___    ___\\//\\ \\ \\//\\ \\  /\\_\\  _____      __     \n"+
