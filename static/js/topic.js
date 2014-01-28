@@ -14,6 +14,7 @@ $(function() {
           }
         }, 300);
       }
+      SyntaxHighlighter.all();
     }
   });
   $D.on('mouseover', '.item', function() {
