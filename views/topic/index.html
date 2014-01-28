@@ -79,8 +79,8 @@
   <script type="text/javascript">
     SyntaxHighlighter.all();
   </script>
+  {{ modules.Page(page=page, page_count=page_count, url=url) }}
 </div>
-{{ modules.Page(page=page, page_count=page_count, url=url) }}
 {% if current_user %}
 <div class="organ reply-create">
   <div class="organ-head no-border">

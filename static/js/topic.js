@@ -1,5 +1,5 @@
 $(function() {
-  $('.nav-wrap li a').pjax({
+  $('.nav-wrap li a, .pagination li a').pjax({
     container: '.reply-list',
     part: '.reply-list',
     success: function() {
