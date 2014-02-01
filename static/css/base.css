@@ -1633,7 +1633,7 @@ ul.users li a div.username span {
 }
 
 .mention-area .user-list a {
-  padding: 6px 8px;
+  padding: 8px 10px;
   display: block;
   cursor: pointer;
 }
@@ -1648,7 +1648,7 @@ ul.users li a div.username span {
 
 .mention-area .user-list .username {
   float: left;
-  margin-left: 5px;
+  margin-left: 8px;
   font-size: 14px;
   color: #333;
 }
