@@ -199,8 +199,10 @@ var get_cookie = function(name) {
     }
   },
   ueReady = function() {
-    var ifa = window.frames['ueditor_0'],
-        $ifa = $(ifa.document);
+    var _ifa = window.frames['ueditor_0'],
+        ifa = _ifa.document ? _ifa : _ifa.contentDocument,
+        $ifa = _ifa.document ? $(_ifa.document) : $(_ifa.contentDocument),
+        event = _ifa.document ? 'keyup' : 'keypress';
     // Ctrl + Enter commit
     $ifa.keypress(function(e) {
       if (e.ctrlKey && e.which == 13 || e.which == 10) {
@@ -210,14 +212,26 @@ var get_cookie = function(name) {
 
     // mention
     (function() {
-      var word;
+      var word,
+          sof,
+          url,
+          count,
+          $cur,
+          idx,
+          $body,
+          $mark,
+          $area,
+          _init = function() {
+            $body = $ifa.find('body');
+            $mark = $body.find('fuck');
+            $area = $('#mention-area');
+          };
 
       $ifa.on('keydown', function(e) {
-        var $area = $('body').find('#mention-area');
+        _init();
         if ($area.length) {
-          var count = $area.find('li').length,
-              $cur = $area.find('.cur'),
-              idx;
+          count = $area.find('li').length;
+          $cur = $area.find('.cur');
 
           // if enter
           if (e.keyCode === 13) {
@@ -258,18 +272,38 @@ var get_cookie = function(name) {
           }
         }
       });
-      $ifa.on('keyup', function(e) {
+
+      $ifa.on('keypress', function(e) {
+        _init();
         var $this = $(this),
-            $body = $this.find('body'),
-            $mark = $body.find('fuck'),
-            $area = $('#mention-area'),
-            of = ifa.getSelection().extentOffset,
+            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset,
             cp = ifa.getSelection().getRangeAt(0),
             ctt = cp.createContextualFragment('<fuck></fuck>'),
-            ctt,
             top,
             left;
 
+        // if input @
+        if (e.charCode === 64) {
+          $mark.length && $mark.remove();
+          cp.insertNode(ctt);
+          $mark = $body.find('fuck');
+          top = $mark.position().top;
+          left = $mark.position().left;
+          $area.length && $area.remove();
+          $area = $('<div id="mention-area" class="mention-area"></div>');
+          $area.css({
+            top: top + $('#ueditor_0').offset().top,
+            left: left + $('#ueditor_0').offset().left
+          });
+          $('body').append($area);
+          $body.data('offset', of);
+        }
+      });
+
+      $ifa.on(event, function(e) {
+        _init();
+        var $this = $(this),
+            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
 
         if ($area.length) {
           // if backspace
@@ -286,30 +320,17 @@ var get_cookie = function(name) {
           }
         }
 
-        // if input @
-        if (e.shiftKey && e.keyCode === 50) {
-          $mark.length && $mark.remove();
-          cp.insertNode(ctt);
-          $mark = $body.find('fuck');
-          top = $mark.position().top;
-          left = $mark.position().left;
-          $area.length && $area.remove();
-          $area = $('<div id="mention-area" class="mention-area"></div>');
-          $area.css({
-            top: top + $('#ueditor_0').offset().top,
-            left: left + $('#ueditor_0').offset().left
-          });
-          $('body').append($area);
-          $body.data('offset', of);
-        }
-
         // if have mention area
-        if ($area.length && e.keyCode !== 13 && e.keyCode !== 38 && e.keyCode !== 40) {
-          var sof = $body.data('offset'),
-              url = '/api/mention/?word=';
+        if ($area.length && [13, 38, 40].indexOf(e.keyCode) === -1) {
+          sof = $body.data('offset');
+          url = '/api/mention/?word=';
           word = $.trim($mark.parent().text().substr(sof));
           if (word.indexOf('@') !== -1) {
-            word = $.trim($mark.parent().text().substr(sof + $body.data('from') - 1));
+            if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
+              word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
+            } else {
+              word = $.trim($mark.parent().text().substr(sof + 1));
+            }
           }
 
           if (word && $mark.length) {
@@ -325,7 +346,7 @@ var get_cookie = function(name) {
                 var source = $('#mention-template').html(),
                     render = template.compile(source),
                     html = render(data);
-                $area = $('body').find('#mention-area');
+                $area = $('#mention-area');
                 $area.html(html).show();
               }
             })
@@ -333,7 +354,7 @@ var get_cookie = function(name) {
         }
 
         // if no @
-        $mark.length || $body.find('#mention-area').hide();
+        $mark.length || $area.hide();
       });
 
       $D.on('mouseover', '.mention-area .user-list a', function() {
@@ -343,15 +364,13 @@ var get_cookie = function(name) {
       });
 
       $D.on('click', '.mention-area .user-list a', function(e) {
+        _init();
         e.preventDefault();
         var $this = $(this),
             url = $this.attr('data-url'),
             username = $this.find('.username').attr('data-username'),
             nickname = $this.find('.nickname').html(),
             content = '&nbsp;<a class="mention" data-username="' + username + '" href="' + url + '">' + '@' + nickname + '</a>&nbsp;',
-            $area = $('#mention-area'),
-            $body = $ifa.find('body'),
-            $mark = $body.find('fuck'),
             html = $mark.parent().html().replace('@' + word, content);
 
         $mark.parent().html(html);
