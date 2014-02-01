@@ -204,7 +204,7 @@ var get_cookie = function(name) {
     // Ctrl + Enter commit
     $ifa.keypress(function(e) {
       if (e.ctrlKey && e.which == 13 || e.which == 10) {
-        $(this).parents('form').find('.fm-action button').click();
+        $('#ueditor_0').parents('form').find('button[type=submit]').click();
       }
     });
 
