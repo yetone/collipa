@@ -54,11 +54,9 @@ $(function () {
       }
     }
   });
+
   ue.addListener('ready', function() {
-    $('#ueditor_0').contents().find('body').keypress(function(e) {
-      if (e.ctrlKey && e.which == 13 || e.which == 10) {
-        $('.topic-create button').click();
-      }
-    });
+    ueReady();
   });
+
 });

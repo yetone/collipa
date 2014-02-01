@@ -108,6 +108,26 @@
       {% end %}
     </script>
   {% end %}
+  <script id="mention-template" type="text/template">
+    <ul class="user-list">
+      <% for (var i=0, l=user_list.length; i < l; i++) { %>
+      <% user = user_list[i] %>
+      <li>
+        <a class="clearfix" data-url="<%= user.url %>" href="javascript:;">
+          <img class="avatar" src="<%= user.avatar %>" />
+          <span class="username" data-username="<%= user.name %>">
+            <span class="nickname">
+              <%= user.nickname %>
+            </span>
+            <span class="truename">
+              @<%= user.name %>
+            </span>
+          </span>
+        </a>
+      </li>
+      <% } %>
+    </ul>
+  </script>
   <span id="script-block">
   {% block script %}{% end %}
   </span>
