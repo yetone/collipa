@@ -1673,4 +1673,5 @@ ul.users li a div.username span {
   border: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 999;
   background-color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
