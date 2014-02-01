@@ -46,6 +46,7 @@ routers = [
     (r"/api/getusername[/]*", api.GetUserNameHandler),
     (r"/api/websocket[/]*", api.WebSocketHandler),
     (r"/api/messagewebsocket[/]*", user.MessageCreateHandler),
+    (r"/api/mention[/]*", api.MentionHandler),
 
     (r"/502[/]*", site.PageErrorHandler),
     (r"/302[/]*", site.OtherPageErrorHandler),

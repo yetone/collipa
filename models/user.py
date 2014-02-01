@@ -10,7 +10,7 @@ from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 from helpers import format_date2, strip_tags
-from extensions import mc, rd
+from extensions import mc, rd, memcached
 
 config = config.rec()
 
@@ -625,6 +625,14 @@ class User(db.Entity, SessionMixin, ModelMixin):
                     config.user_paged]
         else:
             return users
+
+    @staticmethod
+    def mention(word):
+        @memcached('word_' + str(word), 3600)
+        def _func():
+            return word and select(rv for rv in User if (word in rv.name or word in rv.nickname))[:8] or []
+
+        return _func()
 
     def get_followers(self, page=1):
         follower_ids = select(rv.who_id for rv in m.Follow if rv.whom_id ==
