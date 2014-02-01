@@ -95,9 +95,4 @@ $(function () {
       }
     }
   });
-
-  ue.addListener('ready', function() {
-    ueReady();
-  });
-
 });
