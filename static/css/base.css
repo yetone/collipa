@@ -1613,3 +1613,63 @@ ul.users li a div.username span {
   100% {  transform: rotate(359deg); }
   }
 
+/* mention */
+.mention-area .user-list {
+  margin: 0;
+  padding: 0;
+  padding-left: 0 !important;
+  width: 100%;
+}
+
+.mention-area .user-list li {
+}
+
+.mention-area .user-list .cur {
+  background-color: #2271a9;
+}
+
+.mention-area .user-list .cur span {
+  color: #fff;
+}
+
+.mention-area .user-list a {
+  padding: 6px 8px;
+  display: block;
+  cursor: pointer;
+}
+
+.mention-area .user-list .avatar {
+  float: left;
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.mention-area .user-list .username {
+  float: left;
+  margin-left: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.mention-area .user-list .nickname {
+  font-weight: bold;
+}
+
+.mention-area .user-list .truename {
+  margin-left: 3px;
+  font-size: 13px;
+  color: #666;
+}
+
+.mention-area {
+  display: none;
+  position: absolute;
+  top: -999px;
+  left: -999px;
+  margin-top: 20px;
+  margin-left: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
