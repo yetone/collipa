@@ -1679,3 +1679,69 @@ ul.users li a div.username span {
   background-color: #fff;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
+
+#request {
+  width: 360px;
+  text-align: center;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  background-color: #fff;
+  z-index: 999;
+}
+
+#request .request-content {
+  padding: 30px 20px 0 20px;
+}
+
+#request .request-action {
+  padding: 30px 20px;
+}
+
+.nbtn,
+.nbtn:link,
+.nbtn:visited,
+.nbtn:hover {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.428571429;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 1px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  color: #fff;
+}
+
+.nbtn-p:link,
+.nbtn-p:visited {
+  background-color: #428bca;
+}
+.nbtn-p:active,
+.nbtn-p:hover {
+  background-color: #3276b1;
+}
+
+.nbtn-d:link,
+.nbtn-d:visited {
+  background-color: #d9534f;
+}
+
+.nbtn-d:active,
+.nbtn-d:hover {
+  background-color: #d2322d;
+}
+
+#request .request-cancel,
+#request .request-ok {
+}
+
+#request .request-cancel {
+  margin-left: 20px;
+}
