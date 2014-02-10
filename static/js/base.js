@@ -197,6 +197,188 @@ var get_cookie = function(name) {
     } else {
       $('#noty').addClass('static');
     }
+  },
+  ueReady = function() {
+    var _ifa = window.frames['ueditor_0'],
+        ifa = _ifa.document ? _ifa : _ifa.contentDocument,
+        $ifa = _ifa.document ? $(_ifa.document) : $(_ifa.contentDocument),
+        event = _ifa.document ? 'keyup' : 'keypress';
+    // Ctrl + Enter commit
+    $ifa.keypress(function(e) {
+      if (e.ctrlKey && e.which == 13 || e.which == 10) {
+        $('#ueditor_0').parents('form').find('button[type=submit]').click();
+      }
+    });
+
+    // mention
+    (function() {
+      var word,
+          sof,
+          url,
+          count,
+          $cur,
+          idx,
+          $body,
+          $mark,
+          $area,
+          _init = function() {
+            $body = $ifa.find('body');
+            $mark = $body.find('fuck');
+            $area = $('#mention-area');
+          };
+
+      $ifa.on('keydown', function(e) {
+        _init();
+        if ($area.length) {
+          count = $area.find('li').length;
+          $cur = $area.find('.cur');
+
+          // if enter
+          if (e.keyCode === 13) {
+            $cur.length && $cur.trigger('click') && e.preventDefault();
+            return;
+          }
+
+          // if up or down
+          if (e.keyCode === 38 && count > 0) {
+            if ($cur.length) {
+              idx = $area.find('li').index($cur.parent('li'));
+              $cur.removeClass('cur');
+              if (idx === 0) {
+                $area.find('li').eq(count - 1).children('a').addClass('cur');
+              } else {
+                $area.find('li').eq(idx - 1).children('a').addClass('cur');
+              }
+            } else {
+              $area.find('li').eq(count - 1).children('a').addClass('cur');
+            }
+            e.preventDefault();
+            return;
+          }
+          if (e.keyCode === 40 && count > 0) {
+            if ($cur.length) {
+              idx = $area.find('li').index($cur.parent('li'));
+              $cur.removeClass('cur');
+              if (idx === count - 1) {
+                $area.find('li').eq(0).children('a').addClass('cur');
+              } else {
+                $area.find('li').eq(idx + 1).children('a').addClass('cur');
+              }
+            } else {
+              $area.find('li').eq(0).children('a').addClass('cur');
+            }
+            e.preventDefault();
+            return;
+          }
+        }
+      });
+
+      $ifa.on('keypress', function(e) {
+        _init();
+        var $this = $(this),
+            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset,
+            cp = ifa.getSelection().getRangeAt(0),
+            ctt = cp.createContextualFragment('<fuck></fuck>'),
+            top,
+            left;
+
+        // if input @
+        if (e.charCode === 64) {
+          $mark.length && $mark.remove();
+          cp.insertNode(ctt);
+          $mark = $body.find('fuck');
+          top = $mark.position().top;
+          left = $mark.position().left;
+          $area.length && $area.remove();
+          $area = $('<div id="mention-area" class="mention-area"></div>');
+          $area.css({
+            top: top + $('#ueditor_0').offset().top,
+            left: left + $('#ueditor_0').offset().left
+          });
+          $('body').append($area);
+          $body.data('offset', of);
+        }
+      });
+
+      $ifa.on(event, function(e) {
+        _init();
+        var $this = $(this),
+            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
+
+        if ($area.length) {
+          // if backspace
+          if (e.keyCode === 8 || e.keyCode === 46) {
+            if (of + 1 == $body.data('offset')) {
+              $mark.length && $mark.remove();
+              $area.remove();
+            }
+          }
+          if (e.keyCode === 8) {
+            if (of == $body.data('offset')) {
+              $area.hide();
+            }
+          }
+        }
+
+        // if have mention area
+        if ($area.length && [13, 38, 40].indexOf(e.keyCode) === -1) {
+          sof = $body.data('offset');
+          url = '/api/mention/?word=';
+          word = $.trim($mark.parent().text().substr(sof));
+          if (word.indexOf('@') !== -1) {
+            if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
+              word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
+            } else {
+              word = $.trim($mark.parent().text().substr(sof + 1));
+            }
+          }
+
+          if (word && $mark.length) {
+            $.ajax({
+              url: url + word,
+              type: 'GET',
+              dataType: 'json',
+              success: function(data) {
+                if (data.status !== 'success') {
+                  noty(data);
+                  return;
+                }
+                var source = $('#mention-template').html(),
+                    render = template.compile(source),
+                    html = render(data);
+                $area = $('#mention-area');
+                $area.html(html).show();
+              }
+            })
+          }
+        }
+
+        // if no @
+        $mark.length || $area.hide();
+      });
+
+      $D.on('mouseover', '.mention-area .user-list a', function() {
+        var $this = $(this);
+        $this.parent().siblings().find('a').removeClass('cur');
+        $this.addClass('cur');
+      });
+
+      $D.on('click', '.mention-area .user-list a', function(e) {
+        _init();
+        e.preventDefault();
+        var $this = $(this),
+            url = $this.attr('data-url'),
+            username = $this.find('.username').attr('data-username'),
+            nickname = $this.find('.nickname').html(),
+            content = '&nbsp;<a class="mention" data-username="' + username + '" href="' + url + '">' + '@' + nickname + '</a>&nbsp;',
+            html = $mark.parent().html().replace('@' + word, content);
+
+        $mark.parent().html(html);
+        $body.data('from', $body.find('fuck').parent().text().length);
+        $area.length && $area.remove();
+        $mark.length && $mark.remove();
+      });
+    })();
   };
 
 $(function() {
@@ -454,11 +636,6 @@ $(function() {
     }
   };
   notifier = new Notifier();
-
-  $D.click(function() {
-    var $d = $('.open.menu-list');
-    $d.removeClass('open');
-  });
 
   var cslMessage = "             ___    ___                            \n"+
                    "            /\\_ \\  /\\_ \\    __                     \n"+

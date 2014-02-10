@@ -20,6 +20,19 @@ def md(text):
             misaka.EXT_AUTOLINK, render_flags=misaka.HTML_SKIP_HTML)
 '''
 
+
+def memcached(key, limit):
+    def wrap(func):
+        def get_value():
+            value = mc.get(key)
+            if not value:
+                value = func()
+                mc.set(key, value, limit)
+            return value
+        return get_value
+    return wrap
+
+
 def img_convert(text):
     img_url = ur'http[s]:\/\/[^\s\"]*\.(jpg|jpeg|png|bmp|gif)'
     for match in re.finditer(img_url, text):
@@ -27,6 +40,7 @@ def img_convert(text):
         img_tag = '![](%s)' % url
         text = text.replace(url, img_tag)
     return text
+
 
 def pk(name, value=None):
     if value:

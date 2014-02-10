@@ -35,14 +35,6 @@ $(function() {
     }
   });
 
-  ue.addListener('ready', function() {
-    $('#ueditor_0').contents().find('body').keypress(function(e) {
-      if (e.ctrlKey && e.which == 13 || e.which == 10) {
-        $('.reply-create button').click();
-      }
-    });
-  });
-
   $D.on('click', '.reply-create button', function(e) {
     e.preventDefault();
     var $this = $(this),
@@ -60,4 +52,9 @@ $(function() {
       }
     });
   });
+
+  ue.addListener('ready', function() {
+    ueReady();
+  });
+
 });

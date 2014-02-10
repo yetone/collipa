@@ -1,5 +1,19 @@
 /*可以在这里添加你自己的css*/
 
+.clearfix {
+  *zoom: 1;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both;
+}
 a {
   color: rgb(99, 99, 99);
   text-decoration: auto;
@@ -7,6 +21,7 @@ a {
 
 body {
   font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei",微软雅黑 !important;
+  font-size: 14px;
 }
 
 a.mention {
