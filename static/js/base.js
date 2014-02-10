@@ -1,8 +1,8 @@
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
-  return "You are my love."
-}
+  return "You are my love.";
+};
 
 var love = function() {
   /*
@@ -179,14 +179,14 @@ var get_cookie = function(name) {
     var noty_div;
     if (!data) {
       noty_div =
-        '<div id="noty" class="info">'
-      +   "您操作过快，服务器未响应"
-      + '</div>';
+        '<div id="noty" class="info">' +
+          "您操作过快，服务器未响应" +
+        '</div>';
     } else if (data.status) {
       noty_div =
-        '<div id="noty" class="' + data.status + '">'
-      +   data.message
-      + '</div>';
+        '<div id="noty" class="' + data.status + '">' +
+          data.message +
+        '</div>';
     }
 
     $('#noty').remove();
@@ -197,6 +197,39 @@ var get_cookie = function(name) {
     } else {
       $('#noty').addClass('static');
     }
+  },
+  request = function(opt) {
+    var $old = $('#request'),
+        $request = $('<div id="request"><div class="request-content"></div><div class="request-action"><a href="javascript:;" class="request-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="request-cancel nbtn nbtn-d">取消</a></div></div>'),
+        cbk = function() {
+          $('#request').animate({opacity: 0}, 500, function() {
+            $(this).remove();
+          });
+        };
+    $old.remove();
+    $('body').append($request);
+    $('#request .request-content').html(opt.content);
+    popup($('#request'), 'fixed');
+    $D.on('click', '#request .request-ok', function(e) {
+      e.preventDefault();
+      if (opt.ok) {
+        opt.ok({
+          cbk: cbk
+        });
+      } else {
+        cbk();
+      }
+    });
+    $D.on('click', '#request .request-cancel', function(e) {
+      e.preventDefault();
+      if (opt.cancel) {
+        opt.cancel({
+          cbk: cbk
+        });
+      } else {
+        cbk();
+      }
+    });
   },
   ueReady = function() {
     var _ifa = window.frames['ueditor_0'],
@@ -550,6 +583,46 @@ $(function() {
             }
           });
           */
+    },
+    serializeObject: function(opt) {
+      var o = {},
+          a = this.serializeArray();
+      $.each(a, function() {
+        if (o[this.name] !== undefined) {
+          if (!o[this.name].push) {
+            o[this.name] = [o[this.name]];
+          }
+          o[this.name].push(this.value || '');
+        } else {
+          o[this.name] = this.value || '';
+        }
+      });
+      return o;
+    },
+    mySubmit: function(opt) {
+      var self = this;
+      opt = $.extend({
+        url: self.attr('action'),
+        type: self.attr('method'),
+        dataType: 'json'
+      }, opt);
+
+      opt.data = (opt.data ? $.extend(this.serializeObject(), opt.data) : this.serializeObject());
+
+      opt.before && opt.before();
+
+      $.ajax({
+        url: opt.url + (opt.url.indexOf('?') === -1 ? '?' : '&') + '_xsrf=' + get_cookie('_xsrf'),
+        type: opt.type,
+        data: opt.data,
+        dataType: opt.dataType,
+        success: function(jsn) {
+          opt.success && opt.success(jsn);
+        },
+        error: function(jsn) {
+          opt.error && opt.error(jsn);
+        }
+      });
     }
   });
   var shape_resize = function(data) {

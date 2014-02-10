@@ -52,6 +52,11 @@
             <a title="修改" href="{{ reply.url }}/edit"><i class="icon-pencil"></i> 修改</a>
           </li>
           {% end %}
+          {% if current_user.is_admin %}
+          <li class="remove">
+            <a title="删除" href="{{ reply.url }}"><i class="icon-trash"></i> 删除</a>
+          </li>
+          {% end %}
           {% if current_user != reply.author %}
             {% if current_user.is_thanked(reply=reply) %}
             <li class="thank pressed">

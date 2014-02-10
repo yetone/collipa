@@ -92,6 +92,9 @@
         <a id="online-count" href="/users?category=online">0 人在线</a>
       </div>
     </div>
+    <div class="hidden">
+      {% block hidden %}{% end %}
+    </div>
   </body>
   <script src="{{ static_url('js/jquery.js') }}"></script>
   <script src="{{ static_url('js/ext/template.min.js') }}"></script>

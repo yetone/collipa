@@ -53,6 +53,10 @@ $(function() {
       return;
     }
 
+    if ($this.parent('li').hasClass('remove')) {
+      return;
+    }
+
     $this.addClass('disabled');
     $.ajax({
       url: url,
@@ -182,6 +186,34 @@ $(function() {
       }
     }
   });
+
+  // 删除操作
+  (function() {
+    var $remove = $('.remove a');
+    $D.on('click', '.remove a', function(e) {
+      e.preventDefault();
+      var $this = $(this);
+      request({
+        content: '确定删除？',
+        ok: function(obj) {
+          $('#remove-form').mySubmit({
+            url: $this.attr('href'),
+            success: function(jsn) {
+              noty(jsn);
+              obj.cbk();
+              if ($this.parents('.reply-list').length) {
+                $this.parents('li.item').animate({opacity: 0}, 500, function() {
+                  $(this).remove();
+                });
+              } else {
+                // window.location.href = '/';
+              }
+            }
+          });
+        }
+      });
+    });
+  })();
 
   ue.addListener('ready', function() {
     ueReady();

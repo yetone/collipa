@@ -23,6 +23,11 @@
 <link rel="stylesheet" tyle="text/css" href="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCoreDefault.css') }}"/>
 <script src="{{ static_url('js/ext/ueditor/third-party/SyntaxHighlighter/shCore.js') }}"></script>
 {% end %}
+{% block hidden %}
+<form id="remove-form" method="delete">
+  {{ xsrf_form_html() }}
+</form>
+{% end %}
 {% block script %}
 <script id="reply-template" type="text/template">
   <li id="show-<%= id %>" data-id="<%= id %>" class="item clearfix">
