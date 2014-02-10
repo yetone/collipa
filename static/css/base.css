@@ -655,6 +655,9 @@ label {
   min-height: 60px;
   word-wrap: break-word;
 }
+.topic .topic-content img {
+  max-width: 100%;
+}
 .topic .meta {
   margin-top: 10px;
   padding: 6px 30px;
