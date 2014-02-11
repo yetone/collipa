@@ -1043,7 +1043,7 @@ ul.child-nodes li .description {
 }
 
 #layout {
-  z-index: 99;
+  z-index: 10008;
   background-color: white;
   width: 420px;
   padding: 20px;
@@ -1147,7 +1147,7 @@ ul.child-nodes li .description {
   color: white;
   font-weight: bolder;
   background: #eee;
-  z-index: 10003;
+  z-index: 10010;
   word-spacing: 0.2em;
   letter-spacing: 0.2em;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
@@ -1685,7 +1685,7 @@ ul.users li a div.username span {
   text-align: center;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
   background-color: #fff;
-  z-index: 999;
+  z-index: 10008;
 }
 
 #request .request-content {
@@ -1743,5 +1743,14 @@ ul.users li a div.username span {
 }
 
 #request .request-cancel {
-  margin-left: 20px;
+  margin-left: 70px;
+}
+
+#blur-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10006;
+  background-color: #000;
+  opacity: 0.35;
 }

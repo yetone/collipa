@@ -193,7 +193,7 @@ $(function() {
     $D.on('click', '.remove a', function(e) {
       e.preventDefault();
       var $this = $(this);
-      request({
+      $.request({
         content: '确定删除？',
         ok: function(obj) {
           $('#remove-form').mySubmit({

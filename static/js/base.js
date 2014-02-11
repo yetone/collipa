@@ -127,9 +127,7 @@ var get_cookie = function(name) {
   },
 
   popup = function($popdiv, pos) {
-    if (!pos) {
-      pos = 'absolute';
-    }
+    pos = pos || 'absolute';
     var _scrollHeight = $(document).scrollTop(),
         _windowHeight = $(window).height(),
         _windowWidth  = $(window).width(),
@@ -138,9 +136,19 @@ var get_cookie = function(name) {
 
     _popTop = (_windowHeight - _popdivHeight) / 2;
     _popLeft = (_windowWidth - _popdivWidth) / 2;
-    $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': pos});
-    if ($popdiv.width() + 2 >= _windowWidth) {
-      $popdiv.width(_windowWidth * 0.85);
+    if (pos === 'fixed') {
+      $popdiv.css({
+        position: pos,
+        left: '50%',
+        top: '50%',
+        marginTop: -$popdiv.height()/2,
+        marginLeft: -$popdiv.width()/2
+      });
+    } else {
+      $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': pos});
+      if ($popdiv.width() + 2 >= _windowWidth) {
+        $popdiv.width(_windowWidth * 0.85);
+      }
     }
   },
 
@@ -197,39 +205,6 @@ var get_cookie = function(name) {
     } else {
       $('#noty').addClass('static');
     }
-  },
-  request = function(opt) {
-    var $old = $('#request'),
-        $request = $('<div id="request"><div class="request-content"></div><div class="request-action"><a href="javascript:;" class="request-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="request-cancel nbtn nbtn-d">取消</a></div></div>'),
-        cbk = function() {
-          $('#request').animate({opacity: 0}, 500, function() {
-            $(this).remove();
-          });
-        };
-    $old.remove();
-    $('body').append($request);
-    $('#request .request-content').html(opt.content);
-    popup($('#request'), 'fixed');
-    $D.on('click', '#request .request-ok', function(e) {
-      e.preventDefault();
-      if (opt.ok) {
-        opt.ok({
-          cbk: cbk
-        });
-      } else {
-        cbk();
-      }
-    });
-    $D.on('click', '#request .request-cancel', function(e) {
-      e.preventDefault();
-      if (opt.cancel) {
-        opt.cancel({
-          cbk: cbk
-        });
-      } else {
-        cbk();
-      }
-    });
   },
   ueReady = function() {
     var _ifa = window.frames['ueditor_0'],
@@ -418,6 +393,49 @@ var get_cookie = function(name) {
   };
 
 $(function() {
+  $.extend({
+    removeBg: function() {
+      $('#blur-bg').animate({opacity: 0}, 500, function() {
+        $(this).remove();
+      });
+    },
+    request: function(opt) {
+      var oldTop,
+          $old = $('#request'),
+          $request = $('<div id="request"><div class="request-content"></div><div class="request-action"><a href="javascript:;" class="request-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="request-cancel nbtn nbtn-d">取消</a></div></div>'),
+          cbk = function() {
+            $.removeBg();
+            $('#request').animate({opacity: 0}, 500, function() {
+              $(this).remove();
+            });
+          };
+      $old.remove();
+      $('body').append($request);
+      $('#request .request-content').html(opt.content);
+      $request = $('#request');
+      $request.popslide();
+      $D.on('click', '#request .request-ok', function(e) {
+        e.preventDefault();
+        if (opt.ok) {
+          opt.ok({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+      $D.on('click', '#request .request-cancel', function(e) {
+        e.preventDefault();
+        if (opt.cancel) {
+          opt.cancel({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+    }
+  });
   $.fn.extend({
     fix: function() {
       var navSelector = this.selector,
@@ -626,6 +644,42 @@ $(function() {
           opt.error && opt.error(jsn);
         }
       });
+    },
+    popslide: function(opt) {
+      opt = $.extend({
+        type: 'down',
+        hasBg: true
+      }, opt);
+      var oldTop,
+          oldLeft,
+          self = this,
+          $bg = $('<div id="blur-bg"></div>'),
+          addBg = function() {
+            if (opt.hasBg) {
+              $('#blur-bg').remove();
+              $bg.css({width: $W.width(), height: $W.height()});
+              $('body').append($bg);
+            }
+          };
+      self.hide();
+      popup(self, 'fixed');
+      switch (opt.type) {
+        case 'down':
+          oldTop = self.css('top');
+          self.css({top: -self.height()})
+              .show()
+              .animate({top: oldTop}, 300);
+          addBg();
+          break;
+        case 'right':
+          oldLeft = self.css('left');
+          self.css({left: -self.width()})
+              .show()
+              .animate({left: oldLeft}, 300);
+          addBg();
+          break;
+      }
+      return self;
     }
   });
   var shape_resize = function(data) {
@@ -671,6 +725,7 @@ $(function() {
   $D.on('click', '.layout-close', function(e) {
     e.preventDefault();
     $('#layout').fadeOut();
+    $.removeBg();
   });
 
   $D.live('keypress', function(e) {
