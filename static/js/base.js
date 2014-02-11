@@ -359,11 +359,14 @@ var get_cookie = function(name) {
           url = '/api/mention/?word=';
           word = $.trim($mark.parent().text().substr(sof));
           if (word.indexOf('@') !== -1) {
+            /*
             if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
               word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
             } else {
               word = $.trim($mark.parent().text().substr(sof + 1));
             }
+            */
+            word = word.substr(word.lastIndexOf('@') + 1);
           }
 
           if (word && $mark.length) {
@@ -382,7 +385,7 @@ var get_cookie = function(name) {
                 $area = $('#mention-area');
                 $area.html(html).show();
               }
-            })
+            });
           }
         }
 
