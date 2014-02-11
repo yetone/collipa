@@ -19,7 +19,6 @@ routers = [
     (r"/topic/(\d+)[/]*", topic.HomeHandler),
     (r"/topic/(\d+)/history[/]*", topic.HistoryHandler),
     (r"/topic/(\d+)/edit[/]*", topic.EditHandler),
-    (r"/topic/(\d+)/remove[/]*", topic.RemoveHandler),
     (r"/topic/create[/]*", topic.CreateHandler),
 
     (r"/node/create[/]*", node.CreateHandler),
@@ -32,7 +31,6 @@ routers = [
     (r"/reply/create[/]*", reply.CreateHandler),
     (r"/reply/(\d+)[/]*", reply.HomeHandler),
     (r"/reply/(\d+)/edit[/]*", reply.EditHandler),
-    (r"/reply/(\d+)/remove[/]*", reply.RemoveHandler),
     (r"/reply/(\d+)/history[/]*", reply.HistoryHandler),
 
     (r"/image/upload[/]*", image.UploadHandler),

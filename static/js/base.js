@@ -1,8 +1,8 @@
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
-  return "You are my love."
-}
+  return "You are my love.";
+};
 
 var love = function() {
   /*
@@ -127,9 +127,7 @@ var get_cookie = function(name) {
   },
 
   popup = function($popdiv, pos) {
-    if (!pos) {
-      pos = 'absolute';
-    }
+    pos = pos || 'absolute';
     var _scrollHeight = $(document).scrollTop(),
         _windowHeight = $(window).height(),
         _windowWidth  = $(window).width(),
@@ -138,9 +136,19 @@ var get_cookie = function(name) {
 
     _popTop = (_windowHeight - _popdivHeight) / 2;
     _popLeft = (_windowWidth - _popdivWidth) / 2;
-    $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': pos});
-    if ($popdiv.width() + 2 >= _windowWidth) {
-      $popdiv.width(_windowWidth * 0.85);
+    if (pos === 'fixed') {
+      $popdiv.css({
+        position: pos,
+        left: '50%',
+        top: '50%',
+        marginTop: -$popdiv.height()/2,
+        marginLeft: -$popdiv.width()/2
+      });
+    } else {
+      $popdiv.css({'left': _popLeft + 'px', 'top': _popTop + 'px', 'display': 'block', 'position': pos});
+      if ($popdiv.width() + 2 >= _windowWidth) {
+        $popdiv.width(_windowWidth * 0.85);
+      }
     }
   },
 
@@ -179,14 +187,14 @@ var get_cookie = function(name) {
     var noty_div;
     if (!data) {
       noty_div =
-        '<div id="noty" class="info">'
-      +   "您操作过快，服务器未响应"
-      + '</div>';
+        '<div id="noty" class="info">' +
+          "您操作过快，服务器未响应" +
+        '</div>';
     } else if (data.status) {
       noty_div =
-        '<div id="noty" class="' + data.status + '">'
-      +   data.message
-      + '</div>';
+        '<div id="noty" class="' + data.status + '">' +
+          data.message +
+        '</div>';
     }
 
     $('#noty').remove();
@@ -326,11 +334,14 @@ var get_cookie = function(name) {
           url = '/api/mention/?word=';
           word = $.trim($mark.parent().text().substr(sof));
           if (word.indexOf('@') !== -1) {
+            /*
             if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
               word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
             } else {
               word = $.trim($mark.parent().text().substr(sof + 1));
             }
+            */
+            word = word.substr(word.lastIndexOf('@') + 1);
           }
 
           if (word && $mark.length) {
@@ -349,7 +360,7 @@ var get_cookie = function(name) {
                 $area = $('#mention-area');
                 $area.html(html).show();
               }
-            })
+            });
           }
         }
 
@@ -382,6 +393,49 @@ var get_cookie = function(name) {
   };
 
 $(function() {
+  $.extend({
+    removeBg: function() {
+      $('#blur-bg').animate({opacity: 0}, 500, function() {
+        $(this).remove();
+      });
+    },
+    request: function(opt) {
+      var oldTop,
+          $old = $('#request'),
+          $request = $('<div id="request"><div class="request-content"></div><div class="request-action"><a href="javascript:;" class="request-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="request-cancel nbtn nbtn-d">取消</a></div></div>'),
+          cbk = function() {
+            $.removeBg();
+            $('#request').animate({opacity: 0}, 500, function() {
+              $(this).remove();
+            });
+          };
+      $old.remove();
+      $('body').append($request);
+      $('#request .request-content').html(opt.content);
+      $request = $('#request');
+      $request.popslide();
+      $D.on('click', '#request .request-ok', function(e) {
+        e.preventDefault();
+        if (opt.ok) {
+          opt.ok({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+      $D.on('click', '#request .request-cancel', function(e) {
+        e.preventDefault();
+        if (opt.cancel) {
+          opt.cancel({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+    }
+  });
   $.fn.extend({
     fix: function() {
       var navSelector = this.selector,
@@ -550,6 +604,82 @@ $(function() {
             }
           });
           */
+    },
+    serializeObject: function(opt) {
+      var o = {},
+          a = this.serializeArray();
+      $.each(a, function() {
+        if (o[this.name] !== undefined) {
+          if (!o[this.name].push) {
+            o[this.name] = [o[this.name]];
+          }
+          o[this.name].push(this.value || '');
+        } else {
+          o[this.name] = this.value || '';
+        }
+      });
+      return o;
+    },
+    mySubmit: function(opt) {
+      var self = this;
+      opt = $.extend({
+        url: self.attr('action'),
+        type: self.attr('method'),
+        dataType: 'json'
+      }, opt);
+
+      opt.data = (opt.data ? $.extend(this.serializeObject(), opt.data) : this.serializeObject());
+
+      opt.before && opt.before();
+
+      $.ajax({
+        url: opt.url + (opt.url.indexOf('?') === -1 ? '?' : '&') + '_xsrf=' + get_cookie('_xsrf'),
+        type: opt.type,
+        data: opt.data,
+        dataType: opt.dataType,
+        success: function(jsn) {
+          opt.success && opt.success(jsn);
+        },
+        error: function(jsn) {
+          opt.error && opt.error(jsn);
+        }
+      });
+    },
+    popslide: function(opt) {
+      opt = $.extend({
+        type: 'down',
+        hasBg: true
+      }, opt);
+      var oldTop,
+          oldLeft,
+          self = this,
+          $bg = $('<div id="blur-bg"></div>'),
+          addBg = function() {
+            if (opt.hasBg) {
+              $('#blur-bg').remove();
+              $bg.css({width: $W.width(), height: $W.height()});
+              $('body').append($bg);
+            }
+          };
+      self.hide();
+      popup(self, 'fixed');
+      switch (opt.type) {
+        case 'down':
+          oldTop = self.css('top');
+          self.css({top: -self.height()})
+              .show()
+              .animate({top: oldTop}, 300);
+          addBg();
+          break;
+        case 'right':
+          oldLeft = self.css('left');
+          self.css({left: -self.width()})
+              .show()
+              .animate({left: oldLeft}, 300);
+          addBg();
+          break;
+      }
+      return self;
     }
   });
   var shape_resize = function(data) {
@@ -595,6 +725,7 @@ $(function() {
   $D.on('click', '.layout-close', function(e) {
     e.preventDefault();
     $('#layout').fadeOut();
+    $.removeBg();
   });
 
   $D.live('keypress', function(e) {

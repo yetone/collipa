@@ -75,14 +75,17 @@ $(function() {
 
   $D.on('click', '.profile-action .mail', function(e) {
     e.preventDefault();
-    var action = $(this).attr('href'),
+    var $this = $(this),
+        $layout = $('#layout'),
+        action = $this.attr('href'),
         source = $('#action-template').html(),
         render = template.compile(source),
         html = render({action: action});
 
-    $('#layout').remove();
+    $layout.remove();
     $('body').append(html);
-    popup($('#layout'), 'fixed');
+    $layout = $('#layout');
+    $layout.popslide();
     $('#layout.message textarea').focus();
   });
 
@@ -101,6 +104,7 @@ $(function() {
       $this.removeAttr('disabled').removeClass('onloading').html("发送");
       if (data.status === 'success') {
         $layout.fadeOut();
+        $.removeBg();
         noty(data);
 
         $textarea.val('');
