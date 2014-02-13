@@ -398,7 +398,7 @@ $(function() {
       var $bg = $('<div id="blur-bg"></div>'),
           oldOpacity;
       $('#blur-bg').remove();
-      $bg.css({width: $W.width(), height: $W.height(), display: 'none'});
+      $bg.css({display: 'none'});
       $('body').append($bg);
       oldOpacity = $('#blur-bg').css('opacity');
       $bg.css({

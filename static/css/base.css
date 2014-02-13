@@ -1750,6 +1750,8 @@ ul.users li a div.username span {
   position: fixed;
   top: 0;
   left: 0;
+  bottom: 0;
+  right: 0;
   z-index: 10006;
   background-color: #000;
   opacity: 0.35;
