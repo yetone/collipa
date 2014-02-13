@@ -13,24 +13,6 @@ from libs import ghdiff
 config = config.rec()
 
 class TopicForm(BaseForm):
-    node_name = SelectField(
-        '节点', [
-            validators.Required(),
-        ],
-    )
-    title = TextField(
-        '标题', [
-            validators.Required(),
-            validators.Length(min=4, max=100),
-        ],
-    )
-    content = TextAreaField(
-        '内容', [
-            validators.Required(),
-            validators.Length(min=3, max=1000000),
-        ],
-    )
-
     def validate_content(self, field):
         """ 为了照顾一图流
         """
@@ -56,32 +38,30 @@ class TopicForm(BaseForm):
                     result = {'status': 'error', 'message': prev}
         return result
 
-    @staticmethod
-    def init(choices, selected, args=None):
-        node_name = SelectField(
+    @classmethod
+    def init(cls, choices, selected, args=None):
+        cls.node_name = SelectField(
             '节点', [
                 validators.Required(),
             ],
             choices=choices,
         )
-        title = TextField(
+        cls.title = TextField(
             '标题', [
                 validators.Required(),
                 validators.Length(min=4, max=100),
             ],
         )
-        content = TextAreaField(
+        cls.content = TextAreaField(
             '内容', [
                 validators.Required(),
+                validators.Length(min=3, max=1000000),
             ],
         )
-        TopicForm.node_name = node_name
-        TopicForm.title = title
-        TopicForm.content = content
         if args:
-            tf = TopicForm(args)
+            tf = cls(args)
         else:
-            tf = TopicForm()
+            tf = cls()
         tf.node_name.data = selected
         return tf
 

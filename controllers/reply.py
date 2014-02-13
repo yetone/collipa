@@ -8,7 +8,6 @@ from pony.orm import *
 
 from models import Topic, Reply
 from forms import ReplyForm
-from helpers import put_notifier
 from .user import EmailMixin
 
 config = config.rec()
@@ -100,8 +99,7 @@ class CreateHandler(BaseHandler):
         form = ReplyForm(self.request.arguments)
         if form.validate():
             reply = form.save(user=user, topic=topic)
-            if 'class="mention"' in reply.content:
-                put_notifier(reply)
+            reply.put_notifier()
             result = {'status': 'success', 'message': '评论创建成功',
                     'content': reply.content, 'name': reply.author.name,
                     'nickname': reply.author.nickname, 'author_avatar':
@@ -145,6 +143,7 @@ class EditHandler(BaseHandler):
         form = ReplyForm(self.request.arguments)
         if form.validate():
             reply = form.save(user=user, topic=reply.topic, reply=reply)
+            reply.put_notifier()
             result = {'status': 'success', 'message': '评论修改成功',
                     'reply_url': reply.url}
             if self.is_ajax:

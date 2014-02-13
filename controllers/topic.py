@@ -144,6 +144,7 @@ class CreateHandler(BaseHandler):
         form = TopicForm(self.request.arguments)
         if form.validate():
             topic = form.save(user=user)
+            topic.put_notifier()
             result = {'status': 'success', 'message': '主题创建成功',
                     'topic_url': topic.url}
             if self.is_ajax:
@@ -184,6 +185,7 @@ class EditHandler(BaseHandler):
         form = TopicForm(self.request.arguments)
         if form.validate():
             topic = form.save(user=user, topic=topic)
+            topic.put_notifier()
             result = {'status': 'success', 'message': '主题修改成功',
                     'topic_url': topic.url}
             if self.is_ajax:

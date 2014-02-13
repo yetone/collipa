@@ -5,6 +5,7 @@ from pony.orm import *
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
+from helpers import get_mention_names
 
 config = config.rec()
 
@@ -192,3 +193,14 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
     @property
     def history_count(self):
         return count(self.histories)
+
+    def put_notifier(self):
+        if 'class="mention"' not in self.content:
+            return self
+        names = get_mention_names(self.content)
+        for name in names:
+            user = m.User.get(name=name)
+            if user and user.id != self.topic.user_id:
+                m.Notification(reply_id=self.id, receiver_id=user.id,
+                        role='mention').save()
+        return self

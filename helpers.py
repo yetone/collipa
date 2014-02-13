@@ -128,19 +128,13 @@ def username(data):
     pattern = r'^[a-zA-Z0-9]+$'
     return regex(pattern, data)
 
-def put_notifier(reply):
+def get_mention_names(content):
     up = UsernameParser()
-    up.feed(reply.content)
+    up.feed(content)
     up.close()
     names1 = up.names
     names = {}.fromkeys(names1).keys()
-    print names
-    for name in names:
-        user = m.User.get(name=name)
-        if user and user.id != reply.topic.user_id:
-            m.Notification(reply_id=reply.id, receiver_id=user.id,
-                    role='mention').save()
-    return
+    return names
 
 def strip_tags(html):
     if html:
