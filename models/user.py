@@ -30,6 +30,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     topic_count = Required(int, default=0)
     reply_count = Required(int, default=0)
+    tweet_count = Required(int, default=0)
 
     """ 获得的 thank, up, down, report, collect 数目, 便于用户等级评估
     """
