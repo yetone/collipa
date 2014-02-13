@@ -394,6 +394,21 @@ var get_cookie = function(name) {
 
 $(function() {
   $.extend({
+    addBg: function() {
+      var $bg = $('<div id="blur-bg"></div>'),
+          oldOpacity;
+      $('#blur-bg').remove();
+      $bg.css({width: $W.width(), height: $W.height(), display: 'none'});
+      $('body').append($bg);
+      oldOpacity = $('#blur-bg').css('opacity');
+      $bg.css({
+            opacity: 0,
+            display: 'block'
+          })
+         .animate({
+           opacity: oldOpacity
+         });
+    },
     removeBg: function() {
       $('#blur-bg').animate({opacity: 0}, 500, function() {
         $(this).remove();
@@ -652,15 +667,7 @@ $(function() {
       }, opt);
       var oldTop,
           oldLeft,
-          self = this,
-          $bg = $('<div id="blur-bg"></div>'),
-          addBg = function() {
-            if (opt.hasBg) {
-              $('#blur-bg').remove();
-              $bg.css({width: $W.width(), height: $W.height()});
-              $('body').append($bg);
-            }
-          };
+          self = this;
       self.hide();
       popup(self, 'fixed');
       switch (opt.type) {
@@ -669,14 +676,14 @@ $(function() {
           self.css({top: -self.height()})
               .show()
               .animate({top: oldTop}, 300);
-          addBg();
+          $.addBg();
           break;
         case 'right':
           oldLeft = self.css('left');
           self.css({left: -self.width()})
               .show()
               .animate({left: oldLeft}, 300);
-          addBg();
+          $.addBg();
           break;
       }
       return self;
