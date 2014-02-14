@@ -1719,15 +1719,38 @@ ul.users li a div.username span {
   color: #fff;
 }
 
+.nbtn-p,
 .nbtn-p:link,
 .nbtn-p:visited {
   background-color: #428bca;
 }
+
 .nbtn-p:active,
 .nbtn-p:hover {
   background-color: #3276b1;
 }
 
+.nbtn-p[disabled=disabled],
+.nbtn-p:disabled {
+  background-color: #8DB4D6;
+}
+
+.nbtn-p i.icon-br,
+.nbtn-p:link i.icon-br,
+.nbtn-p:visited i.icon-br {
+  border-left-color: #428bca;
+}
+.nbtn-p:active i.icon-br,
+.nbtn-p:hover i.icon-br {
+  border-left-color: #3276b1;
+}
+.nbtn-p[disabled=disabled] i.icon-br,
+.nbtn-p:disabled i.icon-br {
+  border-left-color: #8DB4D6;
+}
+
+
+.nbtn-d,
 .nbtn-d:link,
 .nbtn-d:visited {
   background-color: #d9534f;
@@ -1755,4 +1778,45 @@ ul.users li a div.username span {
   z-index: 10006;
   background-color: #000;
   opacity: 0.35;
+}
+.tweet-box {
+  background-color: #fff;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.tweet-box .toolbar {
+  padding: 10px 0;
+}
+
+.tweet-editor {
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.tweet-editor:focus {
+  outline: 0;
+}
+
+.tweet-submmit,
+.tweet-submmit:hover,
+.tweet-submmit:active {
+  position: relative;
+  padding-left: 30px;
+  padding-right: 30px;
+  border-radius: 1px 0 0 1px;
+  margin-right: -4px;
+}
+
+.tweet-placeholder {
+  color: #aaa;
+}
+
+.tweet-submmit .icon-br {
+  position: absolute;
+  bottom: -4px;
+  right: -5px;
+  display: inline-block;
+  height: 0;
+  width: 0;
+  border: 4px solid transparent;
 }

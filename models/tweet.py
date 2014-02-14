@@ -9,6 +9,7 @@ from helpers import get_mention_names
 
 config = config.rec()
 
+
 class Tweet(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
 
@@ -37,11 +38,10 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
         return '/tweet/%s' % self.id
 
     def save(self, category='create', user=None):
-        bank = m.Bank.get_one()
         now = int(time.time())
         if category == 'create':
             self.created_at = now
-            self.tweet.tweet_count += 1
+            self.author.tweet_count += 1
 
         if not user:
             user = self.author

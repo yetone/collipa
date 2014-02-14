@@ -7,6 +7,7 @@ import config
 
 config = config.rec()
 
+
 class Collect(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
 
@@ -15,6 +16,7 @@ class Collect(db.Entity, SessionMixin, ModelMixin):
     collect_class_id = Optional(int)
     topic_id = Optional(int)
     reply_id = Optional(int)
+    tweet_id = Optional(int)
 
     content = Optional(LongUnicode)
 

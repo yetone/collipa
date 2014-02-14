@@ -7,7 +7,7 @@ from ._base import BaseHandler
 from pony.orm import *
 
 from models import Tweet
-from forms import TweetForm
+from helpers import strip_xss_tags, strip_tags
 
 config = config.rec()
 
@@ -73,9 +73,9 @@ class CreateHandler(BaseHandler):
         if not self.has_permission:
             return
         user = self.current_user
-        form = TweetForm(self.request.arguments)
-        if form.validate():
-            tweet = form.save()
+        content = self.get_argument('content', None)
+        if content and len(strip_tags(content)) >= 3:
+            tweet = Tweet(content=strip_xss_tags(content), user_id=user.id).save()
             tweet.put_notifier()
             result = {
                         'status'          : 'success',
@@ -94,47 +94,12 @@ class CreateHandler(BaseHandler):
             if self.is_ajax:
                 return self.write(result)
             self.flash_message(result)
-            return self.redirect(topic.url)
+            return self.redirect('/timeline')
+        result = {
+                    'status': 'error',
+                    'message': '推文内容至少 3 字符'
+                }
         if self.is_ajax:
-            return self.write(form.result)
-        self.flash_message(form.result)
+            return self.write(result)
+        self.flash_message(result)
         return self.redirect('/timeline')
-
-
-class EditHandler(BaseHandler):
-    @db_session
-    @tornado.web.authenticated
-    def get(self, tweet_id):
-        if not self.has_permission:
-            return
-        tweet = Tweet.get(id=tweet_id)
-        if not tweet or (tweet.author != self.current_user and not self.current_user.is_admin):
-            return self.redirect_next_url()
-        form = TweetForm(content=tweet.content)
-        return self.render("tweet/edit.html", form=form, tweet=tweet)
-
-    @db_session
-    @tornado.web.authenticated
-    def post(self, tweet_id):
-        if not self.has_permission:
-            return
-        tweet = Tweet.get(id=tweet_id)
-        if not tweet or (tweet.author != self.current_user and not self.current_user.is_admin):
-            return self.redirect_next_url()
-        user = self.current_user
-        form = TweetForm(self.request.arguments)
-        if form.validate():
-            tweet = form.save(user=user, topic=tweet.topic, tweet=tweet)
-            tweet.put_notifier()
-            result = {
-                    'status': 'success',
-                    'message': '推文修改成功',
-                    'tweet_url': tweet.url
-                    }
-            if self.is_ajax:
-                return self.write(result)
-            self.flash_message(result)
-            return self.redirect(tweet.url)
-        if self.is_ajax:
-            return self.write(form.result)
-        return self.render("tweet/edit.html", form=form, tweet=tweet)

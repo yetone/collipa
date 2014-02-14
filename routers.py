@@ -13,7 +13,8 @@ from controllers import (
     )
 
 routers = [
-    (r"/", site.HomeHandler),
+    (r"/", site.CommunityHandler),
+    (r"/timeline", site.TimelineHandler),
     (r"/account/setting", user.SettingHandler),
 
     (r"/signup[/]*", user.SignupHandler),

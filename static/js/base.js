@@ -735,7 +735,7 @@ $(function() {
     $.removeBg();
   });
 
-  $D.live('keypress', function(e) {
+  $D.on('keypress', function(e) {
     if (e.ctrlKey && e.which == 13 || e.which == 10) {
       $('form button').click();
     }

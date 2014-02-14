@@ -69,7 +69,7 @@ class rec:
             'superwoman', 'superchild', 'god', 'photo', 'photos', 'city',
             'boy', 'boys', 'girl', 'girls', 'discussion', 'discussions',
             'note', 'book', 'music', 'movie', 'shop', 'life', 'live', 'baby',
-            'love', 'me', 'mine', 'blog']
+            'love', 'me', 'mine', 'blog', 't']
 
     bank_init_coin = 6300000
     user_init_coin = 2100
