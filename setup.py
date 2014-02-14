@@ -23,6 +23,7 @@ def init_node():
 def merge():
     try:
         c.execute("use %s" % config.db_name)
+        c.execute("alter table Block add tweet_id int(11)")
         c.execute("alter table Notification add tweet_id int(11)")
         c.execute("alter table Up add tweet_id int(11)")
         c.execute("alter table Down add tweet_id int(11)")
