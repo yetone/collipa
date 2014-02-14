@@ -118,3 +118,8 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
                 m.Notification(tweet_id=self.id, receiver_id=user.id,
                         role='mention').save()
         return self
+
+    @staticmethod
+    def get_timeline(page=1):
+        tweets = select(rv for rv in Tweet).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+        return tweets
