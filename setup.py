@@ -23,12 +23,12 @@ def init_node():
 def merge():
     try:
         c.execute("use %s" % config.db_name)
+        c.execute("alter table Notification add tweet_id int(11)")
         c.execute("alter table Up add tweet_id int(11)")
         c.execute("alter table Down add tweet_id int(11)")
         c.execute("alter table Thank add tweet_id int(11)")
         c.execute("alter table Report add tweet_id int(11)")
         c.execute("alter table Collect add tweet_id int(11)")
-        c.execute("alter table Notification add tweet_id int(11)")
         c.execute("alter table Reply add tweet_id int(11) default 0")
         c.execute("alter table User add tweet_count int(11) default 0")
 
