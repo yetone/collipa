@@ -21,6 +21,7 @@ class Block(db.Entity, SessionMixin, ModelMixin):
     """
     topic_id = Optional(int)
     reply_id = Optional(int)
+    tweet_id = Optional(int)
     node_id = Optional(int)
     blocker_id = Optional(int)
 

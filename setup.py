@@ -20,6 +20,28 @@ def init_node():
         Node(name=u'根节点', urlname='root',
                 description=u'一切的根源').save()
 
+def merge():
+    try:
+        c.execute("use %s" % config.db_name)
+        c.execute("alter table Block add tweet_id int(11)")
+        c.execute("alter table Notification add tweet_id int(11)")
+        c.execute("alter table Up add tweet_id int(11)")
+        c.execute("alter table Down add tweet_id int(11)")
+        c.execute("alter table Thank add tweet_id int(11)")
+        c.execute("alter table Report add tweet_id int(11)")
+        c.execute("alter table Collect add tweet_id int(11)")
+        c.execute("alter table Reply add tweet_id int(11) default 0")
+        c.execute("alter table User add tweet_count int(11) default 0")
+
+        c.close()
+        m.commit()
+        m.close()
+    except Exception as e:
+        print type(e).__name__
+        print e
+        raise
+
+
 def main(argv):
     try:
         opts, args = getopt.getopt(argv, "", ["install", "init",
@@ -40,6 +62,7 @@ def main(argv):
                 m.close()
             except:
                 pass
+            merge()
             from models import db
             db.generate_mapping(create_tables=True)
             init_node()

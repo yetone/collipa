@@ -188,10 +188,13 @@ textarea:focus {
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
 }
 
+.clr,
 .clearfix {
   *zoom: 1;
 }
 
+.clr:before,
+.clr:after,
 .clearfix:before,
 .clearfix:after {
   display: table;
@@ -199,6 +202,7 @@ textarea:focus {
   content: "";
 }
 
+.clr:after,
 .clearfix:after {
   clear: both;
 }
@@ -213,9 +217,13 @@ textarea:focus {
   border: 0;
 }
 
+.bgw {
+  background-color: #fff;
+}
+
 .fl{float:left;}
 .fr{float:right;}
-.hidden{display:none;}
+.dn,.hidden{display:none;}
 
 .oh{overflow:hidden;}
 .dib{display:inline-block;}
@@ -556,6 +564,9 @@ a.node:hover {
 .topic-list .nav-bottom-span,
 .reply-list .nav-bottom-span {
   background-color: rgb(209, 209, 209);
+}
+.index-nav {
+  border-top: 0;
 }
 .index-nav .nav-bottom-span {
   background-color: #09C;
@@ -1719,15 +1730,38 @@ ul.users li a div.username span {
   color: #fff;
 }
 
+.nbtn-p,
 .nbtn-p:link,
 .nbtn-p:visited {
   background-color: #428bca;
 }
+
 .nbtn-p:active,
 .nbtn-p:hover {
   background-color: #3276b1;
 }
 
+.nbtn-p[disabled=disabled],
+.nbtn-p:disabled {
+  background-color: #8DB4D6;
+}
+
+.nbtn-p i.icon-br,
+.nbtn-p:link i.icon-br,
+.nbtn-p:visited i.icon-br {
+  border-left-color: #428bca;
+}
+.nbtn-p:active i.icon-br,
+.nbtn-p:hover i.icon-br {
+  border-left-color: #3276b1;
+}
+.nbtn-p[disabled=disabled] i.icon-br,
+.nbtn-p:disabled i.icon-br {
+  border-left-color: #8DB4D6;
+}
+
+
+.nbtn-d,
 .nbtn-d:link,
 .nbtn-d:visited {
   background-color: #d9534f;
@@ -1756,3 +1790,103 @@ ul.users li a div.username span {
   background-color: #000;
   opacity: 0.35;
 }
+.tweet-box {
+  background-color: #fff;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.tweet-box .toolbar {
+  padding: 10px 0;
+}
+
+.tweet-editor {
+  position: relative;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.tweet-editor:focus {
+  outline: 0;
+}
+
+.tweet-submmit,
+.tweet-submmit:hover,
+.tweet-submmit:active {
+  position: relative;
+  padding-left: 30px;
+  padding-right: 30px;
+  border-radius: 1px 0 0 1px;
+  margin-right: -4px;
+}
+
+.tweet-placeholder {
+  color: #aaa;
+}
+
+.tweet-submmit .icon-br {
+  position: absolute;
+  bottom: -4px;
+  right: -5px;
+  display: inline-block;
+  height: 0;
+  width: 0;
+  border: 4px solid transparent;
+}
+
+.s-nav {
+  background-color: #fff;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.s-nav li {
+  float: left;
+  position: relative;
+  width: 50%;
+  border-left: 1px solid #e2e2e2;
+  margin-left: -1px;
+}
+
+.s-nav li:nth-child(1) {
+  border-left: 0;
+}
+
+.s-nav a {
+  display: block;
+  padding: 8px 0;
+  text-align: center;
+  color: #555;
+  width: 100%;
+  text-align: center;
+}
+
+.s-nav li.on:after {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  margin-left: -8px;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color: #fff;
+}
+
+.s-nav .twitter.on:after {
+  border-bottom-color: #f9f9f9;
+}
+
+.s-nav li.on {
+}
+
+.s-nav li.on a:after {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  margin-left: -8px;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color: #e2e2e2;
+}
+

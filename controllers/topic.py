@@ -13,6 +13,7 @@ from .user import EmailMixin
 
 config = config.rec()
 
+
 class HomeHandler(BaseHandler, EmailMixin):
     @db_session
     def get(self, topic_id):

@@ -1,0 +1,79 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}
+  {% if page > 1 %}第 {{ page }} 页 - {% end %}
+  时间线
+{% end %}
+{% block script %}
+<script id="tweet-template" type="text/template">
+  <li id="show-<%= id %>" data-id="<%= id %>" class="item clearfix">
+    <a class="avatar fl" href="<%= author_url %>">
+      <img class="avatar" src="<%= author_avatar %>">
+    </a>
+    <div class="item-content">
+      <div class="author-info">
+        <a class="name" data-name="<%= author_name %>"><%= author_nickname %></a>
+        <a class="time" href="<%= tweet_url %>"><%= created %></a>
+      </div>
+    <div class="content tweet-content">
+      <%== content %>
+    </div>
+    <div class="meta">
+      <ul class="vote clearfix hidden">
+        <li class="up">
+          <a title="赞同" href="<%= tweet_url %>?action=up">
+            <i class="icon-thumbs-up"></i>
+             赞同(0)
+          </a>
+        </li>
+        <li class="down">
+          <a title="反对" href="<%= tweet_url %>?action=down">
+            <i class="icon-thumbs-down"></i>
+             反对(0)
+          </a>
+        </li>
+        <li class="collect">
+          <a title="收藏" href="<%= tweet_url %>?action=collect">
+            <i class="icon-bookmark"></i>
+             收藏
+          </a>
+        </li>
+        <li class="edit">
+          <a title="修改" href="<%= tweet_url %>/edit">
+            <i class="icon-pencil"></i>
+             修改
+          </a>
+        </li>
+      </ul>
+      <ul class="action clearfix">
+        <li class="retweet">
+          <a title="转推" href="#;">
+            <i class="icon-reply"></i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </li>
+</script>
+<script type="text/javascript" src="{{ static_url('js/timeline.js') }}"></script>
+{% end %}
+{% block body %}
+<div class="tweet-box">
+  <div class="tweet-area">
+    <div class="tweet-editor" contenteditable="true">
+      <div class="tweet-placeholder">
+        输入内容吧...
+      </div>
+    </div>
+  </div>
+  <div class="toolbar clearfix dn">
+    <button class="nbtn nbtn-p fr tweet-submmit" type="button" disabled="disabled">
+      发推
+      <i class="icon-br"></i>
+    </button>
+  </div>
+</div>
+<div class="organ tweet-list">
+  {% module Template("modules/tweet_list.html", tweets=tweets) %}
+</div>
+{% end %}
