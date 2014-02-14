@@ -1848,6 +1848,7 @@ ul.users li a div.username span {
 
 .s-nav li:nth-child(1) {
   border-left: 0;
+  margin-left: 0;
 }
 
 .s-nav a {
