@@ -60,10 +60,10 @@ def main(argv):
                 m.close()
             except:
                 pass
+            merge()
             from models import db
             db.generate_mapping(create_tables=True)
             init_node()
-            merge()
             print("数据库表初始化成功")
         if opt == '--iwanttodropdatabase':
             key = raw_input("你确定要删除数据库？所有数据将消失，且无法恢复！！！(若确定请输入yes i do,否则直接按回车键！):\n")
