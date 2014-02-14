@@ -430,7 +430,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
                 self.id and rv.whom_id is not None)
 
     def get_timeline(self, page=1):
-        user_ids = self.followed_user_ids or [0]
+        user_ids = self.followed_user_ids[:] or [0]
         user_ids.append(self.id)
         tweets = select(rv for rv in m.Tweet if rv.user_id in
                 user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
