@@ -7,7 +7,7 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import Topic
+from models import Topic, Tweet
 from extensions import mc
 from helpers import force_int
 
@@ -60,13 +60,17 @@ class TimelineHandler(BaseHandler):
         page = force_int(self.get_argument('page', 1), 1)
         user = self.current_user
         if not user:
-            result = {
-                    'status': 'error',
-                    'message': '想查看时间线请先登录'
-                    }
-            self.flash_message(result)
-            return self.redirect('/')
+            return self.redirect('/timeline/public')
         tweets = user.get_timeline(page=page)
+        return self.render("site/timeline.html",
+                            tweets=tweets,
+                            page=page)
+
+class PublicTimelineHandler(BaseHandler):
+    @db_session
+    def get(self):
+        page = force_int(self.get_argument('page', 1), 1)
+        tweets = Tweet.get_timeline(page=page)
         return self.render("site/timeline.html",
                             tweets=tweets,
                             page=page)

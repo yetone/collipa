@@ -58,21 +58,23 @@
 <script type="text/javascript" src="{{ static_url('js/timeline.js') }}"></script>
 {% end %}
 {% block body %}
-<div class="tweet-box">
-  <div class="tweet-area">
-    <div class="tweet-editor" contenteditable="true">
-      <div class="tweet-placeholder">
-        输入内容吧...
+{% if current_user %}
+  <div class="tweet-box">
+    <div class="tweet-area">
+      <div class="tweet-editor" contenteditable="true">
+        <div class="tweet-placeholder">
+          输入内容吧...
+        </div>
       </div>
     </div>
+    <div class="toolbar clearfix dn">
+      <button class="nbtn nbtn-p fr tweet-submmit" type="button" disabled="disabled">
+        发推
+        <i class="icon-br"></i>
+      </button>
+    </div>
   </div>
-  <div class="toolbar clearfix dn">
-    <button class="nbtn nbtn-p fr tweet-submmit" type="button" disabled="disabled">
-      发推
-      <i class="icon-br"></i>
-    </button>
-  </div>
-</div>
+{% end %}
 <div class="organ tweet-list">
   {% module Template("modules/tweet_list.html", tweets=tweets) %}
 </div>

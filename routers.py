@@ -15,6 +15,7 @@ from controllers import (
 routers = [
     (r"/", site.CommunityHandler),
     (r"/timeline", site.TimelineHandler),
+    (r"/timeline/public", site.PublicTimelineHandler),
     (r"/account/setting", user.SettingHandler),
 
     (r"/signup[/]*", user.SignupHandler),
