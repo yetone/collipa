@@ -60,6 +60,11 @@ class TimelineHandler(BaseHandler):
         page = force_int(self.get_argument('page', 1), 1)
         user = self.current_user
         if not user:
+            result = {
+                    'status': 'error',
+                    'message': '想查看时间线请先登录'
+                    }
+            self.flash_message(result)
             return self.redirect('/')
         tweets = user.get_timeline(page=page)
         return self.render("site/timeline.html",
