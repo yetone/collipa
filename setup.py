@@ -20,6 +20,25 @@ def init_node():
         Node(name=u'根节点', urlname='root',
                 description=u'一切的根源').save()
 
+def merge():
+    try:
+        c.execute("use %s" % config.db_name)
+        c.execute("alter table Up add tweet_id int(11)")
+        c.execute("alter table Down add tweet_id int(11)")
+        c.execute("alter table Thank add tweet_id int(11)")
+        c.execute("alter table Report add tweet_id int(11)")
+        c.execute("alter table Collect add tweet_id int(11)")
+        c.execute("alter table Reply add tweet_id int(11)")
+
+        c.close()
+        m.commit()
+        m.close()
+    except Exception as e:
+        print type(e).__name__
+        print e
+        raise
+
+
 def main(argv):
     try:
         opts, args = getopt.getopt(argv, "", ["install", "init",
@@ -43,6 +62,7 @@ def main(argv):
             from models import db
             db.generate_mapping(create_tables=True)
             init_node()
+            merge()
             print("数据库表初始化成功")
         if opt == '--iwanttodropdatabase':
             key = raw_input("你确定要删除数据库？所有数据将消失，且无法恢复！！！(若确定请输入yes i do,否则直接按回车键！):\n")
