@@ -49,6 +49,9 @@
         主题 <a href="{{ n.reply.topic.url_sharp }}">{{ escape(n.reply.topic.title) }}</a>
         下的 <b><a href="{{ n.reply.url }}">评论</a></b>
         提及了你
+      {% elif n.tweet %}
+        <a href="{{ n.tweet.author.url }}">{{ escape(n.tweet.author.nickname) }}</a> 的 <b><a href="{{ n.tweet.url }}">推文</a></b>
+        提及了你
       {% end %}
     {% end %}
     于 <time>{{ n.updated }}</time>

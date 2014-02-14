@@ -28,7 +28,8 @@ def merge():
         c.execute("alter table Thank add tweet_id int(11)")
         c.execute("alter table Report add tweet_id int(11)")
         c.execute("alter table Collect add tweet_id int(11)")
-        c.execute("alter table Reply add tweet_id int(11)")
+        c.execute("alter table Reply add tweet_id int(11) default 0")
+        c.execute("alter table User add tweet_count int(11) default 0")
 
         c.close()
         m.commit()

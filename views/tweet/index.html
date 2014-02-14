@@ -1,6 +1,8 @@
-{% if tweets %}
-<ul class="item-list">
-  {% for tweet in tweets %}
+{% extends "../layout.html" %}
+
+{% block subtitle %}推文{% end %}
+{% block body %}
+<ul class="item-list bgw">
   <li id="tweet-{{ tweet.id }}" data-id="{{ tweet.id }}" class="item clearfix">
     <a class="avatar fl" href="{{ tweet.author.url }}">
       <img class="avatar" src="{{ tweet.author.get_avatar(size=48) }}">
@@ -83,12 +85,5 @@
       </div>
     </div>
   </li>
-  {% end %}
 </ul>
-{% else %}
-<div class="explain">
-  <div>
-    暂无推文
-  </div>
-</div>
 {% end %}

@@ -5,7 +5,7 @@
   {% if category == "index" %}
   首页
   {% elif category == "timeline" %}
-  时间线
+  我的关注
   {% elif category == "hot" %}
   热门
   {% elif category == "latest" %}
@@ -26,7 +26,7 @@
       </li>
       {% if current_user %}
       <li {% if category == "timeline" %}class="on"{% end %}>
-        <a href="/?category=timeline">时间线</a>
+        <a href="/?category=timeline">我的关注</a>
       </li>
       {% end %}
       <li {% if category == "hot" %}class="on"{% end %}>

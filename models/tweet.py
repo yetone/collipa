@@ -114,7 +114,7 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
         names = get_mention_names(self.content)
         for name in names:
             user = m.User.get(name=name)
-            if user and user.id != self.topic.user_id:
+            if user and user.id != self.user_id:
                 m.Notification(tweet_id=self.id, receiver_id=user.id,
                         role='mention').save()
         return self

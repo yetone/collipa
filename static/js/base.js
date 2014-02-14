@@ -126,6 +126,23 @@ var get_cookie = function(name) {
     };
   },
 
+  placeCaretAtEnd = function(el) {
+    el.focus();
+    if (typeof window.getSelection != "undefined" && typeof document.createRange != "undefined") {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+      var textRange = document.body.createTextRange();
+      textRange.moveToElementText(el);
+      textRange.collapse(false);
+      textRange.select();
+    }
+  },
+
   popup = function($popdiv, pos) {
     pos = pos || 'absolute';
     var _scrollHeight = $(document).scrollTop(),
@@ -206,18 +223,8 @@ var get_cookie = function(name) {
       $('#noty').addClass('static');
     }
   },
-  ueReady = function() {
-    var _ifa = window.frames['ueditor_0'],
-        ifa = _ifa.document ? _ifa : _ifa.contentDocument,
-        $ifa = _ifa.document ? $(_ifa.document) : $(_ifa.contentDocument),
-        event = _ifa.document ? 'keyup' : 'keypress';
-    // Ctrl + Enter commit
-    $ifa.keypress(function(e) {
-      if (e.ctrlKey && e.which == 13 || e.which == 10) {
-        $('#ueditor_0').parents('form').find('button[type=submit]').click();
-      }
-    });
-
+  mention = function($ifa, ifa, $editor, event, cbk) {
+    event = event || 'keyup';
     // mention
     (function() {
       var word,
@@ -300,8 +307,8 @@ var get_cookie = function(name) {
           $area.length && $area.remove();
           $area = $('<div id="mention-area" class="mention-area"></div>');
           $area.css({
-            top: top + $('#ueditor_0').offset().top,
-            left: left + $('#ueditor_0').offset().left
+            top: top + $editor.offset().top,
+            left: left + $editor.offset().left
           });
           $('body').append($area);
           $body.data('offset', of);
@@ -385,11 +392,29 @@ var get_cookie = function(name) {
             html = $mark.parent().html().replace('@' + word, content);
 
         $mark.parent().html(html);
+        placeCaretAtEnd($editor[0]);
+        cbk && cbk();
         $body.data('from', $body.find('fuck').parent().text().length);
         $area.length && $area.remove();
         $mark.length && $mark.remove();
       });
     })();
+  },
+  ueReady = function() {
+    var _ifa = window.frames['ueditor_0'],
+        ifa = _ifa.document ? _ifa : _ifa.contentDocument,
+        $ifa = _ifa.document ? $(_ifa.document) : $(_ifa.contentDocument),
+        event = _ifa.document ? 'keyup' : 'keypress',
+        $editor = $('#ueditor_0');
+    // Ctrl + Enter commit
+    $ifa.keypress(function(e) {
+      if (e.ctrlKey && e.which == 13 || e.which == 10) {
+        $editor.parents('form').find('button[type=submit]').click();
+      }
+    });
+
+    mention($ifa, ifa, $editor, event);
+
   };
 
 $(function() {

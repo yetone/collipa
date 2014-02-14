@@ -80,6 +80,15 @@
         {% end %}
       </div>
       <div id="body">
+        <ul class="s-nav clearfix">
+          {% set twitter = request.uri.startswith('/timeline') or request.uri.startswith('/tweet') %}
+          <li class="bbs{% if not twitter %} on{% end %}">
+            <a class="bbs" href="/">社区</a>
+          </li>
+          <li class="twitter{% if twitter %} on{% end %}">
+            <a href="/timeline">时间线</a>
+          </li>
+        </ul>
         {% block body %}{% end %}
       </div>
     </div>
