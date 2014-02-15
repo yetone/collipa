@@ -50,6 +50,13 @@ class ModelMixin(object):
             return None
 
     @cached_property
+    def tweet(self):
+        try:
+            return m.Tweet[self.tweet_id]
+        except:
+            return None
+
+    @cached_property
     def node(self):
         try:
             return m.Node[self.node_id]

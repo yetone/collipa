@@ -1,9 +1,21 @@
 # coding: utf-8
 
-from controllers import site, user, topic, reply, node, image, api, upload
+from controllers import (
+        site,
+        user,
+        topic,
+        reply,
+        node,
+        image,
+        api,
+        upload,
+        tweet
+    )
 
 routers = [
-    (r"/", site.HomeHandler),
+    (r"/", site.CommunityHandler),
+    (r"/timeline", site.TimelineHandler),
+    (r"/timeline/public", site.PublicTimelineHandler),
     (r"/account/setting", user.SettingHandler),
 
     (r"/signup[/]*", user.SignupHandler),
@@ -32,6 +44,9 @@ routers = [
     (r"/reply/(\d+)[/]*", reply.HomeHandler),
     (r"/reply/(\d+)/edit[/]*", reply.EditHandler),
     (r"/reply/(\d+)/history[/]*", reply.HistoryHandler),
+
+    (r"/tweet/create[/]*", tweet.CreateHandler),
+    (r"/tweet/(\d+)[/]*", tweet.HomeHandler),
 
     (r"/image/upload[/]*", image.UploadHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),

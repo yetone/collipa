@@ -13,11 +13,11 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
     receiver_id = Optional(int)
 
     """ 提醒类型
-        'reply':        评论提醒
-        'answer':       回复提醒
-        'mention':      提及提醒
-        'up':           赞同提醒
-        'thank':        感谢提醒
+        'reply'   : 评论提醒
+        'answer'  : 回复提醒
+        'mention' : 提及提醒
+        'up'      : 赞同提醒
+        'thank'   : 感谢提醒
     """
     role = Required(unicode, default='reply')
 
@@ -38,6 +38,7 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
 
     topic_id = Optional(int)
     reply_id = Optional(int)
+    tweet_id = Optional(int)
 
     def __str__(self):
         return self.id

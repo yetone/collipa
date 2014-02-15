@@ -7,13 +7,14 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import Topic
+from models import Topic, Tweet
 from extensions import mc
 from helpers import force_int
 
 config = config.rec()
 
-class HomeHandler(BaseHandler):
+
+class CommunityHandler(BaseHandler):
     @db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
@@ -37,7 +38,7 @@ class HomeHandler(BaseHandler):
                         3))
                 mc.set('hot_topics', list(topics), 60 * 60 * 2)
         elif category == 'timeline':
-            topics = user.get_timeline(page=None, category=view)
+            topics = user.get_followed_topics(page=None, category=view)
         elif category == 'latest':
             topics = select(rv for rv in Topic).order_by(lambda rv:
                     desc(rv.created_at))
@@ -52,15 +53,40 @@ class HomeHandler(BaseHandler):
         return self.render("site/index.html", topics=topics, category=category,
                 page=page, view=view, page_count=page_count, url='/')
 
+
+class TimelineHandler(BaseHandler):
+    @db_session
+    def get(self):
+        page = force_int(self.get_argument('page', 1), 1)
+        user = self.current_user
+        if not user:
+            return self.redirect('/timeline/public')
+        tweets = user.get_timeline(page=page)
+        return self.render("site/timeline.html",
+                            tweets=tweets,
+                            page=page)
+
+class PublicTimelineHandler(BaseHandler):
+    @db_session
+    def get(self):
+        page = force_int(self.get_argument('page', 1), 1)
+        tweets = Tweet.get_timeline(page=page)
+        return self.render("site/timeline.html",
+                            tweets=tweets,
+                            page=page)
+
+
 class PageNotFoundHandler(BaseHandler):
     @db_session
     def get(self):
         return self.render("site/404.html")
 
+
 class PageErrorHandler(BaseHandler):
     @db_session
     def get(self):
         return self.render("site/502.html")
+
 
 class OtherPageErrorHandler(BaseHandler):
     def get(self):

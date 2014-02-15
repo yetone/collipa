@@ -30,6 +30,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     topic_count = Required(int, default=0)
     reply_count = Required(int, default=0)
+    tweet_count = Required(int, default=0)
 
     """ 获得的 thank, up, down, report, collect 数目, 便于用户等级评估
     """
@@ -428,7 +429,14 @@ class User(db.Entity, SessionMixin, ModelMixin):
         return select(rv.whom_id for rv in m.Follow if rv.who_id ==
                 self.id and rv.whom_id is not None)
 
-    def get_timeline(self, role=None, category='all', order_by='created_at', page=1):
+    def get_timeline(self, page=1):
+        user_ids = self.followed_user_ids[:] or [0]
+        user_ids.append(self.id)
+        tweets = select(rv for rv in m.Tweet if rv.user_id in
+                user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+        return tweets
+
+    def get_followed_topics(self, role=None, category='all', order_by='created_at', page=1):
         node_ids = self.followed_node_ids
         user_ids = self.followed_user_ids
         if not node_ids:
@@ -467,55 +475,50 @@ class User(db.Entity, SessionMixin, ModelMixin):
         else:
             return topics
 
-    def is_uped(self, topic=None, reply=None):
-        if topic:
-            if m.Up.get(user_id=self.id, topic_id=topic.id):
-                return True
-            return False
-        if reply:
-            if m.Up.get(user_id=self.id, reply_id=reply.id):
-                return True
-            return False
+    def is_uped(self, topic=None, reply=None, tweet=None):
+        if topic and m.Up.get(user_id=self.id, topic_id=topic.id):
+            return True
+        if reply and m.Up.get(user_id=self.id, reply_id=reply.id):
+            return True
+        if tweet and m.Up.get(user_id=self.id, tweet_id=tweet.id):
+            return True
+        return False
 
-    def is_downed(self, topic=None, reply=None):
-        if topic:
-            if m.Down.get(user_id=self.id, topic_id=topic.id):
-                return True
-            return False
-        if reply:
-            if m.Down.get(user_id=self.id, reply_id=reply.id):
-                return True
-            return False
+    def is_downed(self, topic=None, reply=None, tweet=None):
+        if topic and m.Down.get(user_id=self.id, topic_id=topic.id):
+            return True
+        if reply and m.Down.get(user_id=self.id, reply_id=reply.id):
+            return True
+        if tweet and m.Down.get(user_id=self.id, tweet_id=tweet.id):
+            return True
+        return False
 
-    def is_collected(self, topic=None, reply=None):
-        if topic:
-            if m.Collect.get(user_id=self.id, topic_id=topic.id):
-                return True
-            return False
-        if reply:
-            if m.Collect.get(user_id=self.id, reply_id=reply.id):
-                return True
-            return False
+    def is_collected(self, topic=None, reply=None, tweet=None):
+        if topic and m.Collect.get(user_id=self.id, topic_id=topic.id):
+            return True
+        if reply and m.Collect.get(user_id=self.id, reply_id=reply.id):
+            return True
+        if tweet and m.Collect.get(user_id=self.id, tweet_id=tweet.id):
+            return True
+        return False
 
-    def is_thanked(self, topic=None, reply=None):
-        if topic:
-            if m.Thank.get(user_id=self.id, topic_id=topic.id):
-                return True
-            return False
-        if reply:
-            if m.Thank.get(user_id=self.id, reply_id=reply.id):
-                return True
-            return False
+    def is_thanked(self, topic=None, reply=None, tweet=None):
+        if topic and m.Thank.get(user_id=self.id, topic_id=topic.id):
+            return True
+        if reply and m.Thank.get(user_id=self.id, reply_id=reply.id):
+            return True
+        if tweet and m.Thank.get(user_id=self.id, tweet_id=tweet.id):
+            return True
+        return False
 
-    def is_reported(self, topic=None, reply=None):
-        if topic:
-            if m.Report.get(user_id=self.id, topic_id=topic.id):
-                return True
-            return False
-        if reply:
-            if m.Report.get(user_id=self.id, reply_id=reply.id):
-                return True
-            return False
+    def is_reported(self, topic=None, reply=None, tweet=None):
+        if topic and m.Report.get(user_id=self.id, topic_id=topic.id):
+            return True
+        if reply and m.Report.get(user_id=self.id, reply_id=reply.id):
+            return True
+        if tweet and m.Report.get(user_id=self.id, tweet_id=tweet.id):
+            return True
+        return False
 
     @property
     def unread_notification_count(self):
