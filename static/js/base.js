@@ -223,183 +223,6 @@ var get_cookie = function(name) {
       $('#noty').addClass('static');
     }
   },
-  mention = function($ifa, ifa, $editor, event, cbk) {
-    event = event || 'keyup';
-    // mention
-    (function() {
-      var word,
-          sof,
-          url,
-          count,
-          $cur,
-          idx,
-          $body,
-          $mark,
-          $area,
-          _init = function() {
-            $body = $ifa.find('body');
-            $mark = $body.find('fuck');
-            $area = $('#mention-area');
-          };
-
-      $ifa.on('keydown', function(e) {
-        _init();
-        if ($area.length) {
-          count = $area.find('li').length;
-          $cur = $area.find('.cur');
-
-          // if enter
-          if (e.keyCode === 13) {
-            $cur.length && $cur.trigger('click') && e.preventDefault();
-            return;
-          }
-
-          // if up or down
-          if (e.keyCode === 38 && count > 0) {
-            if ($cur.length) {
-              idx = $area.find('li').index($cur.parent('li'));
-              $cur.removeClass('cur');
-              if (idx === 0) {
-                $area.find('li').eq(count - 1).children('a').addClass('cur');
-              } else {
-                $area.find('li').eq(idx - 1).children('a').addClass('cur');
-              }
-            } else {
-              $area.find('li').eq(count - 1).children('a').addClass('cur');
-            }
-            e.preventDefault();
-            return;
-          }
-          if (e.keyCode === 40 && count > 0) {
-            if ($cur.length) {
-              idx = $area.find('li').index($cur.parent('li'));
-              $cur.removeClass('cur');
-              if (idx === count - 1) {
-                $area.find('li').eq(0).children('a').addClass('cur');
-              } else {
-                $area.find('li').eq(idx + 1).children('a').addClass('cur');
-              }
-            } else {
-              $area.find('li').eq(0).children('a').addClass('cur');
-            }
-            e.preventDefault();
-            return;
-          }
-        }
-      });
-
-      $ifa.on('keypress', function(e) {
-        _init();
-        var $this = $(this),
-            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset,
-            cp = ifa.getSelection().getRangeAt(0),
-            ctt = cp.createContextualFragment('<fuck></fuck>'),
-            top,
-            left;
-
-        // if input @
-        if (e.charCode === 64) {
-          $mark.length && $mark.remove();
-          cp.insertNode(ctt);
-          $mark = $body.find('fuck');
-          top = $mark.position().top;
-          left = $mark.position().left;
-          $area.length && $area.remove();
-          $area = $('<div id="mention-area" class="mention-area"></div>');
-          $area.css({
-            top: top + $editor.offset().top,
-            left: left + $editor.offset().left
-          });
-          $('body').append($area);
-          $body.data('offset', of);
-        }
-      });
-
-      $ifa.on(event, function(e) {
-        _init();
-        var $this = $(this),
-            of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
-
-        if ($area.length) {
-          // if backspace
-          if (e.keyCode === 8 || e.keyCode === 46) {
-            if (of + 1 == $body.data('offset')) {
-              $mark.length && $mark.remove();
-              $area.remove();
-            }
-          }
-          if (e.keyCode === 8) {
-            if (of == $body.data('offset')) {
-              $area.hide();
-            }
-          }
-        }
-
-        // if have mention area
-        if ($area.length && [13, 38, 40].indexOf(e.keyCode) === -1) {
-          sof = $body.data('offset');
-          url = '/api/mention/?word=';
-          word = $.trim($mark.parent().text().substr(sof));
-          if (word.indexOf('@') !== -1) {
-            /*
-            if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
-              word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
-            } else {
-              word = $.trim($mark.parent().text().substr(sof + 1));
-            }
-            */
-            word = word.substr(word.lastIndexOf('@') + 1);
-          }
-
-          if (word && $mark.length) {
-            $.ajax({
-              url: url + word,
-              type: 'GET',
-              dataType: 'json',
-              success: function(data) {
-                if (data.status !== 'success') {
-                  noty(data);
-                  return;
-                }
-                var source = $('#mention-template').html(),
-                    render = template.compile(source),
-                    html = render(data);
-                $area = $('#mention-area');
-                $area.html(html).show();
-              }
-            });
-          }
-        }
-
-        // if no @
-        $mark.length || $area.hide();
-      });
-
-      $D.on('mouseover', '.mention-area .user-list a', function() {
-        var $this = $(this);
-        $this.parent().siblings().find('a').removeClass('cur');
-        $this.addClass('cur');
-      });
-
-      $D.on('click', '.mention-area .user-list a', function(e) {
-        _init();
-        e.preventDefault();
-        var $this = $(this),
-            url = $this.attr('data-url'),
-            username = $this.find('.username').attr('data-username'),
-            nickname = $this.find('.nickname').html(),
-            content = '&nbsp;<a class="mention" data-username="' + username + '" href="' + url + '">' + '@' + nickname + '</a>&nbsp;',
-            html = $mark.parent().html().replace('@' + word, content);
-
-        $mark.parent().html(html);
-        placeCaretAtEnd($editor[0]);
-        cbk && cbk();
-        $body.data('from', $body.find('fuck').parent().text().length);
-        $area.length && $area.remove();
-        $mark.length && $mark.remove();
-      });
-    })();
-  },
   ueReady = function() {
     var _ifa = window.frames['ueditor_0'],
         ifa = _ifa.document ? _ifa : _ifa.contentDocument,
@@ -413,12 +236,189 @@ var get_cookie = function(name) {
       }
     });
 
-    mention($ifa, ifa, $editor, event);
+    $.Collipa.mention($ifa, ifa, $editor, event);
 
   };
 
 $(function() {
-  $.extend({
+  $.Collipa = {
+    mention: function($ifa, ifa, $editor, event, cbk) {
+      event = event || 'keyup';
+      // mention
+      (function() {
+        var word,
+            sof,
+            url,
+            count,
+            $cur,
+            idx,
+            $body,
+            $mark,
+            $area,
+            _init = function() {
+              $body = $ifa.find('body');
+              $mark = $body.find('fuck');
+              $area = $('#mention-area');
+            };
+
+        $ifa.on('keydown', function(e) {
+          _init();
+          if ($area.length) {
+            count = $area.find('li').length;
+            $cur = $area.find('.cur');
+
+            // if enter
+            if (e.keyCode === 13) {
+              $cur.length && $cur.trigger('click') && e.preventDefault();
+              return;
+            }
+
+            // if up or down
+            if (e.keyCode === 38 && count > 0) {
+              if ($cur.length) {
+                idx = $area.find('li').index($cur.parent('li'));
+                $cur.removeClass('cur');
+                if (idx === 0) {
+                  $area.find('li').eq(count - 1).children('a').addClass('cur');
+                } else {
+                  $area.find('li').eq(idx - 1).children('a').addClass('cur');
+                }
+              } else {
+                $area.find('li').eq(count - 1).children('a').addClass('cur');
+              }
+              e.preventDefault();
+              return;
+            }
+            if ([40, 9].indexOf(e.keyCode) !== -1 && count > 0) {
+              if ($cur.length) {
+                idx = $area.find('li').index($cur.parent('li'));
+                $cur.removeClass('cur');
+                if (idx === count - 1) {
+                  $area.find('li').eq(0).children('a').addClass('cur');
+                } else {
+                  $area.find('li').eq(idx + 1).children('a').addClass('cur');
+                }
+              } else {
+                $area.find('li').eq(0).children('a').addClass('cur');
+              }
+              e.preventDefault();
+              return;
+            }
+          }
+        });
+
+        $ifa.on('keypress', function(e) {
+          _init();
+          var $this = $(this),
+              of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset,
+              cp = ifa.getSelection().getRangeAt(0),
+              ctt = cp.createContextualFragment('<fuck></fuck>'),
+              top,
+              left;
+
+          // if input @
+          if (e.charCode === 64) {
+            $mark.length && $mark.remove();
+            cp.insertNode(ctt);
+            $mark = $body.find('fuck');
+            top = $mark.position().top;
+            left = $mark.position().left;
+            $area.length && $area.remove();
+            $area = $('<div id="mention-area" class="mention-area"></div>');
+            $area.css({
+              top: top + $editor.offset().top,
+              left: left + $editor.offset().left
+            });
+            $('body').append($area);
+            $body.data('offset', of);
+          }
+        });
+
+        $ifa.on(event, function(e) {
+          _init();
+          var $this = $(this),
+              of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
+
+          if ($area.length) {
+            // if backspace
+            if (e.keyCode === 8 || e.keyCode === 46) {
+              if (of + 1 == $body.data('offset')) {
+                $mark.length && $mark.remove();
+                $area.remove();
+              }
+            }
+            if (e.keyCode === 8) {
+              if (of == $body.data('offset')) {
+                $area.hide();
+              }
+            }
+          }
+
+          // if have mention area
+          if ($area.length && [13, 38, 40].indexOf(e.keyCode) === -1) {
+            sof = $body.data('offset');
+            url = '/api/mention/?word=';
+            word = $.trim($mark.parent().text().substr(sof));
+            if (word.indexOf('@') !== -1) {
+              /*
+              if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
+                word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
+              } else {
+                word = $.trim($mark.parent().text().substr(sof + 1));
+              }
+              */
+              word = word.substr(word.lastIndexOf('@') + 1);
+            }
+
+            if (word && $mark.length) {
+              $.ajax({
+                url: url + word,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                  if (data.status !== 'success') {
+                    noty(data);
+                    return;
+                  }
+                  var source = $('#mention-template').html(),
+                      render = template.compile(source),
+                      html = render(data);
+                  $area = $('#mention-area');
+                  $area.html(html).show();
+                }
+              });
+            }
+          }
+
+          // if no @
+          $mark.length || $area.hide();
+        });
+
+        $D.on('mouseover', '.mention-area .user-list a', function() {
+          var $this = $(this);
+          $this.parent().siblings().find('a').removeClass('cur');
+          $this.addClass('cur');
+        });
+
+        $D.on('click', '.mention-area .user-list a', function(e) {
+          _init();
+          e.preventDefault();
+          var $this = $(this),
+              url = $this.attr('data-url'),
+              username = $this.find('.username').attr('data-username'),
+              nickname = $this.find('.nickname').html(),
+              content = '&nbsp;<a class="mention" data-username="' + username + '" href="' + url + '">' + '@' + nickname + '</a>&nbsp;',
+              html = $mark.parent().html().replace('@' + word, content);
+
+          $mark.parent().html(html);
+          placeCaretAtEnd($editor[0]);
+          cbk && cbk();
+          $body.data('from', $body.find('fuck').parent().text().length);
+          $area.length && $area.remove();
+          $mark.length && $mark.remove();
+        });
+      })();
+    },
     addBg: function() {
       var $bg = $('<div id="blur-bg"></div>'),
           oldOpacity;
@@ -426,6 +426,7 @@ $(function() {
       $bg.css({display: 'none'});
       $('body').append($bg);
       oldOpacity = $('#blur-bg').css('opacity');
+      $bg.stop(true, true);
       $bg.css({
             opacity: 0,
             display: 'block'
@@ -435,7 +436,9 @@ $(function() {
          });
     },
     removeBg: function() {
-      $('#blur-bg').animate({opacity: 0}, 500, function() {
+      var $bg = $('#blur-bg');
+      $bg.stop(true, true);
+      $bg.animate({opacity: 0}, 500, function() {
         $(this).remove();
       });
     },
@@ -444,7 +447,7 @@ $(function() {
           $old = $('#request'),
           $request = $('<div id="request"><div class="request-content"></div><div class="request-action"><a href="javascript:;" class="request-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="request-cancel nbtn nbtn-d">取消</a></div></div>'),
           cbk = function() {
-            $.removeBg();
+            $.Collipa.removeBg();
             $('#request').animate({opacity: 0}, 500, function() {
               $(this).remove();
             });
@@ -454,7 +457,8 @@ $(function() {
       $('#request .request-content').html(opt.content);
       $request = $('#request');
       $request.popslide();
-      $D.on('click', '#request .request-ok', function(e) {
+      $D.off('click', '#request .request-ok');
+      $D.one('click', '#request .request-ok', function(e) {
         e.preventDefault();
         if (opt.ok) {
           opt.ok({
@@ -475,7 +479,7 @@ $(function() {
         }
       });
     }
-  });
+  };
   $.fn.extend({
     fix: function() {
       var navSelector = this.selector,
@@ -701,14 +705,14 @@ $(function() {
           self.css({top: -self.height()})
               .show()
               .animate({top: oldTop}, 300);
-          $.addBg();
+          $.Collipa.addBg();
           break;
         case 'right':
           oldLeft = self.css('left');
           self.css({left: -self.width()})
               .show()
               .animate({left: oldLeft}, 300);
-          $.addBg();
+          $.Collipa.addBg();
           break;
       }
       return self;
@@ -757,7 +761,7 @@ $(function() {
   $D.on('click', '.layout-close', function(e) {
     e.preventDefault();
     $('#layout').fadeOut();
-    $.removeBg();
+    $.Collipa.removeBg();
   });
 
   $D.on('keypress', function(e) {
