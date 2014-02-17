@@ -1,17 +1,19 @@
 $(function() {
   var $editor = $('.tweet-editor'),
+      $toolbar = $('.tweet-box .toolbar'),
+      $btn = $('.tweet-submit'),
       editorEmpty = function() {
         var $placeholder = $('<div class="tweet-placeholder">输入内容吧...</div>');
-        $('.tweet-editor').html($placeholder)
-                          .css({
+        $editor.stop(true, true);
+        $editor.html($placeholder)
+                          .animate({
                             'min-height': 19
-                          });
-        $('.tweet-box .toolbar').addClass('dn');
+                          }, 160);
+        $toolbar.stop(true, true);
+        $toolbar.fadeOut(160);
       },
       checkBtn = function() {
-        var $editor = $('.tweet-editor'),
-            $btn = $('.tweet-submmit'),
-            text = $editor.text();
+        var text = $editor.text();
         if (text.length >= 3) {
           $btn.removeAttr('disabled');
         } else {
@@ -23,11 +25,15 @@ $(function() {
     checkBtn();
   });
   $D.on('focus', '.tweet-editor', function() {
+    var $this = $(this);
     $('.tweet-placeholder').remove();
-    $(this).css({
+    $this.stop(true, true);
+    $this.animate({
       'min-height': 60
+    }, 160, function() {
+      $toolbar.stop(true, true);
+      $toolbar.fadeIn(160);
     });
-    $('.tweet-box .toolbar').removeClass('dn');
   });
   $D.on('blur', '.tweet-editor', function() {
     var $this = $(this),
@@ -38,21 +44,20 @@ $(function() {
   });
   $D.on('keypress', '.tweet-editor', function(e) {
     if (e.ctrlKey && e.which == 13 || e.which == 10) {
-      $('.tweet-submmit').click();
+      $btn.click();
       $(this).blur();
     }
   });
-  $D.on('click', '.tweet-submmit', function(e) {
+  $D.on('click', '.tweet-submit', function(e) {
     e.preventDefault();
     var $this = $(this),
         $editor = $('.tweet-editor'),
-        $btn = $('.tweet-submmit'),
         $tweetList = $('.tweet-list .item-list'),
         content = $editor.html(),
         text = $.trim($editor.text()),
         url = '/tweet/create';
     if (text.length) {
-      $btn.attr('disabled', 'disabled');
+      $this.attr('disabled', 'disabled');
       $.ajax({
         url: url,
         type: 'post',
@@ -78,7 +83,7 @@ $(function() {
                                    opacity: 1
                                  });
           } else {
-            $btn.removeAttr('disabled');
+            $this.removeAttr('disabled');
             noty(data);
           }
         }

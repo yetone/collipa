@@ -1809,9 +1809,9 @@ ul.users li a div.username span {
   outline: 0;
 }
 
-.tweet-submmit,
-.tweet-submmit:hover,
-.tweet-submmit:active {
+.tweet-submit,
+.tweet-submit:hover,
+.tweet-submit:active {
   position: relative;
   padding-left: 30px;
   padding-right: 30px;
@@ -1823,7 +1823,7 @@ ul.users li a div.username span {
   color: #aaa;
 }
 
-.tweet-submmit .icon-br {
+.tweet-submit .icon-br {
   position: absolute;
   bottom: -4px;
   right: -5px;
@@ -1891,3 +1891,6 @@ ul.users li a div.username span {
   border-bottom-color: #e2e2e2;
 }
 
+.s-nav li:hover {
+  background-color: #fafafa;
+}
