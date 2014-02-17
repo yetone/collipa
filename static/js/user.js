@@ -104,7 +104,7 @@ $(function() {
       $this.removeAttr('disabled').removeClass('onloading').html("发送");
       if (data.status === 'success') {
         $layout.fadeOut();
-        $.removeBg();
+        $.Collipa.removeBg();
         noty(data);
 
         $textarea.val('');

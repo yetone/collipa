@@ -20,7 +20,7 @@ $(function() {
           $btn.attr('disabled', 'disabled');
         }
       };
-  mention($D, document, $editor, null, checkBtn);
+  $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('keyup', '.tweet-editor', function() {
     checkBtn();
   });
