@@ -26,6 +26,7 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
     created_at = Required(int, default=int(time.time()))
     updated_at = Required(int, default=int(time.time()))
     active = Required(int, default=int(time.time()))
+    has_img = Optional(unicode, 10)
 
     def __str__(self):
         return self.id
@@ -123,3 +124,7 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
     def get_timeline(page=1):
         tweets = select(rv for rv in Tweet).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
         return tweets
+
+    @property
+    def images(self):
+        return m.Image.select(lambda rv: rv.tweet_id == self.id)

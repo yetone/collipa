@@ -11,8 +11,9 @@ config = config.rec()
 
 class Reply(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
-    topic_id = Required(int)
-    tweet_id = Required(int, default=0)
+    topic_id = Optional(int)
+    tweet_id = Optional(int)
+    image_id = Optional(int)
 
     content = Required(LongUnicode)
 

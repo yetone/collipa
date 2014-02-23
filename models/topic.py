@@ -86,7 +86,7 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
 
         if limit:
             return replies[:limit]
-        if page:
+        elif page:
             return replies[(page - 1) * config.reply_paged: page *
                     config.reply_paged]
         else:

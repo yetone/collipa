@@ -48,6 +48,7 @@ routers = [
     (r"/tweet/create[/]*", tweet.CreateHandler),
     (r"/tweet/(\d+)[/]*", tweet.HomeHandler),
 
+    (r"/image/(\d+)[/]*", image.HomeHandler),
     (r"/image/upload[/]*", image.UploadHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
     (r"/upload/(\w+)[/]*", upload.UploadHandler),

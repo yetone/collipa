@@ -481,6 +481,43 @@ $(function() {
     }
   };
   $.fn.extend({
+    imageUpload: function(opt) {
+      opt = $.extend({
+        url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
+        paramString: '',
+      }, opt);
+      this.fileupload({
+        url: opt.url + opt.paramString,
+        type: 'POST',
+        dataType: 'json',
+        sequentialUploads: true,
+        autoUpload: true,
+        progressall: function(e, data) {
+          var progress = parseInt(data.loaded / data.total * 100, 10),
+              $status_msg = $('.status-msg');
+          if (!$status_msg.length) {
+            $('body').append('<div class="status-msg"></div>');
+            $status_msg = $('.status-msg');
+          }
+          $status_msg.addClass('loader-bar').html('图片上传进度：' + progress + '%');
+          if (progress == 100) {
+            $status_msg.removeClass('loader-bar').html('图片上传完毕');
+            setTimeout(function() {$status_msg.html('');}, 500);
+          }
+        },
+        done: function(e, result) {
+          var $status_msg = $('.status-msg'),
+              data = result.result;
+
+          if (data.status === "success") {
+            opt.cbk && opt.cbk(data);
+          } else {
+            $status_msg.removeClass('loader-bar').html('图片上传失败');
+            noty(data);
+          }
+        }
+      });
+    },
     fix: function() {
       var navSelector = this.selector,
           make_fix = function($nav) {

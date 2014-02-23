@@ -6,7 +6,7 @@ import config
 from ._base import BaseHandler
 from pony.orm import *
 
-from models import Tweet
+from models import Tweet, Image
 from helpers import strip_xss_tags, strip_tags
 
 config = config.rec()
@@ -74,9 +74,24 @@ class CreateHandler(BaseHandler):
             return
         user = self.current_user
         content = self.get_argument('content', None)
+        image_ids = self.get_argument('image_ids', None)
+        images = []
         if content and len(strip_tags(content)) >= 3:
             tweet = Tweet(content=strip_xss_tags(content), user_id=user.id).save()
             tweet.put_notifier()
+            if image_ids:
+                image_ids = image_ids.split(',')
+                for image_id in image_ids:
+                    image_id = int(image_id)
+                    image = Image.get(id=image_id)
+                    if image:
+                        image.tweet_id = tweet.id
+                        images.append({
+                            'id': image.id,
+                            'src': image.path,
+                            })
+            if images != []:
+                tweet.has_img = 'true'
             result = {
                         'status'          : 'success',
                         'message'         : '推文创建成功',
@@ -89,7 +104,8 @@ class CreateHandler(BaseHandler):
                         'author_nickname' : tweet.author.nickname,
                         'tweet_url'       : tweet.url,
                         'created'         : tweet.created,
-                        'id'              : tweet.id
+                        'id'              : tweet.id,
+                        'images'          : images,
                     }
             if self.is_ajax:
                 return self.write(result)
