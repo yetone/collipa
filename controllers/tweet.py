@@ -88,7 +88,9 @@ class CreateHandler(BaseHandler):
                         image.tweet_id = tweet.id
                         images.append({
                             'id': image.id,
-                            'src': image.path,
+                            'path': image.path,
+                            'width': image.width,
+                            'height': image.height,
                             })
             if images != []:
                 tweet.has_img = 'true'

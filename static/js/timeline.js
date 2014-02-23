@@ -164,6 +164,7 @@ $(function() {
   $D.on('click', '.tweet-img-content', function() {
     var $this = $(this),
         $covers = $this.find('.img-cover'),
+        $dns = $this.find('.img-cover.dn'),
         $ul = $this.prev('.thumbs').find('ul'),
         $thumbs = $ul.find('li'),
         $area = $this.parents('.tweet-img-area');
@@ -176,6 +177,8 @@ $(function() {
       $covers.eq(0).show();
     } else {
       $area.removeClass('open').addClass('close');
+      $covers.show();
+      $dns.hide();
     }
   });
   $D.on('click', '.thumbs li', function() {

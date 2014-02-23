@@ -18,6 +18,31 @@
     <div class="content tweet-content">
       <%== content %>
     </div>
+    <% if (images.length > 0) { %>
+    <div class="tweet-img-area close">
+      <div class="thumbs pr">
+        <ul class="clr">
+          <% for (var i = 0, l = images.length; i < l; i++) { %>
+          <% var img = images[i] %>
+          <li>
+            <img data-id="<%= img.id %>" src="<%= img.path %>">
+          </li>
+          <% } %>
+        </ul>
+      </div>
+      <span class="dib pr tweet-img-content">
+        <% for (var i = 0, l = images.length; i < l; i++) { %>
+        <% var img = images[i] %>
+        <span class="img-cover img-cover-<%= i+1 %><% if (i > 2) { %> dn<% } %>">
+            <img data-width="<%= img.width %>" data-height="<%= img.height %>" data-id="<%= img.id %>" src="<%= img.path %>">
+            <% if (i === 0 && images.length > 1) { %>
+            <div class="label"><%= images.length %>张图片</div>
+            <% } %>
+          </span>
+        <% } %>
+      </span>
+    </div>
+    <% } %>
     <div class="meta">
       <ul class="vote clearfix hidden">
         <li class="up">
