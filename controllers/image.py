@@ -7,11 +7,48 @@ import os
 import sys
 import logging
 import tempfile
-import Image
+import Image as Img
 from ._base import BaseHandler
 import tornado.web
+from models import Image
 from helpers import strip_tags, get_year, get_month
 from pony.orm import *
+import config
+from .user import EmailMixin
+
+config = config.rec()
+
+class HomeHandler(BaseHandler, EmailMixin):
+    @db_session
+    def get(self, image_id):
+        image_id = int(image_id)
+        image = Image.get(id=image_id)
+        if not image:
+            raise tornado.web.HTTPError(404)
+        return self.render("image/index.html", image=image)
+
+    @db_session
+    @tornado.web.authenticated
+    def delete(self, image_id):
+        image = Image.get(id=image_id)
+        if not image:
+            return self.redirect_next_url()
+        if self.current_user.is_admin and image.user_id != self.current_user.id:
+            subject = "图片删除通知 - " + config.site_name
+            template = (
+                    '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
+                    '您在 %(site) 的图片由于违反社区规定而被删除。</p>'
+                    ) % {
+                            'nickname': image.author.nickname,
+                            'site': config.site_name,
+                            }
+            self.send_email(self, image.author.email, subject, template)
+        if image.user_id == self.current_user.id:
+            image.remove()
+            result = {'status': 'success', 'message': '已成功删除'}
+        else:
+            result = {'status': 'error', 'message': '你没有权限啊, baby'}
+        return self.write(result)
 
 class UploadHandler(BaseHandler):
     @db_session
@@ -39,7 +76,7 @@ class UploadHandler(BaseHandler):
         tmp_file.write(send_file['body'])
         tmp_file.seek(0)
         try:
-            image_one = Image.open(tmp_file.name)
+            image_one = Img.open(tmp_file.name)
         except IOError, error:
             logging.info(error)
             logging.info('+' * 30 + '\n')
@@ -72,7 +109,36 @@ class UploadHandler(BaseHandler):
         tmp_file.close()
         path = '/' +\
             '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+        album_id = self.get_argument('album_id', '')
+        if not album_id:
+            album = user.default_album
+        else:
+            album = m.Album.get(id=album_id)
+            if not (album and album.user_id != user.id):
+                album = user.default_album
+        image = Image(user_id=user.id,
+                    album_id=album.id,
+                    path=path,
+                    width=width,
+                    height=height).save()
         if self.is_ajax:
-            return self.write({'path': path, 'status': "success", 'message':
-                '上传成功'})
+            return self.write({
+                'id': image.id,
+                'path': path,
+                'status': 'success',
+                'message': '上传成功',
+                'author': {
+                    'id': user.id,
+                    'name': user.name,
+                    'nickname': user.nickname,
+                    'avatar': user.avatar,
+                    'url': user.url,
+                    },
+                'album': {
+                    'id': album.id,
+                    'name': album.name,
+                    'description': album.description,
+                    'url': album.url,
+                    },
+                })
         return

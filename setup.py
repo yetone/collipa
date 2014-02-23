@@ -23,6 +23,18 @@ def init_node():
 def merge():
     try:
         c.execute("use %s" % config.db_name)
+        """
+        c.execute("alter table Image add width int(11) default 0")
+        c.execute("alter table Image add height int(11) default 0")
+        """
+        c.execute("alter table Tweet add has_img varchar(10)")
+        c.execute("alter table Reply add image_id int(11)")
+        c.execute("alter table User add album_count int(11) default 0")
+        c.execute("alter table User add image_count int(11) default 0")
+        c.execute("alter table Up add album_id int(11)")
+        c.execute("alter table Up add image_id int(11)")
+        c.execute("alter table Report add album_id int(11)")
+        c.execute("alter table Report add image_id int(11)")
         c.execute("alter table Block add tweet_id int(11)")
         c.execute("alter table Notification add tweet_id int(11)")
         c.execute("alter table Up add tweet_id int(11)")
@@ -62,7 +74,10 @@ def main(argv):
                 m.close()
             except:
                 pass
-            merge()
+            try:
+                merge()
+            except:
+                pass
             from models import db
             db.generate_mapping(create_tables=True)
             init_node()
