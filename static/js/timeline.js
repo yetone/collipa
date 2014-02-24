@@ -33,6 +33,37 @@ $(function() {
           $preview.addClass('dn');
         }
       },
+      loadedId = [],
+      loadNextPage = function() {
+        var $ul = $('.tweet-list .item-list'),
+            $lis = $ul.find('li.item'),
+            id = $lis.last().data('id'),
+            url = '/timeline?from_id=' + id,
+            $ploading = $('<span class="ploading style-2"></span>');
+        if (loadedId.indexOf(id) !== -1) {
+          return;
+        }
+        loadedId.push(id);
+        if (!$('.ploading').length) {
+          $('body').append($ploading);
+        }
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'html',
+          success: function(d) {
+            var $c = $(d).find('.tweet-list li.item');
+            $ul.append($c);
+            $ploading = $('.ploading');
+            $ploading.animate(
+              {opacity: 0},
+              function() {
+                $ploading.remove();
+              }
+            );
+          }
+        });
+      },
       blurTimer;
   $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('keyup', '.tweet-editor', function() {
@@ -160,5 +191,8 @@ $(function() {
         noty(jsn);
       }
     });
+  });
+  $W.on('scroll', function() {
+    ($(document).scrollTop() + $(window).height() > $(document).height() - 300) && loadNextPage();
   });
 });
