@@ -16,6 +16,7 @@
       {% if tweet.has_img %}
       {% set images = tweet.images %}
       <div class="tweet-img-area close">
+        {% if len(images) > 1 %}
         <div class="thumbs pr">
           <ul class="clr">
             {% for img in images %}
@@ -25,6 +26,7 @@
             {% end %}
           </ul>
         </div>
+        {% end %}
         <span class="dib pr tweet-img-content">
           {% for i, img in enumerate(images) %}
           <span class="img-cover img-cover-{{ i+1 }}{% if i > 2 %} dn{% end %}">

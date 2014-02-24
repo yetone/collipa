@@ -1,6 +1,9 @@
 {% extends "../layout.html" %}
 
 {% block subtitle %}推文{% end %}
+{% block script %}
+<script type="text/javascript" src="{{ static_url('js/tweet.js') }}"></script>
+{% end %}
 {% block body %}
 <ul class="item-list bgw">
   <li id="tweet-{{ tweet.id }}" data-id="{{ tweet.id }}" class="item clearfix">
@@ -15,6 +18,32 @@
       <div class="content tweet-content">
         {{ tweet.content }}
       </div>
+      {% if tweet.has_img %}
+      {% set images = tweet.images %}
+      <div class="tweet-img-area close">
+        {% if len(images) > 1 %}
+        <div class="thumbs pr">
+          <ul class="clr">
+            {% for img in images %}
+            <li>
+              <img data-id="{{ img.id }}" src="{{ img.path }}">
+            </li>
+            {% end %}
+          </ul>
+        </div>
+        {% end %}
+        <span class="dib pr tweet-img-content">
+          {% for i, img in enumerate(images) %}
+          <span class="img-cover img-cover-{{ i+1 }}{% if i > 2 %} dn{% end %}">
+            <img data-width="{{ img.width }}" data-height="{{ img.height }}" data-id="{{ img.id }}" src="{{ img.path }}">
+              {% if i == 0 and len(images) > 1 %}
+              <div class="label">{{ len(images) }}张图片</div>
+              {% end %}
+            </span>
+          {% end %}
+        </span>
+      </div>
+      {% end %}
       <div class="meta">
         {% if current_user %}
         <ul class="vote clearfix hidden">

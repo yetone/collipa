@@ -20,6 +20,7 @@
     </div>
     <% if (images.length > 0) { %>
     <div class="tweet-img-area close">
+      <% if (images.length > 1) { %>
       <div class="thumbs pr">
         <ul class="clr">
           <% for (var i = 0, l = images.length; i < l; i++) { %>
@@ -30,6 +31,7 @@
           <% } %>
         </ul>
       </div>
+      <% } %>
       <span class="dib pr tweet-img-content">
         <% for (var i = 0, l = images.length; i < l; i++) { %>
         <% var img = images[i] %>
@@ -93,6 +95,7 @@
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
 <!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
 <script type="text/javascript" src="{{ static_url('js/timeline.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/tweet.js') }}"></script>
 {% end %}
 {% block body %}
 {% if current_user %}
