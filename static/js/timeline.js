@@ -19,7 +19,52 @@ $(function() {
         } else {
           $btn.attr('disabled', 'disabled');
         }
-      };
+      },
+      previewEmpty = function() {
+        var $preview = $('.tweet-preview');
+        $preview.html('');
+        checkPreview();
+      },
+      checkPreview = function() {
+        var $preview = $('.tweet-preview');
+        if ($preview.find('img').length > 0) {
+          $preview.removeClass('dn');
+        } else {
+          $preview.addClass('dn');
+        }
+      },
+      loadedId = [],
+      loadNextPage = function() {
+        var $ul = $('.tweet-list .item-list'),
+            $lis = $ul.find('li.item'),
+            id = $lis.last().data('id'),
+            url = '/timeline?from_id=' + id,
+            $ploading = $('<span class="ploading style-2"></span>');
+        if (loadedId.indexOf(id) !== -1) {
+          return;
+        }
+        loadedId.push(id);
+        if (!$('.ploading').length) {
+          $('body').append($ploading);
+        }
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'html',
+          success: function(d) {
+            var $c = $(d).find('.tweet-list li.item');
+            $ul.append($c);
+            $ploading = $('.ploading');
+            $ploading.animate(
+              {opacity: 0},
+              function() {
+                $ploading.remove();
+              }
+            );
+          }
+        });
+      },
+      blurTimer;
   $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('keyup', '.tweet-editor', function() {
     checkBtn();
@@ -39,7 +84,9 @@ $(function() {
     var $this = $(this),
         text = $.trim($this.text());
     if (!text.length) {
-      editorEmpty();
+      blurTimer = setTimeout(function() {
+        editorEmpty();
+      }, 400);
     }
   });
   $D.on('keypress', '.tweet-editor', function(e) {
@@ -53,16 +100,23 @@ $(function() {
     var $this = $(this),
         $editor = $('.tweet-editor'),
         $tweetList = $('.tweet-list .item-list'),
+        $imgs = $('.tweet-preview img'),
         content = $editor.html(),
         text = $.trim($editor.text()),
+        image_ids = [],
         url = '/tweet/create';
     if (text.length) {
       $this.attr('disabled', 'disabled');
+      $imgs.each(function(i, e) {
+        var $e = $(e);
+        image_ids.push($e.data('id'));
+      });
       $.ajax({
         url: url,
         type: 'post',
         data: {
           content: content,
+          image_ids: image_ids.join(','),
           '_xsrf': get_cookie('_xsrf')
         },
         success: function(data) {
@@ -75,7 +129,9 @@ $(function() {
             } else {
               $('.tweet-list').html('<ul class="item-list">' + html + '</ul>');
             }
-            editorEmpty();
+            //editorEmpty();
+            previewEmpty();
+            $editor.html('').focus();
             $('#show-' + data.id).css({
                                    opacity: 0
                                  })
@@ -103,5 +159,40 @@ $(function() {
     $textarea.focus();
     placeCaretAtEnd($textarea[0]);
     checkBtn();
+  });
+  $('#pic-select').imageUpload({
+    cbk: function(data) {
+      var img = '<span class="img-cover"><img data-id="' + data.id + '" src="' + data.path + '"><i class="icon-remove-circle"></i></span>',
+          $area = $('.tweet-preview');
+      $area.append(img);
+      checkPreview();
+    }
+  });
+  $D.on('click', '.add-img', function(e) {
+    e.preventDefault();
+    clearTimeout(blurTimer);
+    $editor.focus();
+    $('#pic-select').click();
+  });
+  $D.on('click', '.tweet-preview .img-cover i', function() {
+    var $this = $(this),
+        $imgCover = $this.parent('.img-cover'),
+        id = $imgCover.find('img').data('id'),
+        url = '/image/' + id;
+    clearTimeout(blurTimer);
+    $editor.focus();
+    $.ajax({
+      url: url + '?_xsrf=' + get_cookie('_xsrf'),
+      type: 'DELETE',
+      success: function(jsn) {
+        $imgCover.fadeOut(function() {
+          $(this).remove();
+        });
+        noty(jsn);
+      }
+    });
+  });
+  $W.on('scroll', function() {
+    ($(document).scrollTop() + $(window).height() > $(document).height() - 300) && loadNextPage();
   });
 });

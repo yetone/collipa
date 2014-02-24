@@ -57,6 +57,20 @@ class ModelMixin(object):
             return None
 
     @cached_property
+    def album(self):
+        try:
+            return m.Album[self.album_id]
+        except:
+            return None
+
+    @cached_property
+    def image(self):
+        try:
+            return m.Image[self.image_id]
+        except:
+            return None
+
+    @cached_property
     def node(self):
         try:
             return m.Node[self.node_id]

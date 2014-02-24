@@ -21,3 +21,5 @@ from .block import *
 from .message import *
 from .message_box import *
 from .history import *
+from .album import *
+from .image import *

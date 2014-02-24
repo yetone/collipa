@@ -31,6 +31,8 @@ class User(db.Entity, SessionMixin, ModelMixin):
     topic_count = Required(int, default=0)
     reply_count = Required(int, default=0)
     tweet_count = Required(int, default=0)
+    album_count = Required(int, default=0)
+    image_count = Required(int, default=0)
 
     """ 获得的 thank, up, down, report, collect 数目, 便于用户等级评估
     """
@@ -419,6 +421,103 @@ class User(db.Entity, SessionMixin, ModelMixin):
         else:
             return replies
 
+    def get_tweets(self, page=1, category='all', order_by='created_at', limit=None):
+        if limit:
+            tweets = select(rv for rv in m.Tweet if rv.user_id == self.id).order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5))
+            return tweets[:limit]
+
+        if category == 'all':
+            tweets = select(rv for rv in m.Tweet if rv.user_id == self.id)
+        else:
+            tweets = select(rv for rv in m.Tweet if rv.user_id == self.id and
+                    rv.role == category)
+
+        if order_by == 'created_at':
+            tweets = tweets.order_by(lambda rv: desc(rv.created_at))
+        elif order_by == 'up_count':
+            tweets = tweets.order_by(lambda rv: desc(rv.up_count))
+        elif order_by == 'thank_count':
+            tweets = tweets.order_by(lambda rv: desc(rv.thank_count))
+        elif order_by == 'smart':
+            tweets = tweets.order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5 + rv.created_at / 4))
+
+        if page:
+            return tweets[(page - 1) * config.paged: page * config.paged]
+        else:
+            return tweets
+
+    def get_albums(self, page=1, category='all', order_by='created_at', limit=None):
+        if limit:
+            albums = select(rv for rv in m.Album if rv.user_id == self.id).order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5))
+            return albums[:limit]
+
+        if category == 'all':
+            albums = select(rv for rv in m.Album if rv.user_id == self.id)
+        else:
+            albums = select(rv for rv in m.Album if rv.user_id == self.id and
+                    rv.role == category)
+
+        if order_by == 'created_at':
+            albums = albums.order_by(lambda rv: desc(rv.created_at))
+        elif order_by == 'up_count':
+            albums = albums.order_by(lambda rv: desc(rv.up_count))
+        elif order_by == 'thank_count':
+            albums = albums.order_by(lambda rv: desc(rv.thank_count))
+        elif order_by == 'smart':
+            albums = albums.order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5))
+
+        if page:
+            return albums[(page - 1) * config.paged: page * config.paged]
+        else:
+            return albums
+
+    def get_images(self, page=1, category='all', order_by='created_at', limit=None):
+        if limit:
+            images = select(rv for rv in m.Image if rv.user_id == self.id).order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5))
+            return images[:limit]
+
+        if category == 'all':
+            images = select(rv for rv in m.Image if rv.user_id == self.id)
+        else:
+            images = select(rv for rv in m.Image if rv.user_id == self.id and
+                    rv.role == category)
+
+        if order_by == 'created_at':
+            images = images.order_by(lambda rv: desc(rv.created_at))
+        elif order_by == 'up_count':
+            images = images.order_by(lambda rv: desc(rv.up_count))
+        elif order_by == 'thank_count':
+            images = images.order_by(lambda rv: desc(rv.thank_count))
+        elif order_by == 'smart':
+            images = images.order_by(lambda rv: desc((rv.collect_count +
+                rv.thank_count) * 10 +
+                (rv.up_count - rv.down_count) * 5 + rv.created_at / 4))
+
+        if page:
+            return images[(page - 1) * config.paged: page * config.paged]
+        else:
+            return images
+
+    @property
+    def default_album(self):
+        album = m.Album.select(lambda rv: rv.user_id == self.id and
+                rv.role == 'default').first()
+        if not album:
+            album = m.Album(user_id = self.id,
+                            name = u'默认专辑',
+                            role = 'default').save()
+        return album
+
     @property
     def followed_node_ids(self):
         return select(rv.node_id for rv in m.Follow if rv.who_id ==
@@ -429,11 +528,27 @@ class User(db.Entity, SessionMixin, ModelMixin):
         return select(rv.whom_id for rv in m.Follow if rv.who_id ==
                 self.id and rv.whom_id is not None)
 
-    def get_timeline(self, page=1):
+    def get_timeline(self, page=1, from_id=0, count=0):
         user_ids = self.followed_user_ids[:] or [0]
         user_ids.append(self.id)
-        tweets = select(rv for rv in m.Tweet if rv.user_id in
-                user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+        if from_id != 0:
+            if count == 0:
+                count = config.paged
+            all_ids = select(rv.id for rv in m.Tweet if rv.user_id in
+                    user_ids).order_by(lambda rv: desc(rv.created_at))
+            for i, id in enumerate(all_ids):
+                if i == 1000:
+                    return []
+                if id == from_id:
+                    break
+            tweet_ids = all_ids[i + 1: i + 1 + count]
+            if tweet_ids != []:
+                tweets = select(rv for rv in m.Tweet if rv.id in tweet_ids)[:][::-1]
+            else:
+                tweets = []
+        else:
+            tweets = select(rv for rv in m.Tweet if rv.user_id in
+                    user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
         return tweets
 
     def get_followed_topics(self, role=None, category='all', order_by='created_at', page=1):

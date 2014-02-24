@@ -15,6 +15,8 @@ class Report(db.Entity, SessionMixin, ModelMixin):
     topic_id = Optional(int)
     reply_id = Optional(int)
     tweet_id = Optional(int)
+    album_id = Optional(int)
+    image_id = Optional(int)
 
     def __str__(self):
         return self.id

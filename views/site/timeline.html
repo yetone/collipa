@@ -18,6 +18,33 @@
     <div class="content tweet-content">
       <%== content %>
     </div>
+    <% if (images.length > 0) { %>
+    <div class="tweet-img-area close">
+      <% if (images.length > 1) { %>
+      <div class="thumbs pr">
+        <ul class="clr">
+          <% for (var i = 0, l = images.length; i < l; i++) { %>
+          <% var img = images[i] %>
+          <li>
+            <img data-id="<%= img.id %>" src="<%= img.path %>">
+          </li>
+          <% } %>
+        </ul>
+      </div>
+      <% } %>
+      <span class="dib pr tweet-img-content">
+        <% for (var i = 0, l = images.length; i < l; i++) { %>
+        <% var img = images[i] %>
+        <span class="img-cover img-cover-<%= i+1 %><% if (i > 2) { %> dn<% } %>">
+            <img data-width="<%= img.width %>" data-height="<%= img.height %>" data-id="<%= img.id %>" src="<%= img.path %>">
+            <% if (i === 0 && images.length > 1) { %>
+            <div class="label"><%= images.length %>张图片</div>
+            <% } %>
+          </span>
+        <% } %>
+      </span>
+    </div>
+    <% } %>
     <div class="meta">
       <ul class="vote clearfix hidden">
         <li class="up">
@@ -55,7 +82,20 @@
     </div>
   </li>
 </script>
+<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+<script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.iframe-transport.js') }}"></script>
+<!-- The basic File Upload plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload.js') }}"></script>
+<!-- The File Upload file processing plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-fp.js') }}"></script>
+<!-- The File Upload user interface plugin -->
+<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-ui.js') }}"></script>
+<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
+<!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
 <script type="text/javascript" src="{{ static_url('js/timeline.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/tweet.js') }}"></script>
 {% end %}
 {% block body %}
 {% if current_user %}
@@ -67,7 +107,10 @@
         </div>
       </div>
     </div>
+    <div class="tweet-preview dn">
+    </div>
     <div class="toolbar clearfix dn">
+      <a title="添加图片" class="add-img" href="javascript:;"><i class="icon-picture"></i></a>
       <button class="nbtn nbtn-p fr tweet-submit" type="button" disabled="disabled">
         发推
         <i class="icon-br"></i>
@@ -78,4 +121,8 @@
 <div class="organ tweet-list">
   {% module Template("modules/tweet_list.html", tweets=tweets) %}
 </div>
+<form style="display: none;" method="post" action="/image/upload" enctype="multipart/form-data" method="post">
+  <input id='pic-select' type="file" name="myimage" data-url="/image/upload" multiple />
+  {{ xsrf_form_html() }}
+</form>
 {% end %}

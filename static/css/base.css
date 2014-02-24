@@ -40,6 +40,18 @@ body {
 .content {
   line-height: 180%;
 }
+.dib {
+  display: inline-block;
+}
+.db {
+  display: block;
+}
+.di {
+  display: inline;
+}
+.pr {
+  position: relative;
+}
 
 .tail {
   display: inline;
@@ -1893,4 +1905,120 @@ ul.users li a div.username span {
 
 .s-nav li:hover {
   background-color: #fafafa;
+}
+
+.tweet-box .add-img {
+  line-height: 34px;
+  margin-left: 30px;
+}
+.tweet-box .add-img i {
+  font-size: 16px;
+}
+.tweet-preview {
+  overflow: hidden;
+  padding: 20px 20px 0 0;
+}
+.tweet-preview img {
+  max-height: 200px;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+.img-cover {
+  position: relative;
+  display: inline-block;
+}
+.img-cover.dn {
+  display: none;
+}
+.img-cover i {
+  display: none;
+  position: absolute;
+  font-size: 20px;
+  top: -10px;
+  right: -10px;
+  cursor: pointer;
+}
+.img-cover:hover i {
+  display: inline;
+}
+.tweet-img-area {
+  padding-top: 10px;
+}
+.tweet-img-area .img-cover {
+}
+.tweet-img-content img {
+  box-shadow: 0 0 3px #555;
+  cursor: pointer;
+}
+.open .tweet-img-content img {
+  max-width: 580px;
+}
+.close .tweet-img-content img {
+  height: 200px;
+}
+.close .tweet-img-content .label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 24px;
+  line-height: 24px;
+  padding: 0 10px;
+  background-color: #fff;
+  opacity: 0.8;
+  z-index: 12;
+  width: 100%;
+}
+.open .tweet-img-content .label {
+  display: none;
+}
+.close .tweet-img-content .img-cover-1 {
+  z-index: 10;
+}
+.close .tweet-img-content .img-cover-2 {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 100%;
+  z-index: 8;
+}
+.close .tweet-img-content .img-cover-3 {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 100%;
+  z-index: 6;
+}
+.close .tweet-img-content .img-cover-2 img,
+.close .tweet-img-content .img-cover-3 img {
+  width: 100%;
+}
+.close .thumbs {
+  display: none;
+}
+.thumbs {
+  overflow: hidden;
+  margin-bottom: 10px;
+  height: 68px;
+}
+.thumbs li {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 4px;
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  border: 3px solid #FFF;
+  cursor: pointer;
+  box-shadow: 0 0 3px #aaa;
+}
+.thumbs li.cur {
+  border: 3px solid #3276b1;
+}
+.thumbs img {
+  width: 100%;
+}
+.thumbs ul {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
