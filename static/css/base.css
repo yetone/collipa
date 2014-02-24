@@ -1968,6 +1968,9 @@ ul.users li a div.username span {
   z-index: 12;
   width: 100%;
 }
+.open .tweet-img-content .label {
+  display: none;
+}
 .close .tweet-img-content .img-cover-1 {
   z-index: 10;
 }
