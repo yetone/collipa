@@ -2022,3 +2022,9 @@ ul.users li a div.username span {
   top: 0;
   left: 0;
 }
+.retweet .icon-reply {
+  color: #ccc;
+}
+.item:hover .retweet .icon-reply {
+  color: rgb(122, 122, 122);
+}
