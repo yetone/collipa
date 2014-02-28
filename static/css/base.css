@@ -1968,6 +1968,9 @@ ul.users li a div.username span {
   z-index: 12;
   width: 100%;
 }
+.open .tweet-img-content .label {
+  display: none;
+}
 .close .tweet-img-content .img-cover-1 {
   z-index: 10;
 }
@@ -2018,4 +2021,10 @@ ul.users li a div.username span {
   position: absolute;
   top: 0;
   left: 0;
+}
+.retweet .icon-reply {
+  color: #ccc;
+}
+.item:hover .retweet .icon-reply {
+  color: rgb(122, 122, 122);
 }

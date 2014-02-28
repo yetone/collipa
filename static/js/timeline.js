@@ -33,6 +33,37 @@ $(function() {
           $preview.addClass('dn');
         }
       },
+      loadedId = [],
+      loadNextPage = function() {
+        var $ul = $('.tweet-list .item-list'),
+            $lis = $ul.find('li.item'),
+            id = $lis.last().data('id'),
+            url = '/timeline?from_id=' + id,
+            $ploading = $('<span class="ploading style-2"></span>');
+        if (loadedId.indexOf(id) !== -1) {
+          return;
+        }
+        loadedId.push(id);
+        if (!$('.ploading').length) {
+          $('body').append($ploading);
+        }
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'html',
+          success: function(d) {
+            var $c = $(d).find('.tweet-list li.item');
+            $ul.append($c);
+            $ploading = $('.ploading');
+            $ploading.animate(
+              {opacity: 0},
+              function() {
+                $ploading.remove();
+              }
+            );
+          }
+        });
+      },
       blurTimer;
   $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('keyup', '.tweet-editor', function() {
@@ -161,49 +192,7 @@ $(function() {
       }
     });
   });
-  $D.on('click', '.tweet-img-content', function() {
-    var $this = $(this),
-        $covers = $this.find('.img-cover'),
-        $dns = $this.find('.img-cover.dn'),
-        $ul = $this.prev('.thumbs').find('ul'),
-        $thumbs = $ul.find('li'),
-        $area = $this.parents('.tweet-img-area');
-    $ul.width(($thumbs.outerWidth() + 10) * $thumbs.length);
-    if ($area.hasClass('close')) {
-      $area.removeClass('close').addClass('open');
-      $thumbs.removeClass('cur');
-      $thumbs.eq(0).addClass('cur');
-      $covers.hide();
-      $covers.eq(0).show();
-    } else {
-      $area.removeClass('open').addClass('close');
-      $covers.show();
-      $dns.hide();
-    }
-  });
-  $D.on('click', '.thumbs li', function() {
-    var $this = $(this),
-        $area = $this.parents('.tweet-img-area'),
-        $ul = $this.parent('ul'),
-        $thumbs = $ul.find('li'),
-        $covers = $area.find('.img-cover'),
-        idx = $thumbs.index($this[0]);
-    $covers.hide();
-    $covers.eq(idx).show();
-    $thumbs.removeClass('cur');
-    $this.addClass('cur');
-  });
-  $D.on('mousemove', '.thumbs', function(e) {
-    var $this = $(this),
-        $ul = $this.find('ul'),
-        pos = e.pageX - $this.offset().left,
-        posP = pos / $this.width(),
-        listP = $ul.width() * posP,
-        offset = pos - listP;
-    if ($ul.width() > $this.width()) {
-      $ul.css({
-        'left': offset
-      });
-    }
+  $W.on('scroll', function() {
+    ($(document).scrollTop() + $(window).height() > $(document).height() - 300) && loadNextPage();
   });
 });

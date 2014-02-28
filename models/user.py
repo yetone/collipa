@@ -528,11 +528,27 @@ class User(db.Entity, SessionMixin, ModelMixin):
         return select(rv.whom_id for rv in m.Follow if rv.who_id ==
                 self.id and rv.whom_id is not None)
 
-    def get_timeline(self, page=1):
+    def get_timeline(self, page=1, from_id=0, count=0):
         user_ids = self.followed_user_ids[:] or [0]
         user_ids.append(self.id)
-        tweets = select(rv for rv in m.Tweet if rv.user_id in
-                user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+        if from_id != 0:
+            if count == 0:
+                count = config.paged
+            all_ids = select(rv.id for rv in m.Tweet if rv.user_id in
+                    user_ids).order_by(lambda rv: desc(rv.created_at))
+            for i, id in enumerate(all_ids):
+                if i == 1000:
+                    return []
+                if id == from_id:
+                    break
+            tweet_ids = all_ids[i + 1: i + 1 + count]
+            if tweet_ids != []:
+                tweets = select(rv for rv in m.Tweet if rv.id in tweet_ids)[:][::-1]
+            else:
+                tweets = []
+        else:
+            tweets = select(rv for rv in m.Tweet if rv.user_id in
+                    user_ids).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
         return tweets
 
     def get_followed_topics(self, role=None, category='all', order_by='created_at', page=1):

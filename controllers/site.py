@@ -58,10 +58,11 @@ class TimelineHandler(BaseHandler):
     @db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
+        from_id = force_int(self.get_argument('from_id', 0), 0)
         user = self.current_user
         if not user:
             return self.redirect('/timeline/public')
-        tweets = user.get_timeline(page=page)
+        tweets = user.get_timeline(page=page, from_id=from_id)
         return self.render("site/timeline.html",
                             tweets=tweets,
                             page=page)
