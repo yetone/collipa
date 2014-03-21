@@ -454,7 +454,6 @@ a.node:hover {
 }
 .nav li {
   float: left;
-  margin-right: 15px;
 }
 
 @media screen and (max-width: 720px) {
@@ -537,9 +536,10 @@ a.node:hover {
     top: 8px !important;
   }
 }
+
 .nav a {
   display: block;
-  padding: 8px 12px 4px 12px;
+  padding: 8px 18px 4px 18px;
   color: #555;
 }
 /*
