@@ -14,6 +14,12 @@
         <a class="author-name" href="{{ topic.author.url }}">{{ escape(topic.author.nickname) }}</a>
         创建于
         <a class="time" href="{{ topic.url_sharp }}">{{ topic.created }}</a>
+        {% if topic.reply_count > 0 %}
+        最后回复来自&nbsp;
+        <a class="last-author-name" href="{{ topic.last_reply.author.url }}">{{ escape(topic.last_reply.author.nickname) }}</a>
+        {% end %}
+        &nbsp;
+        <span class="reply-count">共 {{ topic.reply_count }} 个回复</span>
         <a class="eye" href="{{ topic.url_sharp }}"><i class="icon-lightbulb"></i></a>
       </div>
     </div>
