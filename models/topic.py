@@ -51,6 +51,11 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
         return '/topic/%s#reply%s' % (self.id, self.reply_count)
 
     @property
+    def last_reply(self):
+        reply = m.Reply.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv: desc(rv.created_at)).first()
+        return reply
+
+    @property
     def replies(self):
         replies = m.Reply.select(lambda rv: rv.topic_id ==
                 self.id).order_by(lambda rv: desc(rv.created_at))
