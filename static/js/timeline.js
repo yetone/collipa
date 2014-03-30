@@ -4,14 +4,17 @@ $(function() {
       $btn = $('.tweet-submit'),
       editorEmpty = function(_$editor) {
         $editor = _$editor || $editor;
+        $toolbar = $editor.parents('.tweet-box').find('.toolbar');
         var $placeholder = $('<div class="tweet-placeholder">输入内容吧...</div>');
         $editor.stop(true, true);
         $editor.html($placeholder)
                           .animate({
                             'min-height': 19
                           }, 160);
-        $toolbar.stop(true, true);
-        $toolbar.fadeOut(160);
+        if ($toolbar.length) {
+          $toolbar.stop(true, true);
+          $toolbar.fadeOut(160);
+        }
       },
       checkBtn = function(_$editor, _$btn) {
         $editor = _$editor || $editor;
