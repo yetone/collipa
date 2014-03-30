@@ -221,6 +221,9 @@ textarea:focus {
 .no-padding {
   padding: 0 !important;
 }
+.no-margin {
+  margin: 0 !important;
+}
 .hide-text {
   font: 0/0 a;
   color: transparent;
@@ -2027,4 +2030,7 @@ ul.users li a div.username span {
 }
 .item:hover .retweet .icon-reply {
   color: rgb(122, 122, 122);
+}
+.tweet-layout-header {
+  padding: 10px 16px;
 }

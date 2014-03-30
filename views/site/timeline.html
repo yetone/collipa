@@ -4,6 +4,9 @@
   {% if page > 1 %}第 {{ page }} 页 - {% end %}
   时间线
 {% end %}
+{% block style %}
+  {% include "../includes/tweet_editor.html" %}
+{% end %}
 {% block script %}
 <script id="tweet-template" type="text/template">
   <li id="show-<%= id %>" data-id="<%= id %>" class="item clearfix">

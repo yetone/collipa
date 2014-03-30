@@ -1,7 +1,11 @@
 {% extends "../layout.html" %}
 
 {% block subtitle %}推文{% end %}
+{% block style %}
+  {% include "../includes/tweet_editor.html" %}
+{% end %}
 {% block script %}
+<script type="text/javascript" src="{{ static_url('js/timeline.js') }}"></script>
 <script type="text/javascript" src="{{ static_url('js/tweet.js') }}"></script>
 {% end %}
 {% block body %}
