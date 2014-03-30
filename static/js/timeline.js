@@ -2,7 +2,8 @@ $(function() {
   var $editor = $('.tweet-editor'),
       $toolbar = $('.tweet-box .toolbar'),
       $btn = $('.tweet-submit'),
-      editorEmpty = function() {
+      editorEmpty = function(_$editor) {
+        $editor = _$editor || $editor;
         var $placeholder = $('<div class="tweet-placeholder">输入内容吧...</div>');
         $editor.stop(true, true);
         $editor.html($placeholder)
@@ -91,7 +92,7 @@ $(function() {
         text = $.trim($this.text());
     if (!text.length) {
       blurTimer = setTimeout(function() {
-        editorEmpty();
+        editorEmpty($this);
       }, 400);
     }
   });
