@@ -179,6 +179,9 @@ $(function() {
         $textarea.append('&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
         placeCaretAtEnd($textarea[0]);
         checkBtn($textarea, $('#layout .tweet-submit'));
+        $.Collipa.mention($D, document, $textarea, null, function() {
+          checkBtn($textarea, $('#layout .tweet-submit'));
+        });
       }
     });
   });
