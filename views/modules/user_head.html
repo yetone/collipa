@@ -58,11 +58,11 @@
     {% if current_user and current_user != user %}
     <div class="profile-action">
       {% if current_user.is_followed(user=user) %}
-      <a title="取消关注" class="btn unfo" href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow">已关注</a>
+      <a title="取消关注" class="btn unfo" data-href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow" href="javascript:;">已关注</a>
       {% else %}
-      <a title="关注" class="btn fo" href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow">关注</a>
+      <a title="关注" class="btn fo" data-href="{{ user.url }}?next={{ url_escape(request.uri) }}&action=follow" href="javascript:;">关注</a>
       {% end %}
-      <a class="btn mail" title="私信" href="/message/create?user_id={{ user.id }}" data-uid="{{ user.id }}"><i class="icon-envelope"></i></a>
+      <a class="btn mail" title="私信" data-href="/message/create?user_id={{ user.id }}" data-uid="{{ user.id }}" href="javascript:;"><i class="icon-envelope"></i></a>
     </div>
     {% end %}
   </div>

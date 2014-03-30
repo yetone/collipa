@@ -739,16 +739,22 @@ $(function() {
       switch (opt.type) {
         case 'down':
           oldTop = self.css('top');
+          self.stop(true, true);
           self.css({top: -self.height()})
               .show()
-              .animate({top: oldTop}, 300);
+              .animate({top: oldTop}, 300, function() {
+                opt.cbk && opt.cbk();
+              });
           $.Collipa.addBg();
           break;
         case 'right':
           oldLeft = self.css('left');
+          self.stop(true, true);
           self.css({left: -self.width()})
               .show()
-              .animate({left: oldLeft}, 300);
+              .animate({left: oldLeft}, 300, function() {
+                opt.cbk && opt.cbk();
+              });
           $.Collipa.addBg();
           break;
       }

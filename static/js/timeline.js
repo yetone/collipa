@@ -12,7 +12,9 @@ $(function() {
         $toolbar.stop(true, true);
         $toolbar.fadeOut(160);
       },
-      checkBtn = function() {
+      checkBtn = function(_$editor, _$btn) {
+        $editor = _$editor || $editor;
+        $btn = _$btn || $btn;
         var text = $editor.text();
         if (text.length >= 3) {
           $btn.removeAttr('disabled');
@@ -67,11 +69,15 @@ $(function() {
       blurTimer;
   $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('keyup', '.tweet-editor', function() {
-    checkBtn();
+    var $this = $(this),
+        $btn = $this.parents('.tweet-box').find('.tweet-submit');
+    checkBtn($this, $btn);
   });
   $D.on('focus', '.tweet-editor', function() {
-    var $this = $(this);
-    $('.tweet-placeholder').remove();
+    var $this = $(this),
+        $parent = $this.parents('.tweet-box'),
+        $toolbar = $parent.find('.toolbar');
+    $this.find('.tweet-placeholder').remove();
     $this.stop(true, true);
     $this.animate({
       'min-height': 60
@@ -98,9 +104,10 @@ $(function() {
   $D.on('click', '.tweet-submit', function(e) {
     e.preventDefault();
     var $this = $(this),
-        $editor = $('.tweet-editor'),
+        $parent = $this.parents('.tweet-box'),
+        $editor = $parent.find('.tweet-editor'),
+        $imgs = $parent.find('.tweet-preview img'),
         $tweetList = $('.tweet-list .item-list'),
-        $imgs = $('.tweet-preview img'),
         content = $editor.html(),
         text = $.trim($editor.text()),
         image_ids = [],
@@ -123,7 +130,8 @@ $(function() {
           if (data.status === 'success') {
             var source = $('#tweet-template').html(),
                 render = template.compile(source),
-                html = render(data);
+                html = render(data),
+                $layout = $('.tweet-editor-layout');
             if ($tweetList.length) {
               $tweetList.prepend(html);
             } else {
@@ -138,6 +146,10 @@ $(function() {
                                  .animate({
                                    opacity: 1
                                  });
+            if ($layout.length) {
+              $layout.find('.layout-close').click();
+              noty(data);
+            }
           } else {
             $this.removeAttr('disabled');
             noty(data);
@@ -153,12 +165,18 @@ $(function() {
         name = $name_area.attr('data-name'),
         nickname = $name_area.html(),
         user_url = $name_area.attr('href'),
-        $textarea = $('.tweet-editor');
+        $layout = $('#layout');
 
-    $textarea.append('&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
-    $textarea.focus();
-    placeCaretAtEnd($textarea[0]);
-    checkBtn();
+    $layout.remove();
+    $('body').append($('#tweet-editor-template').html());
+    $('#layout').popslide({
+      cbk: function() {
+        var $textarea = $('#layout .tweet-editor');
+        $textarea.append('&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
+        placeCaretAtEnd($textarea[0]);
+        checkBtn($textarea, $('#layout .tweet-submit'));
+      }
+    });
   });
   $('#pic-select').imageUpload({
     cbk: function(data) {

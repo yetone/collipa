@@ -2,7 +2,7 @@ $(function() {
   $D.on('click', '.profile-action a:first', function(e) {
     e.preventDefault();
     var $this = $(this),
-        url = $this.attr('href'),
+        url = $this.attr('data-href'),
         $info_follow_area = $this.parents('.profile-head').find('.status li:last a span'),
         count = parseInt($info_follow_area.html());
 
@@ -77,7 +77,7 @@ $(function() {
     e.preventDefault();
     var $this = $(this),
         $layout = $('#layout'),
-        action = $this.attr('href'),
+        action = $this.attr('data-href'),
         source = $('#action-template').html(),
         render = template.compile(source),
         html = render({action: action});
@@ -85,8 +85,11 @@ $(function() {
     $layout.remove();
     $('body').append(html);
     $layout = $('#layout');
-    $layout.popslide();
-    $('#layout.message textarea').focus();
+    $layout.popslide({
+      cbk: function() {
+        $('#layout.message textarea').focus();
+      }
+    });
   });
 
   $D.on('click', '#layout.message button', function(e) {
