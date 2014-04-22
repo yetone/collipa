@@ -711,7 +711,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
                     'description' or k == 'style'):
                 v = ''
             if k in ['style', 'site_style'] and v:
-                v = strip_tags(v)
+                v = strip_tags(v) if v else ''
             setattr(self, k, v)
         try:
             commit()
