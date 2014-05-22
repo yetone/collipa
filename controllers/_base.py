@@ -117,9 +117,24 @@ class BaseHandler(tornado.web.RequestHandler):
             return True
         if self.current_user.role == 'unverify':
             result = {"status": "error", "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
+        else:
+            result = {"status": "error", "message": "对不起，您没有相关权限"}
         if self.is_ajax:
             self.write(result)
         else:
             self.flash_message(result)
             self.redirect_next_url()
         return False
+
+    def send_result(self, result, redirect_url=None):
+        if self.is_ajax:
+            return self.write(result)
+        self.flash_message(result)
+        return self.redirect(redirect_url or self.next_url)
+
+    def send_result_and_render(self, result, tpl, data=None):
+        data = data or dict()
+        if self.is_ajax:
+            return self.write(result)
+        self.flash_message(result)
+        return self.render(tpl, **data)

@@ -25,7 +25,6 @@ config = config.rec()
 
 
 class EmailMixin(object):
-
     def _create_token(self, user):
         salt = user.create_token(8)
         created = str(int(time.time()))
@@ -55,7 +54,7 @@ class EmailMixin(object):
         if delta > 3600:
             # 1 hour
             result = {"status": "info", "message":
-                    "此验证链接已过期，请再次验证"}
+                      "此验证链接已过期，请再次验证"}
             self.flash_message(result)
             return None
         user = User.get(email=email)
@@ -71,6 +70,7 @@ class EmailMixin(object):
         message = EmailMessage(subject, content, config.smtp_user,
                 [email], connection=self.mail_connection)
         message.send()
+
 
 class HomeHandler(BaseHandler):
     @db_session
@@ -109,7 +109,8 @@ class HomeHandler(BaseHandler):
             url = url + '/followers'
         page_count = (item_count + config.paged - 1) // config.paged
         return self.render("user/index.html", user=user, items=items, view=view,
-                category=category, page=page, page_count=page_count, url=url)
+                           category=category, page=page, page_count=page_count, url=url)
+
 
 class SignupHandler(BaseHandler, EmailMixin):
     @db_session
@@ -168,8 +169,9 @@ class SignupHandler(BaseHandler, EmailMixin):
         ) % {'email': user.name, 'url': url}
         self.send_email(self, user.email, subject, template)
         result = {'status': 'info', 'message':
-                '激活邮件已经发到您的邮箱，请去邮箱进行激活'}
+                  '激活邮件已经发到您的邮箱，请去邮箱进行激活'}
         self.flash_message(result)
+
 
 class SigninHandler(BaseHandler):
     def get(self):
@@ -184,10 +186,12 @@ class SigninHandler(BaseHandler):
             return self.redirect(self.next_url)
         return self.render("user/signin.html", form=form)
 
+
 class SignoutHandler(BaseHandler):
     def get(self):
         self.clear_cookie('user')
         return self.redirect(self.next_url)
+
 
 class NotificationHandler(BaseHandler):
     @db_session
@@ -196,9 +200,9 @@ class NotificationHandler(BaseHandler):
         page = force_int(self.get_argument('page', 1), 1)
         category = self.get_argument('category', 'all')
         self.render("user/notification.html",
-                category=category, page=page)
-        self.current_user.read_notifications()
-        return
+                    category=category, page=page)
+        return self.current_user.read_notifications()
+
 
 class MessageHandler(BaseHandler):
     @db_session
@@ -209,29 +213,29 @@ class MessageHandler(BaseHandler):
         action = self.get_argument('action', None)
         current_user = self.current_user
         user = User.get(id=user_id)
-        if user:
-            message_box = current_user.get_message_box(user=user)
-            if action == "read":
-                message_box.status = 1
-                return self.write({"status": "success", "message": "已读"})
-            if not message_box:
-                result = {"status": "error", "message": "无此私信"}
-                if self.is_ajax:
-                    return self.write(result)
-                self.flash_message(result)
-                return self.redirect_next_url()
-            form = MessageForm()
-            self.render("user/message.html", user=user, message_box=message_box,
+        if not user:
+            category = self.get_argument('category', 'all')
+            return self.render("user/message_box.html", category=category, page=page)
+        message_box = current_user.get_message_box(user=user)
+        if action == "read":
+            message_box.status = 1
+            return self.write({"status": "success", "message": "已读"})
+        if not message_box:
+            result = {"status": "error", "message": "无此私信"}
+            if self.is_ajax:
+                return self.write(result)
+            self.flash_message(result)
+            return self.redirect_next_url()
+        form = MessageForm()
+        self.render("user/message.html", user=user, message_box=message_box,
                     form=form, page=page)
-            if message_box.status == 0:
-                message_box.status = 1
-                try:
-                    commit()
-                except:
-                    pass
-            return
-        category = self.get_argument('category', 'all')
-        return self.render("user/message_box.html", category=category, page=page)
+        if message_box.status == 0:
+            message_box.status = 1
+            try:
+                commit()
+            except:
+                pass
+
 
 class MessageCreateHandler(BaseHandler):
     @db_session
@@ -243,22 +247,12 @@ class MessageCreateHandler(BaseHandler):
         if receiver:
             form = MessageForm(self.request.arguments)
             if form.validate():
-                """
-                message_box1 = current_user.get_message_box(user=user)
-                message_box2 = user.get_message_box(user=current_user)
-                if not message_box1:
-                    message_box1 = MessageBox(sender_id=current_user.id,
-                            receiver_id=user.id, status=1).save()
-                if not message_box2:
-                    message_box2 = MessageBox(sender_id=user.id,
-                            receiver_id=current_user.id).save()
-                """
                 message = form.save(sender_id=sender.id,
                                     receiver_id=receiver.id)
                 result = {"status": "success", "message": "私信发送成功",
-                        "content": message.content, "created": message.created,
-                        "avatar": sender.get_avatar(size=48), "url":
-                        sender.url, "id": message.id}
+                          "content": message.content, "created": message.created,
+                          "avatar": sender.get_avatar(size=48), "url":
+                          sender.url, "id": message.id}
             else:
                 result = {"status": "error", "message": "请填写至少 4 字的内容"}
             if self.is_ajax:
@@ -267,13 +261,10 @@ class MessageCreateHandler(BaseHandler):
                 self.flash_message(result)
                 self.redirect_next_url()
             self.finish()
-            WebSocketHandler.send_message(message.receiver_id, message)
-            return
+            return WebSocketHandler.send_message(message.receiver_id, message)
         result = {"status": "error", "message": "没有目标用户，不能发送私信哦"}
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(result)
-        return self.redirect_next_url()
+        self.send_result(result)
+
 
 class ApiGetUserNameHandler(BaseHandler):
     @db_session
@@ -283,6 +274,7 @@ class ApiGetUserNameHandler(BaseHandler):
         for user in users:
             user_json.append({"value": user.name, "label": user.nickname})
         return self.write(user_json)
+
 
 class PasswordHandler(BaseHandler, EmailMixin):
     """Password
@@ -392,16 +384,16 @@ class PasswordHandler(BaseHandler, EmailMixin):
         self.set_current_user(user)
         return self.redirect('/account/password')
 
-class FindPasswordHandler(BaseHandler):
 
+class FindPasswordHandler(BaseHandler):
     @db_session
     def get(self):
         if self.current_user:
             return self.redirect_next_url()
         return self.render("user/findpassword.html")
 
-class SettingHandler(BaseHandler):
 
+class SettingHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
     def get(self):
@@ -433,6 +425,7 @@ class SettingHandler(BaseHandler):
             return self.redirect_next_url()
         return self.render("user/setting.html", form=form)
 
+
 class AvatarDelHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
@@ -451,30 +444,30 @@ class AvatarDelHandler(BaseHandler):
                 pass
         self.redirect(self.next_url)
 
+
 class AvatarUploadHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
     def get(self):
         self.render("user/avatar_upload.html")
-        return
 
     @db_session
     def post(self):
         if self.request.files == {} or 'myavatar' not in self.request.files:
             self.write({"status": "error",
-                "message": "请选择图片！"})
+                        "message": "请选择图片！"})
             return
         image_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
-                'image/png', 'image/bmp', 'image/x-png']
+                           'image/png', 'image/bmp', 'image/x-png']
         send_file = self.request.files['myavatar'][0]
         if send_file['content_type'] not in image_type_list:
             self.write({"status": "error",
-                "message": "仅支持 jpg, jpeg, bmp, gif, png\
-                    格式的图片！"})
+                        "message": "仅支持 jpg, jpeg, bmp, gif, png\
+                        格式的图片！"})
             return
         if len(send_file['body']) > 100 * 1024 * 1024:
             self.write({"status": "error",
-                "message": "请上传100M以下的图片！"})
+                        "message": "请上传100M以下的图片！"})
             return
         tmp_file = tempfile.NamedTemporaryFile(delete=True)
         tmp_file.write(send_file['body'])
@@ -487,14 +480,14 @@ class AvatarUploadHandler(BaseHandler):
             logging.info(self.request.headers)
             tmp_file.close()
             self.write({"status": "error",
-                "message": "图片不合法！"})
+                        "message": "图片不合法！"})
             return
         width = image_one.size[0]
         height = image_one.size[1]
         if width < 24 or height < 24 or width > 20000 or height > 20000:
             tmp_file.close()
             self.write({"status": "error",
-                "message": "图片长宽在24px~20000px之间！"})
+                        "message": "图片长宽在24px~20000px之间！"})
             return
         timestamp = str(int(time.time()))
         user = self.current_user
@@ -521,15 +514,16 @@ class AvatarUploadHandler(BaseHandler):
         tmp_file.close()
         if user:
             user.avatar_tmp = '/' +\
-                '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+                    '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
             src = user.avatar_tmp
         else:
             src = '/' +\
-                '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+                    '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
         if self.is_ajax:
             print(src)
         return self.write({"status": "success", "message": "成功上传头像", "src":
-            src, "height": height, "width": width})
+                           src, "height": height, "width": width})
+
 
 class AvatarCropHandler(BaseHandler):
     @db_session
@@ -537,10 +531,7 @@ class AvatarCropHandler(BaseHandler):
     def get(self):
         if not self.current_user.avatar_tmp:
             result = {"status": "error", "message": "您还没有上传头像哦"}
-            if self.is_ajax:
-                return self.write(result)
-            self.flash_message(result)
-            return self.redirect_next_url()
+            return self.send_result(result)
         return self.render("user/avatar_crop.html")
 
     @db_session
@@ -584,11 +575,9 @@ class AvatarCropHandler(BaseHandler):
         src = self.current_user.avatar_tmp
         avatar = self.current_user.get_avatar(size=128)
         result = {"status": "success", "message": "头像设置成功", "src": src,
-                "avatar": avatar}
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(result)
-        return self.redirect_next_url()
+                  "avatar": avatar}
+        self.send_result(result)
+
 
 class BackgroundDelHandler(BaseHandler):
     @db_session
@@ -605,10 +594,8 @@ class BackgroundDelHandler(BaseHandler):
         except:
             pass
         result = {"status": "success", "message": "已成功重置背景图片"}
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(result)
-        return self.redirect_next_url()
+        self.send_result(result)
+
 
 class ImgUploadHandler(BaseHandler):
     @db_session
@@ -621,19 +608,19 @@ class ImgUploadHandler(BaseHandler):
             return self.redirect_next_url()
         if self.request.files == {} or 'myimage' not in self.request.files:
             self.write({"status": "error",
-                "message": "对不起，请选择图片"})
+                        "message": "对不起，请选择图片"})
             return
         image_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
-                'image/png', 'image/bmp', 'image/x-png']
+                           'image/png', 'image/bmp', 'image/x-png']
         send_file = self.request.files['myimage'][0]
         if send_file['content_type'] not in image_type_list:
             self.write({"status": "error",
-                "message": "对不起，仅支持 jpg, jpeg, bmp, gif, png\
-                    格式的图片"})
+                        "message": "对不起，仅支持 jpg, jpeg, bmp, gif, png\
+                        格式的图片"})
             return
         if len(send_file['body']) > 6 * 1024 * 1024:
             self.write({"status": "error",
-                "message": "对不起，请上传6M以下的图片"})
+                        "message": "对不起，请上传6M以下的图片"})
             return
         tmp_file = tempfile.NamedTemporaryFile(delete=True)
         tmp_file.write(send_file['body'])
@@ -646,14 +633,14 @@ class ImgUploadHandler(BaseHandler):
             logging.info(self.request.headers)
             tmp_file.close()
             self.write({"status": "error",
-                "message": "对不起，此文件不是图片"})
+                        "message": "对不起，此文件不是图片"})
             return
         width = image_one.size[0]
         height = image_one.size[1]
         if width < 80 or height < 80 or width > 30000 or height > 30000:
             tmp_file.close()
             self.write({"status": "error",
-                "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
+                        "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
             return
         user = self.current_user
         upload_path = sys.path[0] + "/static/upload/" + get_year() + '/' +\
@@ -664,39 +651,39 @@ class ImgUploadHandler(BaseHandler):
             except:
                 pass
         timestamp = str(int(time.time())) +\
-            ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                6)) + '_' + str(user.id)
+                ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
+                                      6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
         image_one.save(tmp_name)
         tmp_file.close()
         path = '/' +\
-            '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+                '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
         category = self.get_argument('category', None)
-        print category
         del_path = None
         if category == 'head':
             del_path = user.head_img
             user.head_img = path
             result = {'path': path, 'status': "success", 'message':
-                    '头部背景设置成功', 'category': 'head'}
+                      '头部背景设置成功', 'category': 'head'}
         elif category == 'background':
             del_path = user.background_img
             user.background_img = path
             result = {'path': path, 'status': "success", 'message':
-                    '背景设置成功', 'category': 'background'}
+                      '背景设置成功', 'category': 'background'}
         else:
             result = {'path': path, 'status': "success", 'message':
-                '图片上传成功'}
+                      '图片上传成功'}
         if del_path:
             try:
                 os.system('rm -f %s%s' % (sys.path[0],
-                    del_path))
+                                          del_path))
             except:
                 pass
         if self.is_ajax:
             return self.write(result)
         return
+
 
 class ShowHandler(BaseHandler):
     @db_session
@@ -724,5 +711,5 @@ class ShowHandler(BaseHandler):
             page_count = (user_count + config.user_paged - 1) // config.user_paged
             url = '/users?category=online'
         return self.render("user/show.html", users=users, hot_users=hot_users,
-                new_users=new_users, page=page,
-                page_count=page_count, url=url, category=category)
+                           new_users=new_users, page=page,
+                           page_count=page_count, url=url, category=category)

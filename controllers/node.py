@@ -16,9 +16,10 @@ from pony.orm import *
 
 from models import Node
 from forms import NodeForm, NodeEditForm
-from helpers import strip_tags, get_year, get_month, force_int
+from helpers import strip_tags, get_year, get_month, force_int, require_admin, require_permission
 
 config = config.rec()
+
 
 class HomeHandler(BaseHandler):
     @db_session
@@ -82,14 +83,12 @@ class HomeHandler(BaseHandler):
         return self.render("node/index.html", node=node, topics=topics,
                 category=category, page=page, page_count=page_count, url=url)
 
+
 class CreateHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
+    @require_admin
     def get(self):
-        if not self.has_permission:
-            return
-        if not self.current_user.is_admin:
-            return self.redirect_next_url()
         node_id = int(self.get_argument('node_id', 0))
         node = Node.get(id=node_id)
         if node:
@@ -101,11 +100,8 @@ class CreateHandler(BaseHandler):
 
     @db_session
     @tornado.web.authenticated
+    @require_admin
     def post(self):
-        if not self.has_permission:
-            return
-        if not self.current_user.is_admin:
-            return self.redirect_next_url()
         user = self.current_user
         form = NodeForm(self.request.arguments)
         if form.validate():
@@ -113,14 +109,12 @@ class CreateHandler(BaseHandler):
             return self.redirect(node.url)
         return self.render("node/create.html", form=form)
 
+
 class EditHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
+    @require_admin
     def get(self, urlname):
-        if not self.has_permission:
-            return
-        if not self.current_user.is_admin:
-            return self.redirect_next_url()
         node = Node.get(urlname=urlname)
         if node:
             selected = [n.name for n in node.parent_nodes]
@@ -134,11 +128,8 @@ class EditHandler(BaseHandler):
 
     @db_session
     @tornado.web.authenticated
+    @require_admin
     def post(self, urlname):
-        if not self.has_permission:
-            return
-        if not self.current_user.is_admin:
-            return self.redirect_next_url()
         node = Node.get(urlname=urlname)
         if not node:
             return self.redirect_next_url()
@@ -165,14 +156,12 @@ class EditHandler(BaseHandler):
             return self.write(form.result)
         return self.render("node/edit.html", form=form, node=node)
 
+
 class ImgUploadHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
+    @require_admin
     def post(self, node_id):
-        if not self.has_permission:
-            return
-        if not self.current_user.is_admin:
-            return self.redirect_next_url()
         category = self.get_argument('category', None)
         node = Node.get(id=node_id)
         if not node:
@@ -281,6 +270,7 @@ class ImgUploadHandler(BaseHandler):
         if self.is_ajax:
             return self.write(result)
         return
+
 
 class ShowHandler(BaseHandler):
     @db_session
