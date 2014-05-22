@@ -11,7 +11,7 @@ import Image as Img
 from ._base import BaseHandler
 import tornado.web
 from models import Image
-from helpers import strip_tags, get_year, get_month
+from helpers import strip_tags, get_year, get_month, require_admin, require_permission
 from pony.orm import *
 import config
 from .user import EmailMixin
@@ -50,12 +50,12 @@ class HomeHandler(BaseHandler, EmailMixin):
             result = {'status': 'error', 'message': '你没有权限啊, baby'}
         return self.write(result)
 
+
 class UploadHandler(BaseHandler):
     @db_session
     @tornado.web.authenticated
+    @require_permission
     def post(self):
-        if not self.has_permission:
-            return
         if self.request.files == {} or 'myimage' not in self.request.files:
             self.write({"status": "error",
                 "message": "对不起，请选择图片"})
@@ -101,7 +101,7 @@ class UploadHandler(BaseHandler):
             except:
                 pass
         timestamp = str(int(time.time())) +\
-            ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
+            ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
                 6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format

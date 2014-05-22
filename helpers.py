@@ -24,6 +24,34 @@ class UsernameParser(HTMLParser):
                     if variable == 'data-username':
                         self.names.append(value)
 
+def require_admin(func):
+    def wrap(self, *args, **kwargs):
+        if self.current_user and self.current_user.is_admin:
+            return func(self, *args, **kwargs)
+        result = {"status": "error", "message": "对不起，您没有相关权限"}
+        if self.is_ajax:
+            self.write(result)
+        else:
+            self.flash_message(result)
+            self.redirect_next_url()
+    return wrap
+
+def require_permission(func):
+    def wrap(self, *args, **kwargs):
+        if self.current_user and\
+            (self.current_user.role != 'unverify' or self.current_user.is_admin):
+            return func(self, *args, **kwargs)
+        if self.current_user.role == 'unverify':
+            result = {"status": "error", "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
+        else:
+            result = {"status": "error", "message": "对不起，您没有相关权限"}
+        if self.is_ajax:
+            self.write(result)
+        else:
+            self.flash_message(result)
+            self.redirect_next_url()
+    return wrap
+
 def get_day(timestamp):
     FORY = '%d'
     os.environ["TZ"] = config.default_timezone
