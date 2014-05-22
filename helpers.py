@@ -10,6 +10,7 @@ from libs import xss
 
 config = config.rec()
 
+
 class UsernameParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
@@ -29,11 +30,7 @@ def require_admin(func):
         if self.current_user and self.current_user.is_admin:
             return func(self, *args, **kwargs)
         result = {"status": "error", "message": "对不起，您没有相关权限"}
-        if self.is_ajax:
-            self.write(result)
-        else:
-            self.flash_message(result)
-            self.redirect_next_url()
+        self.send_result(result)
     return wrap
 
 def require_permission(func):
@@ -45,11 +42,7 @@ def require_permission(func):
             result = {"status": "error", "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
         else:
             result = {"status": "error", "message": "对不起，您没有相关权限"}
-        if self.is_ajax:
-            self.write(result)
-        else:
-            self.flash_message(result)
-            self.redirect_next_url()
+        self.send_result(result)
     return wrap
 
 def get_day(timestamp):
