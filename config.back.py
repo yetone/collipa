@@ -13,6 +13,8 @@ _SMTPPORT = '587' # 邮箱端口
 _RDPORT = 6379 # Redis port
 
 class rec:
+    debug = True
+
     database = 'mysql://%s:%s@%s/%s?charset=utf8' % (_DBUSER, _DBPASS, _DBHOST, _DBNAME)
 
     db_user = _DBUSER

@@ -33,7 +33,7 @@ class Application(tornado.web.Application):
             site_title=config.site_name,
             site_name=config.site_name,
             login_url="/signin",
-            debug=True
+            debug=config.debug,
         )
 
         tornado.web.Application.__init__(self, routers, **settings)
@@ -41,16 +41,16 @@ class Application(tornado.web.Application):
     @property
     def mail_connection(self):
         return EmailBackend(
-                config.smtp_host, int(config.smtp_port), config.smtp_user,
-                config.smtp_password,
-                True
-                )
+            config.smtp_host, int(config.smtp_port), config.smtp_user,
+            config.smtp_password,
+            True
+        )
 
 def main():
     db.generate_mapping()
     tornado.options.parse_command_line()
     tornado.httpserver.HTTPServer(Application(),
-            xheaders=True).listen(options.port)
+                                  xheaders=True).listen(options.port)
     print("App started. Listenning on %d" % options.port)
     tornado.ioloop.IOLoop.instance().start()
 
