@@ -707,10 +707,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
         if data.get('urlname') != self.urlname:
             self.edit_urlname_count -= 1
         for k, v in data.iteritems():
-            if not v and (k == 'address' or k == 'website' or k ==
-                    'description' or k == 'style'):
+            if not v and k in ['address', 'website', 'description', 'style', 'site_style']:
                 v = ''
-            if k in ['style', 'site_style'] and v:
+            if v and k in ['style', 'site_style']:
                 v = strip_tags(v)
             setattr(self, k, v)
         try:
