@@ -86,7 +86,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                         "url": message.sender.url,
                         "nickname": message.sender.nickname,
                         "message_box_id": message.message_box2_id
-                        })
+                    })
                 except Exception, e:
                     print e
                     logging.error("Error sending message", exc_info=True)
@@ -127,7 +127,7 @@ class MentionHandler(BaseHandler):
             return self.write({
                 'status': 'error',
                 'message': '没有关键字'
-                })
+            })
         user_list = User.mention(word)
         user_json = []
         for user in user_list:
@@ -137,8 +137,8 @@ class MentionHandler(BaseHandler):
                 'nickname': user.nickname,
                 'url': user.url,
                 'avatar': user.get_avatar()
-                })
+            })
         return self.write({
             'status': 'success',
             'user_list': user_json
-            })
+        })

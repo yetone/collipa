@@ -142,7 +142,7 @@ class EditHandler(BaseHandler):
             reply.put_notifier()
             result = {'status': 'success', 'message': '评论修改成功',
                       'reply_url': reply.url}
-            return self.send_result(result, result.url)
+            return self.send_result(result, reply.url)
         data = dict(form=form, reply=reply)
         return self.send_result_and_render(form.result, "reply/edit.html", data)
 
