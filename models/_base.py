@@ -14,6 +14,7 @@ config = config.rec()
 db = Database('mysql', config.db_host, config.db_user, config.db_pass,
         config.db_name)
 
+
 class SessionMixin(object):
     def save(self):
         try:
