@@ -7,6 +7,7 @@ import config
 
 config = config.rec()
 
+
 class Bill(db.Entity, SessionMixin, ModelMixin):
     coin = Required(int)
     balance = Required(int)
