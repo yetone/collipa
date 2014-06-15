@@ -83,11 +83,7 @@ class HomeHandler(BaseHandler):
         if action and self.current_user:
             if action == 'follow' and user != self.current_user:
                 result = self.current_user.follow(whom_id=user.id)
-                if self.is_ajax:
-                    return self.write(result)
-                else:
-                    self.flash_message(result)
-                    return self.redirect_next_url()
+                return self.send_result(result)
         items = []
         item_count = 0
         url = user.url
@@ -222,10 +218,7 @@ class MessageHandler(BaseHandler):
             return self.write({"status": "success", "message": "已读"})
         if not message_box:
             result = {"status": "error", "message": "无此私信"}
-            if self.is_ajax:
-                return self.write(result)
-            self.flash_message(result)
-            return self.redirect_next_url()
+            return self.send_result(result)
         form = MessageForm()
         self.render("user/message.html", user=user, message_box=message_box,
                     form=form, page=page)
@@ -255,11 +248,7 @@ class MessageCreateHandler(BaseHandler):
                           sender.url, "id": message.id}
             else:
                 result = {"status": "error", "message": "请填写至少 4 字的内容"}
-            if self.is_ajax:
-                self.write(result)
-            else:
-                self.flash_message(result)
-                self.redirect_next_url()
+            self.send_result(result)
             self.finish()
             return WebSocketHandler.send_message(message.receiver_id, message)
         result = {"status": "error", "message": "没有目标用户，不能发送私信哦"}
@@ -405,12 +394,7 @@ class SettingHandler(BaseHandler):
             elif action == 'reset_bg':
                 self.current_user.reset_img('background')
                 result = {"status": "success", "message": "背景已重置"}
-            if self.is_ajax:
-                self.write(result)
-            else:
-                self.flash_message(result)
-                self.redirect('/account/setting')
-            return
+            return self.send_result(result, '/account/setting')
         user = self.current_user
         form = SettingForm.init(user)
         return self.render("user/setting.html", form=form)
@@ -519,8 +503,6 @@ class AvatarUploadHandler(BaseHandler):
         else:
             src = '/' +\
                     '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-        if self.is_ajax:
-            print(src)
         return self.write({"status": "success", "message": "成功上传头像", "src":
                            src, "height": height, "width": width})
 
@@ -680,9 +662,7 @@ class ImgUploadHandler(BaseHandler):
                                           del_path))
             except:
                 pass
-        if self.is_ajax:
-            return self.write(result)
-        return
+        return self.write(result)
 
 
 class ShowHandler(BaseHandler):
