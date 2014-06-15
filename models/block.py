@@ -8,6 +8,7 @@ import config
 
 config = config.rec()
 
+
 class Block(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
 

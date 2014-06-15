@@ -8,6 +8,7 @@ import config
 
 config = config.rec()
 
+
 class Bank(db.Entity, SessionMixin, ModelMixin):
     balance = Required(int, default=config.bank_init_coin)
 
