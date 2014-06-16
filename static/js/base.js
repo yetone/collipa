@@ -793,7 +793,7 @@ $(function() {
 
   shape_resize();
 
-  $(window).resize(function() {
+  $W.resize(function() {
     if ($('#head > .menu.fixed').length) {
       shape_resize(true);
     } else {

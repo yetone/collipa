@@ -459,86 +459,6 @@ a.node:hover {
   float: left;
 }
 
-@media screen and (max-width: 720px) {
-  .nav li {
-    margin-right: 13px;
-  }
-  .nav.fixed li {
-    display: none;
-  }
-  .nav.fixed li.on {
-    display: inline-block;
-  }
-  .body-nav.fixed li,
-  .index-nav.fixed li {
-    display: none;
-  }
-  .body-nav.fixed li:nth-child(1),
-  .index-nav.fixed li:nth-child(1) {
-    display: inline-block;
-  }
-  .index-nav.fixed .nav-bottom-span {
-    left: -999px !important;
-  }
-  .edui-default .edui-editor-toolbarbox {
-    display: none;
-  }
-  .reply-create label {
-    display: none;
-  }
-  label {
-    width: 35px !important;
-    font-size: 10px !important;
-  }
-  .fm-action button,
-  .edui-default .edui-editor {
-    margin-left: 45px !important;
-  }
-  .reply-create .edui-default .edui-editor {
-    margin-left: auto !important;
-  }
-  .reply-create .fm-action button {
-    margin-left: 30px !important;
-  }
-  .profile-card .status {
-    display: none;
-  }
-  .message-list {
-    padding: 10px 20px;
-  }
-  ul.parent-nodes li,
-  ul.sibling-nodes li,
-  ul.child-nodes li {
-    width: 120px;
-  }
-  ul.users li a {
-    width: 60px;
-    height: 87px;
-  }
-  ul.users li a div.username span {
-    width: 50px;
-  }
-  ul.users li a div.avatar img.avatar {
-    width: 60px;
-    height: 60px;
-  }
-  ul.users li a div.avatar {
-    height: 60px;
-  }
-  #shape {
-    margin: 0 auto;
-  }
-
-  .content img.upload-topic-image {
-    max-width: 360px !important;
-  }
-  #head .menu li {
-    margin-left: 13px;
-  }
-  #head .menu.fixed {
-    top: 8px !important;
-  }
-}
 
 .nav a {
   display: block;
@@ -876,7 +796,6 @@ label {
 }
 .open.menu-list {
   display: inline-block;
-  margin-left: 12px;
 }
 .edui-for-removeformat {
   margin: 0;
@@ -2033,4 +1952,98 @@ ul.users li a div.username span {
 }
 .tweet-layout-header {
   padding: 10px 16px;
+}
+
+@media screen and (max-width: 720px) {
+  .nav li {
+    margin-right: 13px;
+  }
+  .nav.fixed li {
+    display: none;
+  }
+  .nav.fixed li.on {
+    display: inline-block;
+  }
+  .body-nav.fixed li,
+  .index-nav.fixed li {
+    display: none;
+  }
+  .body-nav.fixed li:nth-child(1),
+  .index-nav.fixed li:nth-child(1) {
+    display: inline-block;
+  }
+  .index-nav.fixed .nav-bottom-span {
+    left: -999px !important;
+  }
+  .edui-default .edui-editor-toolbarbox {
+  }
+  .reply-create label {
+    display: none;
+  }
+  label {
+    width: 35px !important;
+    font-size: 10px !important;
+  }
+  .fm-action button,
+  .edui-default .edui-editor {
+    margin-left: 45px !important;
+  }
+  .reply-create .edui-default .edui-editor {
+    margin-left: auto !important;
+  }
+  .reply-create .fm-action button {
+    margin-left: 30px !important;
+  }
+  .profile-card .status {
+    display: none;
+  }
+  .message-list {
+    padding: 10px 20px;
+  }
+  ul.parent-nodes li,
+  ul.sibling-nodes li,
+  ul.child-nodes li {
+    width: 120px;
+  }
+  ul.users li a {
+    width: 60px;
+    height: 87px;
+  }
+  ul.users li a div.username span {
+    width: 50px;
+  }
+  ul.users li a div.avatar img.avatar {
+    width: 60px;
+    height: 60px;
+  }
+  ul.users li a div.avatar {
+    height: 60px;
+  }
+  #shape {
+    margin: 0 auto;
+  }
+
+  .upload-reply-image,
+  .upload-topic-image {
+    max-width: 260px !important;
+  }
+  #head .menu li {
+    margin-left: 13px;
+  }
+  #head .menu.fixed {
+    top: 8px !important;
+  }
+  .message-fm {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .message-fm .fm-label {
+    display: none;
+  }
+  .message-fm textarea {
+    width: 260px;
+  }
+  .open .tweet-img-content img {
+    max-width: 220px
+  }
 }
