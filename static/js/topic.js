@@ -49,6 +49,7 @@ $(function() {
         $more_list.removeClass('open');
       } else {
         $more_list.addClass('open');
+        $this.addClass('dn');
       }
       return;
     }

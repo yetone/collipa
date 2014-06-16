@@ -35,7 +35,7 @@
 <div data-id="{{ message_box.id }}" class="organ message-box nav-shadow">
   {{ modules.MessageList(messages=message_box.get_messages(page=page))}}
   <div class="message-fm tc">
-    <div class="dib" style="width: 472px;">
+    <div class="dib">
     {{ modules.MessageForm(user=user, form=form) }}
     </div>
   </div>
