@@ -1,24 +1,25 @@
 # coding: utf-8
 
-import os
 import sys
 import getopt
 import MySQLdb
-from pony.orm import *
+from pony.orm import db_session
 import config
 
 config = config.rec()
 
-m = MySQLdb.Connect(host=config.db_host, user=config.db_user, passwd=\
-    config.db_pass)
+m = MySQLdb.Connect(host=config.db_host, user=config.db_user,
+                    passwd=config.db_pass)
 c = m.cursor()
+
 
 @db_session
 def init_node():
     from models import Node
     if not Node.get(id=1):
         Node(name=u'根节点', urlname='root',
-                description=u'一切的根源').save()
+             description=u'一切的根源').save()
+
 
 def merge():
     try:
@@ -57,7 +58,7 @@ def merge():
 def main(argv):
     try:
         opts, args = getopt.getopt(argv, "", ["install", "init",
-            "iwanttodropdatabase"])
+                                              "iwanttodropdatabase"])
     except getopt.GetoptError:
         print("参数错误")
         sys.exit(2)

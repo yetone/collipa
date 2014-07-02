@@ -20,6 +20,7 @@ from routers import routers
 config = config.rec()
 define("port", default=8008, help="run on the given port", type=int)
 
+
 class Application(tornado.web.Application):
     def __init__(self):
         settings = dict(
@@ -45,6 +46,7 @@ class Application(tornado.web.Application):
             config.smtp_password,
             True
         )
+
 
 def main():
     db.generate_mapping()
