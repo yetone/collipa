@@ -4,12 +4,12 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony.orm import db_session
 
 from models import Topic, Reply
 from forms import ReplyForm
 from .user import EmailMixin
-from helpers import require_admin, require_permission
+from helpers import require_permission
 
 config = config.rec()
 

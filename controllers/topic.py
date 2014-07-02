@@ -4,7 +4,7 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony.orm import db_session, count
 
 from models import Topic, Node, User
 from forms import TopicForm, ReplyForm
@@ -30,15 +30,16 @@ class HomeHandler(BaseHandler, EmailMixin):
             url = topic.url
         elif category == 'hot':
             reply_count = count(topic.get_replies(page=None,
-                    category=category))
+                                                  category=category))
             url = topic.url + '?category=hot'
         page_count = (reply_count + config.reply_paged - 1) // config.reply_paged
         if page == 0:
             page = page_count
         replies = topic.get_replies(page=page, category=category)
         form = ReplyForm()
-        return self.render("topic/index.html", topic=topic, replies=replies, form=form,
-                category=category, page=page, page_count=page_count, url=url)
+        return self.render("topic/index.html", topic=topic, replies=replies,
+                           form=form, category=category, page=page,
+                           page_count=page_count, url=url)
 
     @db_session
     @tornado.web.authenticated
@@ -51,19 +52,19 @@ class HomeHandler(BaseHandler, EmailMixin):
         user = self.current_user
         if not action:
             result = {'status': 'info', 'message':
-                    '需要 action 参数'}
+                      '需要 action 参数'}
         if action == 'up':
             if topic.user_id != user.id:
                 result = user.up(topic_id=topic_id)
             else:
                 result = {'status': 'info', 'message':
-                        '不能为自己的主题投票'}
+                          '不能为自己的主题投票'}
         if action == 'down':
             if topic.user_id != user.id:
                 result = user.down(topic_id=topic_id)
             else:
                 result = {'status': 'info', 'message':
-                        '不能为自己的主题投票'}
+                          '不能为自己的主题投票'}
         if action == 'collect':
             result = user.collect(topic_id=topic_id)
         if action == 'thank':
@@ -147,7 +148,7 @@ class CreateHandler(BaseHandler):
             topic = form.save(user=user)
             topic.put_notifier()
             result = {'status': 'success', 'message': '主题创建成功',
-                    'topic_url': topic.url}
+                      'topic_url': topic.url}
             if self.is_ajax:
                 return self.write(result)
             self.flash_message(result)
@@ -163,7 +164,8 @@ class EditHandler(BaseHandler):
     @require_permission
     def get(self, topic_id):
         topic = Topic.get(id=topic_id)
-        if topic and (topic.author == self.current_user or self.current_user.is_admin):
+        if topic and\
+           (topic.author == self.current_user or self.current_user.is_admin):
             selected = topic.node.name
         else:
             return self.redirect_next_url()
@@ -186,7 +188,7 @@ class EditHandler(BaseHandler):
             topic = form.save(user=user, topic=topic)
             topic.put_notifier()
             result = {'status': 'success', 'message': '主题修改成功',
-                    'topic_url': topic.url}
+                      'topic_url': topic.url}
             if self.is_ajax:
                 return self.write(result)
             self.flash_message(result)
@@ -204,4 +206,5 @@ class HistoryHandler(BaseHandler):
             return self.redirect_next_url()
         if not topic.histories:
             return self.redirect(topic.url)
-        return self.render("topic/history.html", topic=topic, histories=topic.histories)
+        return self.render("topic/history.html",
+                           topic=topic, histories=topic.histories)

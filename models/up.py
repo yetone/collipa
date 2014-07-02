@@ -1,11 +1,12 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, commit
 from ._base import db, SessionMixin, ModelMixin
 import config
 
 config = config.rec()
+
 
 class Up(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
@@ -39,7 +40,7 @@ class Up(db.Entity, SessionMixin, ModelMixin):
                 return None
 
             if topic.compute_count > 0 and topic.up_count in\
-                config.topic_compute_key_list:
+               config.topic_compute_key_list:
                 topic.compute_role()
 
             topic.up_count += 1
@@ -56,7 +57,7 @@ class Up(db.Entity, SessionMixin, ModelMixin):
                 return None
 
             if reply.compute_count > 0 and reply.up_count in\
-                config.reply_compute_key_list:
+               config.reply_compute_key_list:
                 reply.compute_role()
 
             reply.up_count += 1

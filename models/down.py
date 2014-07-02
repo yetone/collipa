@@ -1,11 +1,12 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, commit
 from ._base import db, SessionMixin, ModelMixin
 import config
 
 config = config.rec()
+
 
 class Down(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)

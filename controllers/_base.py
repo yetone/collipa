@@ -2,13 +2,13 @@
 
 import tornado.web
 
-from pony.orm import *
+from pony.orm import db_session
 import config
-from extensions import mc
 
 import models as m
 
 config = config.rec()
+
 
 class BaseHandler(tornado.web.RequestHandler):
     @db_session
@@ -30,14 +30,16 @@ class BaseHandler(tornado.web.RequestHandler):
     def set_current_user(self, user):
         if user:
             self.set_secure_cookie('user',
-                    tornado.escape.json_encode({'token': user.token, 'id':
-                        user.id}))
+                                   tornado.escape.json_encode({
+                                       'token': user.token,
+                                       'id': user.id
+                                   }))
         else:
             self.clear_cookie('user')
 
     def set_index_category(self, category='index'):
         self.set_secure_cookie('index_category',
-                tornado.escape.json_encode(category))
+                               tornado.escape.json_encode(category))
         return category
 
     @property
@@ -49,7 +51,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def set_node_category(self, node, category='index'):
         self.set_secure_cookie('node_category_%s' % node.id,
-                tornado.escape.json_encode(category))
+                               tornado.escape.json_encode(category))
         return category
 
     def get_node_category(self, node):
@@ -60,7 +62,7 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def is_ajax(self):
-        if self.request.headers.has_key('X-Requested-With') and\
+        if 'X-Requested-With' in self.request.headers and\
                 self.request.headers['X-Requested-With'].lower() ==\
                 'xmlhttprequest':
             return True
@@ -103,7 +105,7 @@ class BaseHandler(tornado.web.RequestHandler):
         message = (category, msg)
         self.messages.append(message)
         self.set_secure_cookie('flash_messages',
-                                tornado.escape.json_encode(self.messages))
+                               tornado.escape.json_encode(self.messages))
         return message
 
     @property
@@ -112,13 +114,15 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def has_permission(self):
-        if self.current_user and\
-            (self.current_user.role != 'unverify' or self.current_user.is_admin):
+        if self.current_user and (self.current_user.role != 'unverify' or
+                                  self.current_user.is_admin):
             return True
         if self.current_user.role == 'unverify':
-            result = {"status": "error", "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
+            result = {"status": "error",
+                      "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
         else:
-            result = {"status": "error", "message": "对不起，您没有相关权限"}
+            result = {"status": "error",
+                      "message": "对不起，您没有相关权限"}
         if self.is_ajax:
             self.write(result)
         else:

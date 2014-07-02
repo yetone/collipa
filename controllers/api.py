@@ -5,14 +5,12 @@ import tornado.web
 import tornado.websocket
 import tornado.escape
 
-import time
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony.orm import db_session
 
 from models import User
-from extensions import mc, rd
-from helpers import force_int
+from extensions import rd
 
 config = config.rec()
 
@@ -56,7 +54,10 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
         logging.info("Online user count is " + unicode(len(online)))
         for user in cls.users:
             try:
-                user.write_message({"type": "online", "count": unicode(len(online))})
+                user.write_message({
+                    "type": "online",
+                    "count": unicode(len(online))
+                })
             except Exception as e:
                 logging.error("Error sending online user count", exc_info=True)
                 if type(e).__name__ == "AttributeError":

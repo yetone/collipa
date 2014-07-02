@@ -14,35 +14,36 @@ def search(text, regex):
     return regexcmp.search(text)
 
 VALID_TAGS = {
-        'blockquote': {},
-        'audio': {'controls': '.*'},
-        'video': {'controls': '.*'},
-        'source': {'src': '.*', 'type': '.*'},
-        'pre': {'class': '.*', 'style': '.*'},
-        'code': {'class': '.*', 'style': '.*'},
-        'span': {'class': '.*', 'style': '.*'},
-        'div': {'class': '.*', 'style': '.*'},
-        'h1': {}, 'h2': {}, 'h3': {}, 'h4': {},
-        'strong': {}, 'em': {},
-        'p': {'class': '.*', 'style': '.*'},
-        'ul': {'class': '.*', 'style': '.*'},
-        'ol': {'class': '.*', 'style': '.*'},
-        'li': {'class': '.*', 'style': '.*'},
-        'br': {},
-        'a': {'class': '.*', 'style': '.*',
-            'href': '(^https?://|^/)', 'title': '.*',
-            'data-username': '.*'},
-        'img': {'width': '\d(px|)', 'height': '\d(px|)',
+    'blockquote': {},
+    'audio': {'controls': '.*'},
+    'video': {'controls': '.*'},
+    'source': {'src': '.*', 'type': '.*'},
+    'pre': {'class': '.*', 'style': '.*'},
+    'code': {'class': '.*', 'style': '.*'},
+    'span': {'class': '.*', 'style': '.*'},
+    'div': {'class': '.*', 'style': '.*'},
+    'h1': {}, 'h2': {}, 'h3': {}, 'h4': {},
+    'strong': {}, 'em': {},
+    'p': {'class': '.*', 'style': '.*'},
+    'ul': {'class': '.*', 'style': '.*'},
+    'ol': {'class': '.*', 'style': '.*'},
+    'li': {'class': '.*', 'style': '.*'},
+    'br': {},
+    'a': {'class': '.*', 'style': '.*',
+          'href': '(^https?://|^/)', 'title': '.*',
+          'data-username': '.*'},
+    'img': {'width': '\d(px|)', 'height': '\d(px|)',
             '_url': '(^https?://|^/static/)',
             'src': '(^https?://|^/static/)',
             'alt': '.*', 'class': '.*', 'style': '.*'},
-        'embed': {'wmode': '\w', 'play': '\w',
-            'loop': '\w',
-            'menu': '\w', 'allowscriptaccess': '\w',
-            'allowfullscreen': '\w',
-            'width': '\d(px|)', 'height': '\d(px|)', 'class': '.*',
-            'type': 'application/x-shockwave-flash', 'src': '.*'}
-        }
+    'embed': {'wmode': '\w', 'play': '\w',
+              'loop': '\w',
+              'menu': '\w', 'allowscriptaccess': '\w',
+              'allowfullscreen': '\w',
+              'width': '\d(px|)', 'height': '\d(px|)', 'class': '.*',
+              'type': 'application/x-shockwave-flash', 'src': '.*'}
+}
+
 
 def parsehtml(html):
     soup = BeautifulSoup(html)

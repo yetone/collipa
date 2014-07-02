@@ -1,7 +1,6 @@
 # coding: utf-8
 
-import time
-from pony.orm import *
+from pony.orm import Required
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
@@ -26,14 +25,16 @@ class Bank(db.Entity, SessionMixin, ModelMixin):
             bank.save()
         return bank
 
-    def income(self, coin, role="topic-create", topic_id=None, reply_id=None, spender_id=None, incomer_id=None):
+    def income(self, coin, role="topic-create", topic_id=None, reply_id=None,
+               spender_id=None, incomer_id=None):
         self.balance += coin
         bill = m.Bill(coin=coin, balance=self.balance, role=role, category=1,
-                topic_id=topic_id, reply_id=reply_id, spender_id=spender_id, incomer_id=incomer_id)
+                      topic_id=topic_id, reply_id=reply_id,
+                      spender_id=spender_id, incomer_id=incomer_id)
         bill.save()
 
     def spend(self, coin, role="signup", spender_id=None, incomer_id=None):
         self.balance -= coin
         bill = m.Bill(coin=coin, balance=self.balance, role=role, category=0,
-                spender_id=spender_id, incomer_id=incomer_id)
+                      spender_id=spender_id, incomer_id=incomer_id)
         bill.save()

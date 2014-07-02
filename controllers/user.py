@@ -13,7 +13,7 @@ import Image
 
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony.orm import db_session, count, commit
 
 from models import User
 from .api import WebSocketHandler
@@ -68,7 +68,7 @@ class EmailMixin(object):
     def send_email(self, this, email, subject, content):
         from libs.tornadomail.message import EmailMessage
         message = EmailMessage(subject, content, config.smtp_user,
-                [email], connection=self.mail_connection)
+                               [email], connection=self.mail_connection)
         message.send()
 
 
@@ -104,8 +104,9 @@ class HomeHandler(BaseHandler):
             item_count = count(user.get_followers(page=None))
             url = url + '/followers'
         page_count = (item_count + config.paged - 1) // config.paged
-        return self.render("user/index.html", user=user, items=items, view=view,
-                           category=category, page=page, page_count=page_count, url=url)
+        return self.render("user/index.html", user=user, items=items,
+                           view=view, category=category, page=page,
+                           page_count=page_count, url=url)
 
 
 class SignupHandler(BaseHandler, EmailMixin):
@@ -151,8 +152,7 @@ class SignupHandler(BaseHandler, EmailMixin):
 
     def send_register_email(self, user):
         token = self._create_token(user)
-        url = '%s/signup?verify=%s' % \
-                (config.site_url, token)
+        url = '%s/signup?verify=%s' % (config.site_url, token)
 
         subject = "帐号激活 - " + config.site_name
         template = (
@@ -211,7 +211,8 @@ class MessageHandler(BaseHandler):
         user = User.get(id=user_id)
         if not user:
             category = self.get_argument('category', 'all')
-            return self.render("user/message_box.html", category=category, page=page)
+            return self.render("user/message_box.html",
+                               category=category, page=page)
         message_box = current_user.get_message_box(user=user)
         if action == "read":
             message_box.status = 1
@@ -242,10 +243,15 @@ class MessageCreateHandler(BaseHandler):
             if form.validate():
                 message = form.save(sender_id=sender.id,
                                     receiver_id=receiver.id)
-                result = {"status": "success", "message": "私信发送成功",
-                          "content": message.content, "created": message.created,
-                          "avatar": sender.get_avatar(size=48), "url":
-                          sender.url, "id": message.id}
+                result = {
+                    "status": "success",
+                    "message": "私信发送成功",
+                    "content": message.content,
+                    "created": message.created,
+                    "avatar": sender.get_avatar(size=48),
+                    "url": sender.url,
+                    "id": message.id,
+                }
             else:
                 result = {"status": "error", "message": "请填写至少 4 字的内容"}
             self.send_result(result)
@@ -311,8 +317,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
                 return self.redirect('/signin')
 
         token = self._create_token(user)
-        url = '%s/account/password?verify=%s' % \
-                (config.site_url, token)
+        url = '%s/account/password?verify=%s' % (config.site_url, token)
 
         template = (
             '<div>你好 <strong>%(nickname)s</strong></div>'
@@ -418,7 +423,7 @@ class AvatarDelHandler(BaseHandler):
         if user.avatar:
             try:
                 os.system('rm -f %s%s*' % (sys.path[0],
-                    user.avatar[:user.avatar.rfind('x')]))
+                                           user.avatar[:user.avatar.rfind('x')]))
             except:
                 pass
             user.avatar = None
@@ -497,14 +502,12 @@ class AvatarUploadHandler(BaseHandler):
         image_one.save(tmp_name)
         tmp_file.close()
         if user:
-            user.avatar_tmp = '/' +\
-                    '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+            user.avatar_tmp = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
             src = user.avatar_tmp
         else:
-            src = '/' +\
-                    '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-        return self.write({"status": "success", "message": "成功上传头像", "src":
-                           src, "height": height, "width": width})
+            src = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+        return self.write({"status": "success", "message": "成功上传头像",
+                           "src": src, "height": height, "width": width})
 
 
 class AvatarCropHandler(BaseHandler):
@@ -545,8 +548,7 @@ class AvatarCropHandler(BaseHandler):
         if user.avatar:
             try:
                 os.system('rm -f %s%s*' %
-                    (sys.path[0],
-                        user.avatar[:user.avatar.rfind('.')]))
+                          (sys.path[0], user.avatar[:user.avatar.rfind('.')]))
             except:
                 pass
         user.avatar = user.avatar_tmp
@@ -567,7 +569,7 @@ class BackgroundDelHandler(BaseHandler):
     def get(self):
         try:
             os.system('rm -f %s%s' % (sys.path[0],
-                self.current_user.background_img))
+                                      self.current_user.background_img))
         except:
             pass
         self.current_user.background_img = ''
@@ -632,15 +634,13 @@ class ImgUploadHandler(BaseHandler):
                 os.system('mkdir -p %s' % upload_path)
             except:
                 pass
-        timestamp = str(int(time.time())) +\
-                ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                                      6)) + '_' + str(user.id)
+        timestamp = str(int(time.time())) + ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
+                                                                  6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
         image_one.save(tmp_name)
         tmp_file.close()
-        path = '/' +\
-                '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+        path = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
         category = self.get_argument('category', None)
         del_path = None
         if category == 'head':

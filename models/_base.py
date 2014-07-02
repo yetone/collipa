@@ -3,7 +3,7 @@
 import models as m
 from helpers import format_date, cached_property
 import config
-from pony.orm import *
+from pony.orm import Database, commit
 
 __all__ = [
     'db', 'SessionMixin', 'ModelMixin',
@@ -12,7 +12,7 @@ __all__ = [
 config = config.rec()
 
 db = Database('mysql', config.db_host, config.db_user, config.db_pass,
-        config.db_name)
+              config.db_name)
 
 
 class SessionMixin(object):
@@ -30,6 +30,7 @@ class SessionMixin(object):
         except:
             pass
         return self
+
 
 class ModelMixin(object):
     @staticmethod

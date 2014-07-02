@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
@@ -35,13 +35,11 @@ class Block(db.Entity, SessionMixin, ModelMixin):
     @property
     def blocker(self):
         if self.blocker_id:
-            return m.User.get(id=blocker_id)
+            return m.User.get(id=self.blocker_id)
         return None
 
     def save(self):
-
-        super(Up, self).save()
+        super(m.Up, self).save()
 
     def remove(self):
-
-        super(Up, self).remove()
+        super(m.Up, self).remove()

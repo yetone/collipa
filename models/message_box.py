@@ -1,12 +1,13 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, desc
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
 config = config.rec()
+
 
 class MessageBox(db.Entity, SessionMixin, ModelMixin):
     sender_id = Required(int)
@@ -42,8 +43,8 @@ class MessageBox(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def message(self):
-        message = m.Message.select(lambda rv: rv.message_box1_id ==
-                self.id or rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
+        message = m.Message.select(lambda rv: rv.message_box1_id == self.id or
+                                   rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
         if message:
             message = message[:][0]
         else:
@@ -51,8 +52,8 @@ class MessageBox(db.Entity, SessionMixin, ModelMixin):
         return message
 
     def get_messages(self, page=1):
-        messages = m.Message.select(lambda rv: rv.message_box1_id ==
-                self.id or rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
+        messages = m.Message.select(lambda rv: rv.message_box1_id == self.id or
+                                    rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
         messages = messages[(page - 1) * config.paged: page * config.paged]
         return messages
 

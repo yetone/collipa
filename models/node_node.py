@@ -1,12 +1,12 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required
 from ._base import db, SessionMixin, ModelMixin
-import models as m
 import config
 
 config = config.rec()
+
 
 class NodeNode(db.Entity, SessionMixin, ModelMixin):
     parent_id = Required(int)

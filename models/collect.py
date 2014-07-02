@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, LongUnicode
 from ._base import db, SessionMixin, ModelMixin
 import config
 
@@ -36,8 +36,9 @@ class Collect(db.Entity, SessionMixin, ModelMixin):
             self.content = self.topic.content
 
             self.topic.author.income(coin=config.collect_coin, role="collect",
-                    topic_id=self.topic_id)
-            self.author.spend(coin=config.collect_coin, role="collect", topic_id=self.topic_id)
+                                     topic_id=self.topic_id)
+            self.author.spend(coin=config.collect_coin, role="collect",
+                              topic_id=self.topic_id)
 
         if self.reply_id:
             self.reply.collect_count += 1
@@ -45,8 +46,9 @@ class Collect(db.Entity, SessionMixin, ModelMixin):
             self.content = self.reply.content
 
             self.reply.author.income(coin=config.collect_coin, role="collect",
-                    reply_id=self.reply_id)
-            self.author.spend(coin=config.collect_coin, role="collect", reply_id=self.reply_id)
+                                     reply_id=self.reply_id)
+            self.author.spend(coin=config.collect_coin, role="collect",
+                              reply_id=self.reply_id)
 
         self.author.collection_count += 1
 
