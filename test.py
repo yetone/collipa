@@ -1,14 +1,14 @@
 import models as m
-from pony.orm import *
+from pony.orm import db_session, select
 import config
 
 m.db.generate_mapping()
 config = config.rec()
 
+
 @db_session
 def do_sth():
     users = select(rv for rv in m.User if rv.role == 'unverify')
-    message_boxes = m.MessageBox.select()
     messages = m.Message.select()
     count = 0
     delete_count = 0

@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import re
-#import misaka
 import config
 import memcache
 import redis

@@ -1,21 +1,23 @@
 # coding: utf-8
 
-_DBUSER = "username" # 数据库用户名
-_DBPASS = "password" # 数据库密码
-_DBHOST = "localhost" # 数据库地址
-_DBNAME = "collipa" # 数据库名称
+_DBUSER = "username"  # database username
+_DBPASS = "password"  # database password
+_DBHOST = "localhost"  # database host
+_DBNAME = "collipa"  # database name
 
-_SMTPUSER = 'example@gmail.com' # 邮箱用户名
-_SMTPPASS = 'password' # 邮箱密码
-_SMTPHOST = 'smtp.gmail.com' # 邮箱地址
-_SMTPPORT = '587' # 邮箱端口
+_SMTPUSER = 'example@gmail.com'  # email username
+_SMTPPASS = 'password'  # email password
+_SMTPHOST = 'smtp.gmail.com'  # email host
+_SMTPPORT = '587'  # email port
 
-_RDPORT = 6379 # Redis port
+_RDPORT = 6379  # Redis port
+
 
 class rec:
     debug = True
 
-    database = 'mysql://%s:%s@%s/%s?charset=utf8' % (_DBUSER, _DBPASS, _DBHOST, _DBNAME)
+    database = 'mysql://%s:%s@%s/%s?charset=utf8' % (_DBUSER, _DBPASS, _DBHOST,
+                                                     _DBNAME)
 
     db_user = _DBUSER
     db_pass = _DBPASS
@@ -24,8 +26,8 @@ class rec:
 
     rd_port = _RDPORT
 
-    cookie_secret = 'cookiesecret' # cookie secret
-    password_secret = 'passwordsecret' # password secret
+    cookie_secret = 'cookiesecret'  # cookie secret
+    password_secret = 'passwordsecret'  # password secret
 
     site_name = 'Collipa'
     site_url = 'http://127.0.0.1:8008'
@@ -52,26 +54,30 @@ class rec:
     smtp_ssl = True
 
     forbidden_name_list = ['start', 'about', 'links', 'contact', 'user',
-            'users', 'admin', 'dashboard', 'setting', 'settings', 'topic',
-            'topics', 'reply', 'replies', 'login', 'register', 'logout',
-            'signin', 'signup', 'signout', 'static', 'statics',
-            'public', 'publics', 'password',
-            'account', 'accounts', 'node', 'nodes', 'post', 'posts',
-            'comment', 'comments',
-            'notification', 'notifications', 'api', 'apis', 'faq', 'help',
-            'helps', 'helper', 'helpers', 'bot', 'bots', 'computer', 'compute',
-            'collect', 'collects', 'collection', 'collections', 'thank', 'up',
-            'down', 'give', 'news', 'hot', 'hots', 'timeline', 'goodnews',
-            'other', 'ad', 'ads', 'site', 'sites', 'collipa', 'image',
-            'images', 'upload', 'message', 'messages', 'bank', 'coin',
-            'balance', 'new', 'some', 'controller', 'control', 'show',
-            'friend', 'friends', '404', '502', '503', '302', 'test', 'success',
-            'error', 'information', 'index', 'home', 'a', 'b', 'c', '0', '1',
-            '2', 'status', 'inform', 'notice', 'notify', 'superman',
-            'superwoman', 'superchild', 'god', 'photo', 'photos', 'city',
-            'boy', 'boys', 'girl', 'girls', 'discussion', 'discussions',
-            'note', 'book', 'music', 'movie', 'shop', 'life', 'live', 'baby',
-            'love', 'me', 'mine', 'blog', 't']
+                           'users', 'admin', 'dashboard', 'setting',
+                           'settings', 'topic', 'topics', 'reply', 'replies',
+                           'login', 'register', 'logout', 'signin', 'signup',
+                           'signout', 'static', 'statics', 'public', 'publics',
+                           'password', 'account', 'accounts', 'node', 'nodes',
+                           'post', 'posts', 'comment', 'comments',
+                           'notification', 'notifications', 'api', 'apis',
+                           'faq', 'help', 'helps', 'helper', 'helpers', 'bot',
+                           'bots', 'computer', 'compute', 'collect',
+                           'collects', 'collection', 'collections', 'thank',
+                           'up', 'down', 'give', 'news', 'hot', 'hots',
+                           'timeline', 'goodnews', 'other', 'ad', 'ads',
+                           'site', 'sites', 'collipa', 'image', 'images',
+                           'upload', 'message', 'messages', 'bank', 'coin',
+                           'balance', 'new', 'some', 'controller', 'control',
+                           'show', 'friend', 'friends', '404', '502', '503',
+                           '302', 'test', 'success', 'error', 'information',
+                           'index', 'home', 'a', 'b', 'c', '0', '1', '2',
+                           'status', 'inform', 'notice', 'notify', 'superman',
+                           'superwoman', 'superchild', 'god', 'photo',
+                           'photos', 'city', 'boy', 'boys', 'girl', 'girls',
+                           'discussion', 'discussions', 'note', 'book',
+                           'music', 'movie', 'shop', 'life', 'live', 'baby',
+                           'love', 'me', 'mine', 'blog', 't']
 
     bank_init_coin = 6300000
     user_init_coin = 2100

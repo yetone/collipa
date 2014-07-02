@@ -8,8 +8,7 @@ from controllers import (site,
                          image,
                          api,
                          upload,
-                         tweet
-                        )
+                         tweet)
 
 
 routers = [
