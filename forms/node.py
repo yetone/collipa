@@ -5,12 +5,11 @@ from libs.tforms.fields import TextField, TextAreaField, SelectMultipleField
 from libs.tforms.validators import ValidationError
 from ._base import BaseForm
 import config
-from pony.orm import *
 
 from models import Node, NodeNode
-from helpers import strip_tags
 
 config = config.rec()
+
 
 class NodeForm(BaseForm):
     @staticmethod
@@ -80,6 +79,7 @@ class NodeForm(BaseForm):
                     if not NodeNode.get(parent_id=parent.id, child_id=node.id):
                         NodeNode(parent_id=parent.id, child_id=node.id).save()
         return node
+
 
 class NodeEditForm(BaseForm):
     @staticmethod

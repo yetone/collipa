@@ -12,6 +12,7 @@ from models import Reply, History
 
 config = config.rec()
 
+
 class ReplyForm(BaseForm):
     content = TextAreaField(
         '内容', [
@@ -24,7 +25,7 @@ class ReplyForm(BaseForm):
         """ 为了照顾一图流
         """
         if field.data.find('<img class="upload-reply-image"') == -1 and\
-            field.data.find('<embed type="application') == -1:
+           field.data.find('<embed type="application') == -1:
             data = strip_tags(field.data)
             if len(data) < 3:
                 raise ValidationError('内容至少 3 字符')
@@ -45,7 +46,7 @@ class ReplyForm(BaseForm):
         data = self.data
         content = unicode(data.get('content'))
         data.update({'user_id': user.id, 'topic_id': topic.id,
-            'content': strip_xss_tags(content)})
+                     'content': strip_xss_tags(content)})
         if reply:
             category = 'edit'
             pre_content = reply.content

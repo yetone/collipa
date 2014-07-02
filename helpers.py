@@ -5,7 +5,6 @@ import os
 import re
 import time
 import config
-import models as m
 from libs import xss
 
 config = config.rec()
@@ -25,6 +24,7 @@ class UsernameParser(HTMLParser):
                     if variable == 'data-username':
                         self.names.append(value)
 
+
 def require_admin(func):
     def wrap(self, *args, **kwargs):
         if self.current_user and self.current_user.is_admin:
@@ -33,17 +33,20 @@ def require_admin(func):
         self.send_result(result)
     return wrap
 
+
 def require_permission(func):
     def wrap(self, *args, **kwargs):
-        if self.current_user and\
-            (self.current_user.role != 'unverify' or self.current_user.is_admin):
+        if self.current_user and (self.current_user.role != 'unverify' or
+                                  self.current_user.is_admin):
             return func(self, *args, **kwargs)
         if self.current_user.role == 'unverify':
-            result = {"status": "error", "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
+            result = {"status": "error",
+                      "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
         else:
             result = {"status": "error", "message": "对不起，您没有相关权限"}
         self.send_result(result)
     return wrap
+
 
 def get_day(timestamp):
     FORY = '%d'
@@ -60,6 +63,7 @@ def get_month(timestamp):
     str = time.strftime(FORY, time.localtime(timestamp))
     return str
 '''
+
 
 def format_date(timestamp):
     FORY = '%Y-%m-%d @ %H:%M'
@@ -89,12 +93,14 @@ def format_date(timestamp):
         str = time.strftime(FORY, time.localtime(timestamp))
     return str
 
+
 def format_date2(timestamp):
     FORY = '%Y-%m-%d @ %H:%M'
     os.environ["TZ"] = config.default_timezone
     time.tzset()
     str = time.strftime(FORY, time.localtime(timestamp))
     return str
+
 
 def get_year():
     timestamp = int(time.time())
@@ -104,6 +110,7 @@ def get_year():
     str = time.strftime(FORY, time.localtime(timestamp))
     return str
 
+
 def get_month():
     timestamp = int(time.time())
     FORY = '%m'
@@ -111,6 +118,7 @@ def get_month():
     time.tzset()
     str = time.strftime(FORY, time.localtime(timestamp))
     return str
+
 
 def format_text(text):
     floor = ur'#(\d+)楼\s'
@@ -120,6 +128,7 @@ def format_text(text):
         nurl = '<a class="toreply" href="#;">#<span class="tofloor">%s</span>楼 </a>' % (url)
         text = text.replace(floor, nurl)
     return text
+
 
 def reply_content(text):
     return text[0:26]
@@ -149,6 +158,7 @@ def username(data):
     pattern = r'^[a-zA-Z0-9]+$'
     return regex(pattern, data)
 
+
 def get_mention_names(content):
     up = UsernameParser()
     up.feed(content)
@@ -156,6 +166,7 @@ def get_mention_names(content):
     names1 = up.names
     names = {}.fromkeys(names1).keys()
     return names
+
 
 def strip_tags(html):
     if html:
@@ -169,8 +180,10 @@ def strip_tags(html):
         return "".join(result)
     return ''
 
+
 def strip_xss_tags(html):
     return xss.parsehtml(html)
+
 
 def filter_img_tags(htmlstr):
     re_img = re.compile('<\s*img[^>]*>', re.L)
@@ -178,6 +191,7 @@ def filter_img_tags(htmlstr):
     s = re_img.sub('', htmlstr)
     s = re_br.sub('', s)
     return s
+
 
 def get_img_list(text):
     img_path = ur'\/static\/[^\s\"]*\.(jpg|jpeg|png|bmp|gif)'
@@ -187,11 +201,13 @@ def get_img_list(text):
         path_list += [path]
     return path_list
 
+
 def force_int(value, default=1):
     try:
         return int(value)
     except:
         return default
+
 
 class _Missing(object):
 
@@ -202,6 +218,7 @@ class _Missing(object):
         return '_missing'
 
 _missing = _Missing()
+
 
 class cached_property(object):
     def __init__(self, func, name=None, doc=None):

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, LongUnicode, select, desc
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
@@ -74,15 +74,13 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.tweet_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.tweet_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Up if rv.tweet_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -93,15 +91,13 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.tweet_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.tweet_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Thank if rv.tweet_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -117,12 +113,13 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
             user = m.User.get(name=name)
             if user and user.id != self.user_id:
                 m.Notification(tweet_id=self.id, receiver_id=user.id,
-                        role='mention').save()
+                               role='mention').save()
         return self
 
     @staticmethod
     def get_timeline(page=1):
-        tweets = select(rv for rv in Tweet).order_by(lambda rv: desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+        tweets = select(rv for rv in Tweet).order_by(lambda rv:
+                                                     desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
         return tweets
 
     @property

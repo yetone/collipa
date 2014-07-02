@@ -1,12 +1,13 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
 config = config.rec()
+
 
 class Notification(db.Entity, SessionMixin, ModelMixin):
     sender_id = Optional(int)

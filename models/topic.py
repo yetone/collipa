@@ -1,13 +1,15 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import (Required, Optional, LongUnicode, desc, commit, select,
+                      count)
 from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 from helpers import get_mention_names
 
 config = config.rec()
+
 
 class Topic(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
@@ -52,40 +54,41 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def last_reply(self):
-        reply = m.Reply.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv: desc(rv.created_at)).first()
+        reply = m.Reply.select(lambda rv: rv.topic_id ==
+                               self.id).order_by(lambda rv:
+                                                 desc(rv.created_at)).first()
         return reply
 
     @property
     def replies(self):
         replies = m.Reply.select(lambda rv: rv.topic_id ==
-                self.id).order_by(lambda rv: desc(rv.created_at))
+                                 self.id).order_by(lambda rv:
+                                                   desc(rv.created_at))
         return replies
 
     def get_replies(self, page=1, category='all', order_by='created_at',
-            limit=None):
+                    limit=None):
         if category == 'all':
             replies = m.Reply.select(lambda rv: rv.topic_id ==
-                    self.id)
+                                     self.id)
         else:
             if category == 'hot':
                 replies = m.Reply.select(lambda rv: rv.topic_id ==
-                        self.id)
-                #now = int(time.time())
-                #ago = now - 60 * 60 * 24
-                #replies = select(rv for rv in m.Reply if rv.topic_id == self.id
-                #        and rv.created_at > ago)
+                                         self.id)
                 limit = 10
                 order_by = 'smart'
             elif category == 'author':
                 replies = select(rv for rv in m.Reply if rv.topic_id == self.id
-                        and rv.user_id == self.user_id)
+                                 and rv.user_id == self.user_id)
             else:
                 replies = select(rv for rv in m.Reply if rv.topic_id ==
-                        self.id and rv.role == category)
+                                 self.id and rv.role == category)
 
         if order_by == 'smart':
             replies = replies.order_by(lambda rv: desc((rv.collect_count +
-                rv.thank_count) * 10 + (rv.up_count - rv.down_count) * 5))
+                                                        rv.thank_count) * 10 +
+                                                       (rv.up_count -
+                                                        rv.down_count) * 5))
         else:
             replies = replies.order_by(lambda rv: rv.created_at)
 
@@ -93,7 +96,7 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             return replies[:limit]
         elif page:
             return replies[(page - 1) * config.reply_paged: page *
-                    config.reply_paged]
+                           config.reply_paged]
         else:
             return replies
 
@@ -110,25 +113,33 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             self.role = 'up'
         if ratio > 6:
             self.role = 'dispute'
-        if self.role == 'up' and self.reply_count > 20 and self.reply_hits > 60:
+        if self.role == 'up' and self.reply_count > 20 and\
+           self.reply_hits > 60:
             self.role = 'hot'
 
-            if not m.Bill.get(user_id=self.author.id, role='topic-hot',
-                    topic_id=self.id):
-                self.author.income(coin=config.topic_hot_coin, role='topic-hot', topic_id=self.id)
+            if not m.Bill.get(user_id=self.author.id,
+                              role='topic-hot',
+                              topic_id=self.id):
+                self.author.income(coin=config.topic_hot_coin,
+                                   role='topic-hot',
+                                   topic_id=self.id)
                 bank = m.Bank.get_one()
-                bank.spend(coin=config.topic_hot_coin, role='topic-hot',
-                        topic_id=self.id)
+                bank.spend(coin=config.topic_hot_coin,
+                           role='topic-hot',
+                           topic_id=self.id)
         if self.report_count > 12 and self.up_count < 5:
             self.role = 'report'
 
-            if not m.Bill.get(user_id=self.author.id, role='topic-report',
-                    topic_id=self.id):
+            if not m.Bill.get(user_id=self.author.id,
+                              role='topic-report',
+                              topic_id=self.id):
                 self.author.spend(coin=config.topic_report_coin,
-                        role='topic-report', topic_id=self.id)
+                                  role='topic-report',
+                                  topic_id=self.id)
                 bank = m.Bank.get_one()
-                bank.income(coin=config.topic_report_coin, role='topic-report',
-                        topic_id=self.id)
+                bank.income(coin=config.topic_report_coin,
+                            role='topic-report',
+                            topic_id=self.id)
 
         try:
             commit()
@@ -146,14 +157,22 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             self.node.topic_count += 1
             self.author.topic_count += 1
 
-            self.author.spend(coin=config.topic_create_coin, role="topic-create", topic_id=self.id)
-            bank.income(coin=config.topic_create_coin, role="topic-create", topic_id=self.id,
-                    spender_id=self.author.id)
+            self.author.spend(coin=config.topic_create_coin,
+                              role="topic-create",
+                              topic_id=self.id)
+            bank.income(coin=config.topic_create_coin,
+                        role="topic-create",
+                        topic_id=self.id,
+                        spender_id=self.author.id)
 
         if category == 'edit' and not user:
-            self.author.spend(coin=config.topic_edit_coin, role='topic-edit', topic_id=self.id)
-            bank.income(coin=config.topic_edit_coin, role='topic-edit', topic_id=self.id,
-                    spender_id=self.author.id)
+            self.author.spend(coin=config.topic_edit_coin,
+                              role='topic-edit',
+                              topic_id=self.id)
+            bank.income(coin=config.topic_edit_coin,
+                        role='topic-edit',
+                        topic_id=self.id,
+                        spender_id=self.author.id)
 
         if not user:
             user = self.author
@@ -212,15 +231,13 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -231,15 +248,13 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -250,15 +265,15 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
     def get_replyers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                    self.id and rv.user_id != self.user_id and rv.created_at >
-                    after_date)
+                              self.id and rv.user_id != self.user_id and
+                              rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                    self.id and rv.user_id != self.user_id and rv.created_at <
-                    before_date)
+                              self.id and rv.user_id != self.user_id and
+                              rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                    self.id and rv.user_id != self.user_id)
+                              self.id and rv.user_id != self.user_id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -269,12 +284,14 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
     @property
     def histories(self):
         histories = m.History.select(lambda rv: rv.topic_id ==
-                self.id).order_by(lambda rv: desc(rv.created_at))
+                                     self.id).order_by(lambda rv:
+                                                       desc(rv.created_at))
         return histories
 
     def get_histories(self, page=1):
         histories = m.History.select(lambda rv: rv.topic_id ==
-                self.id).order_by(lambda rv: desc(rv.created_at))
+                                     self.id).order_by(lambda rv:
+                                                       desc(rv.created_at))
         return histories[(page - 1) * config.paged: page * config.paged]
 
     @property
@@ -289,5 +306,5 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             user = m.User.get(name=name)
             if user and user.id != self.user_id:
                 m.Notification(topic_id=self.id, receiver_id=user.id,
-                        role='mention').save()
+                               role='mention').save()
         return self

@@ -1,6 +1,4 @@
 import difflib
-import os.path
-import xml.sax.saxutils
 
 
 default_css = """\
@@ -82,7 +80,7 @@ def _colorize(diff):
                 while lines and len(_next) < 2:
                     _next.append(lines.pop())
                 if _next[0].startswith("+") and (len(_next) == 1
-                    or _next[1][0] not in ("+", "-")):
+                                                 or _next[1][0] not in ("+", "-")):
                     aline, bline = _line_diff(line[1:], _next.pop(0)[1:])
                     yield '<div class="delete">-%s</div>' % (aline,)
                     yield '<div class="insert">+%s</div>' % (bline,)
@@ -94,7 +92,6 @@ def _colorize(diff):
             klass = "insert"
         yield '<div class="%s">%s</div>' % (klass, escape(line),)
     yield "</div>"
-
 
 
 def _line_diff(a, b):

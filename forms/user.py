@@ -7,7 +7,7 @@ from ._base import BaseForm
 import config
 
 from models import User, Message
-from pony.orm import *
+from pony.orm import db_session
 
 config = config.rec()
 
@@ -25,6 +25,7 @@ class MessageForm(BaseForm):
         data.update(kargs)
         message = Message(**data).save()
         return message
+
 
 class SignupForm(BaseForm):
     name = TextField(
@@ -85,6 +86,7 @@ class SignupForm(BaseForm):
         user.save()
         return user
 
+
 class SigninForm(BaseForm):
     account = TextField(
         '邮箱', [
@@ -98,7 +100,7 @@ class SigninForm(BaseForm):
             validators.Length(min=6, max=24),
         ]
     )
-    #permanent = BooleanField('记住我')
+    # permanent = BooleanField('记住我')
 
     @db_session
     def validate_password(self, field):
@@ -114,6 +116,7 @@ class SigninForm(BaseForm):
             self.user = user
             return user
         raise ValidationError('用户名或密码错误')
+
 
 class SettingForm(BaseForm):
     @classmethod
@@ -165,14 +168,14 @@ class SettingForm(BaseForm):
         if not args:
             if user:
                 args = {
-                        'nickname': [user.nickname],
-                        'urlname': [user.urlname],
-                        'address': [user.address],
-                        'website': [user.website],
-                        'description': [user.description],
-                        'style': [user.style],
-                        'site_style': [user.site_style]
-                        }
+                    'nickname': [user.nickname],
+                    'urlname': [user.urlname],
+                    'address': [user.address],
+                    'website': [user.website],
+                    'description': [user.description],
+                    'style': [user.style],
+                    'site_style': [user.site_style]
+                }
                 sf = cls(args)
                 sf.edit_nickname_count = user.edit_nickname_count
                 sf.edit_urlname_count = user.edit_urlname_count

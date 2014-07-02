@@ -12,12 +12,13 @@ from libs import ghdiff
 
 config = config.rec()
 
+
 class TopicForm(BaseForm):
     def validate_content(self, field):
         """ 为了照顾一图流
         """
         if field.data.find('<img class="upload-topic-image"') == -1 and\
-            field.data.find('<embed type="application') == -1:
+           field.data.find('<embed type="application') == -1:
             data = strip_tags(field.data)
             if len(data) < 3:
                 raise ValidationError('内容至少 3 字符')
@@ -81,7 +82,7 @@ class TopicForm(BaseForm):
             print(data)
         content = unicode(data.get('content'))
         data.update({'user_id': user.id, 'node_id': self.node.id,
-            'content': strip_xss_tags(content)})
+                     'content': strip_xss_tags(content)})
         if topic:
             category = 'edit'
             pre_node_id = topic.node_id

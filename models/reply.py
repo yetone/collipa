@@ -1,13 +1,15 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import (Required, Optional, LongUnicode, commit, select, desc,
+                      count)
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 from helpers import get_mention_names
 
 config = config.rec()
+
 
 class Reply(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
@@ -55,26 +57,27 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
             self.role = 'up'
         if ratio > 6:
             self.role = 'dispute'
-        if self.role == 'up' and self.reply_count > 20 and self.reply_hits > 60:
+        if self.role == 'up' and self.reply_count > 20 and\
+           self.reply_hits > 60:
             self.role = 'hot'
 
             if not m.Bill.get(user_id=self.author.id, role='reply-hot',
-                    reply_id=self.id):
+                              reply_id=self.id):
                 self.author.income(coin=config.reply_hot_coin,
-                        role='reply-hot', reply_id=self.id)
+                                   role='reply-hot', reply_id=self.id)
                 bank = m.Bank.get_one()
                 bank.spend(coin=config.reply_hot_coin, role='reply-hot',
-                        reply_id=self.id)
+                           reply_id=self.id)
         if self.report_count > 12 and self.up_count < 5:
             self.role = 'report'
 
             if not m.Bill.get(user_id=self.author.id, role='reply-report',
-                    reply_id=self.id):
+                              reply_id=self.id):
                 self.author.spend(coin=config.reply_report_coin,
-                        role='reply-report', reply_id=self.id)
+                                  role='reply-report', reply_id=self.id)
                 bank = m.Bank.get_one()
                 bank.income(coin=config.reply_report_coin, role='reply-report',
-                        reply_id=self.id)
+                            reply_id=self.id)
 
         try:
             commit()
@@ -93,27 +96,33 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
             self.floor = self.topic.reply_count
             self.author.reply_count += 1
 
-            self.author.spend(coin=config.reply_create_coin, role='reply-create', reply_id=self.id)
+            self.author.spend(coin=config.reply_create_coin,
+                              role='reply-create', reply_id=self.id)
             bank.income(coin=config.reply_create_coin, role="reply-create",
-                    reply_id=self.id, spender_id=self.author.id)
+                        reply_id=self.id, spender_id=self.author.id)
 
             if self.user_id != self.topic.user_id:
                 receiver_id = self.topic.user_id
                 topic_id = self.topic_id
                 notification = m.Notification.get(receiver_id=receiver_id,
-                        topic_id=topic_id, role='reply')
+                                                  topic_id=topic_id,
+                                                  role='reply')
                 if notification:
                     if notification.switch == 1:
                         notification.status = 0
                         notification.updated_at = now
                 else:
                     notification = m.Notification(receiver_id=receiver_id,
-                            topic_id=topic_id, role='reply').save()
+                                                  topic_id=topic_id,
+                                                  role='reply').save()
 
         if category == 'edit' and not user:
-            self.author.spend(coin=config.reply_edit_coin, role='reply-edit', reply_id=self.id)
-            bank.income(coin=config.reply_edit_coin, role='reply-edit', reply_id=self.id,
-                    spender_id=self.author.id)
+            self.author.spend(coin=config.reply_edit_coin,
+                              role='reply-edit', reply_id=self.id)
+            bank.income(coin=config.reply_edit_coin,
+                        role='reply-edit',
+                        reply_id=self.id,
+                        spender_id=self.author.id)
 
         if not user:
             user = self.author
@@ -146,15 +155,13 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -165,15 +172,13 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -184,12 +189,12 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
     @property
     def histories(self):
         histories = m.History.select(lambda rv: rv.reply_id ==
-                self.id).order_by(lambda rv: desc(rv.created_at))
+                                     self.id).order_by(lambda rv: desc(rv.created_at))
         return histories
 
     def get_histories(self, page=1):
         histories = m.History.select(lambda rv: rv.reply_id ==
-                self.id).order_by(lambda rv: desc(rv.created_at))
+                                     self.id).order_by(lambda rv: desc(rv.created_at))
         return histories[(page - 1) * config.paged: page * config.paged]
 
     @property
@@ -203,6 +208,7 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
         for name in names:
             user = m.User.get(name=name)
             if user and user.id != self.topic.user_id:
-                m.Notification(reply_id=self.id, receiver_id=user.id,
-                        role='mention').save()
+                m.Notification(reply_id=self.id,
+                               receiver_id=user.id,
+                               role='mention').save()
         return self

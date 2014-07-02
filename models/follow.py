@@ -1,13 +1,14 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 from helpers import cached_property
 
 config = config.rec()
+
 
 class Follow(db.Entity, SessionMixin, ModelMixin):
     who_id = Required(int)

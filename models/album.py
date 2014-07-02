@@ -1,13 +1,13 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, select, desc
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
-from helpers import get_mention_names
 
 config = config.rec()
+
 
 class Album(db.Entity, SessionMixin, ModelMixin):
     name = Required(unicode, 400)
@@ -55,15 +55,13 @@ class Album(db.Entity, SessionMixin, ModelMixin):
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.album_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Up if rv.album_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Up if rv.album_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -74,15 +72,13 @@ class Album(db.Entity, SessionMixin, ModelMixin):
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.album_id ==
-                    self.id and rv.created_at >
-                    after_date)
+                              self.id and rv.created_at > after_date)
         elif before_date:
             user_ids = select(rv.user_id for rv in m.Thank if rv.album_id ==
-                    self.id and rv.created_at <
-                    before_date)
+                              self.id and rv.created_at < before_date)
         else:
             user_ids = select(rv.user_id for rv in m.Thank if rv.album_id ==
-                    self.id)
+                              self.id)
         users = []
         if user_ids:
             user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
@@ -91,26 +87,28 @@ class Album(db.Entity, SessionMixin, ModelMixin):
         return users
 
     def get_images(self, page=1, category='all', order_by='created_at',
-            limit=None):
+                   limit=None):
         if category == 'all':
             images = m.Image.select(lambda rv: rv.topic_id ==
-                    self.id)
+                                    self.id)
         else:
             if category == 'hot':
                 images = m.Image.select(lambda rv: rv.topic_id ==
-                        self.id)
+                                        self.id)
                 limit = 10
                 order_by = 'smart'
             elif category == 'author':
                 images = select(rv for rv in m.Image if rv.topic_id == self.id
-                        and rv.user_id == self.user_id)
+                                and rv.user_id == self.user_id)
             else:
                 images = select(rv for rv in m.Image if rv.topic_id ==
-                        self.id and rv.role == category)
+                                self.id and rv.role == category)
 
         if order_by == 'smart':
             images = images.order_by(lambda rv: desc((rv.collect_count +
-                rv.thank_count) * 10 + (rv.up_count - rv.down_count) * 5))
+                                                      rv.thank_count) * 10 +
+                                                     (rv.up_count -
+                                                      rv.down_count) * 5))
         else:
             images = images.order_by(lambda rv: rv.created_at)
 
@@ -118,6 +116,6 @@ class Album(db.Entity, SessionMixin, ModelMixin):
             return images[:limit]
         elif page:
             return images[(page - 1) * config.paged: page *
-                    config.paged]
+                          config.paged]
         else:
             return images

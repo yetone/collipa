@@ -8,7 +8,8 @@ import sys
 from ._base import BaseHandler
 import tornado.web
 from helpers import get_year, get_month
-from pony.orm import *
+from pony.orm import db_session
+
 
 class UploadHandler(BaseHandler):
     @db_session
@@ -18,7 +19,7 @@ class UploadHandler(BaseHandler):
             return
         if self.request.files == {} or 'myfile' not in self.request.files:
             self.write({"status": "error",
-                "message": "对不起，请选择文件"})
+                        "message": "对不起，请选择文件"})
             return
 
         file_type_list = []
@@ -30,13 +31,13 @@ class UploadHandler(BaseHandler):
         if send_file['content_type'] not in file_type_list:
             if category == 'music':
                 self.write({"status": "error",
-                    "message": "对不起，仅支持 mp3, wav 格式的音乐文件"})
+                            "message": "对不起，仅支持 mp3, wav 格式的音乐文件"})
                 return
 
         if category == 'music':
             if len(send_file['body']) > 20 * 1024 * 1024:
                 self.write({"status": "error",
-                    "message": "对不起，请上传20M以下的音乐文件"})
+                            "message": "对不起，请上传20M以下的音乐文件"})
                 return
 
         user = self.current_user
@@ -51,7 +52,7 @@ class UploadHandler(BaseHandler):
 
         timestamp = str(int(time.time())) +\
             ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                6)) + '_' + str(user.id)
+                                    6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         file_path = upload_path + timestamp + '.' + image_format
         with open(file_path, 'wb') as f:
@@ -61,6 +62,11 @@ class UploadHandler(BaseHandler):
             '/'.join(file_path.split('/')[file_path.split('/').index("static"):])
         if category == 'music':
             if self.is_ajax:
-                return self.write({'path': path, 'status': "success", 'message':
-                    '上传成功', 'category': 'music', 'content_type': send_file['content_type']})
+                return self.write({
+                    'path': path,
+                    'status': "success",
+                    'message': '上传成功',
+                    'category': 'music',
+                    'content_type': send_file['content_type'],
+                })
         return

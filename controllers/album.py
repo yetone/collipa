@@ -4,9 +4,9 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony.orm import db_session
 
-from models import Album
+from models import Tweet
 from helpers import strip_xss_tags, strip_tags
 
 config = config.rec()
@@ -35,13 +35,13 @@ class HomeHandler(BaseHandler):
                     result = user.up(tweet_id=tweet.id)
                 else:
                     result = {'status': 'info', 'message':
-                            '不能为自己的推文投票'}
+                              '不能为自己的推文投票'}
             if action == 'down':
                 if tweet.user_id != user.id:
                     result = user.down(tweet_id=tweet.id)
                 else:
                     result = {'status': 'info', 'message':
-                            '不能为自己的推文投票'}
+                              '不能为自己的推文投票'}
             if action == 'collect':
                 result = user.collect(tweet_id=tweet.id)
             if action == 'thank':
@@ -78,27 +78,27 @@ class CreateHandler(BaseHandler):
             tweet = Tweet(content=strip_xss_tags(content), user_id=user.id).save()
             tweet.put_notifier()
             result = {
-                        'status'          : 'success',
-                        'message'         : '推文创建成功',
-                        'content'         : tweet.content,
-                        'name'            : tweet.author.name,
-                        'nickname'        : tweet.author.nickname,
-                        'author_avatar'   : tweet.author.get_avatar(size=48),
-                        'author_url'      : tweet.author.url,
-                        'author_name'     : tweet.author.name,
-                        'author_nickname' : tweet.author.nickname,
-                        'tweet_url'       : tweet.url,
-                        'created'         : tweet.created,
-                        'id'              : tweet.id
-                    }
+                'status': 'success',
+                'message': '推文创建成功',
+                'content': tweet.content,
+                'name': tweet.author.name,
+                'nickname': tweet.author.nickname,
+                'author_avatar': tweet.author.get_avatar(size=48),
+                'author_url': tweet.author.url,
+                'author_name': tweet.author.name,
+                'author_nickname': tweet.author.nickname,
+                'tweet_url': tweet.url,
+                'created': tweet.created,
+                'id': tweet.id
+            }
             if self.is_ajax:
                 return self.write(result)
             self.flash_message(result)
             return self.redirect('/timeline')
         result = {
-                    'status': 'error',
-                    'message': '推文内容至少 3 字符'
-                }
+            'status': 'error',
+            'message': '推文内容至少 3 字符'
+        }
         if self.is_ajax:
             return self.write(result)
         self.flash_message(result)

@@ -1,12 +1,12 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional
 from ._base import db, SessionMixin, ModelMixin
-import models as m
 import config
 
 config = config.rec()
+
 
 class FollowClass(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int)
@@ -23,4 +23,4 @@ class FollowClass(db.Entity, SessionMixin, ModelMixin):
         return self.id
 
     def __repr__(self):
-        return '<FollowClass>: %s>' % self.id
+        return '<FollowClass: %s>' % self.id

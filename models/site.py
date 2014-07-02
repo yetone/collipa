@@ -1,12 +1,11 @@
 # coding: utf-8
 
-import time
-from pony.orm import *
+from pony.orm import Optional, LongUnicode
 from ._base import db, SessionMixin, ModelMixin
 import config
-import models as m
 
 config = config.rec()
+
 
 class Site(db.Entity, SessionMixin, ModelMixin):
     name = Optional(unicode)

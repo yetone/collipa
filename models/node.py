@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import time
-from pony.orm import *
+from pony.orm import Required, Optional, LongUnicode, select, desc, commit
 from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
@@ -10,6 +10,7 @@ from helpers import strip_tags
 from extensions import mc
 
 config = config.rec()
+
 
 class Node(db.Entity, SessionMixin, ModelMixin):
     user_id = Required(int, default=1)
@@ -61,13 +62,13 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     @property
     def parent_node_ids(self):
         parent_ids = select(nn.parent_id for nn in m.NodeNode if
-                nn.child_id == self.id)
+                            nn.child_id == self.id)
         return parent_ids if parent_ids else [0]
 
     @property
     def parent_nodes(self):
         parent_id_list = select(nn.parent_id for nn in m.NodeNode if
-                nn.child_id == self.id)[:]
+                                nn.child_id == self.id)[:]
         if parent_id_list:
             nodes = Node.get_items_by_id(parent_id_list)
             return nodes
@@ -77,7 +78,7 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     @property
     def child_nodes(self):
         child_id_list = select(nn.child_id for nn in m.NodeNode if
-                nn.parent_id == self.id)[:]
+                               nn.parent_id == self.id)[:]
         if child_id_list:
             nodes = Node.get_items_by_id(child_id_list)
             return nodes
@@ -88,7 +89,9 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     def sibling_nodes(self):
         parent_ids = self.parent_node_ids
         sibling_id_list = select(nn.child_id for nn in m.NodeNode if
-                nn.parent_id in parent_ids and nn.child_id != self.id and nn.child_id != 0)[:]
+                                 nn.parent_id in parent_ids and
+                                 nn.child_id != self.id and
+                                 nn.child_id != 0)[:]
         if sibling_id_list:
             nodes = Node.get_items_by_id(sibling_id_list)
             return nodes
@@ -108,8 +111,7 @@ class Node(db.Entity, SessionMixin, ModelMixin):
 
     def get_topics(self, page=1, category='all', order_by='created_at'):
         if category == 'all':
-            topics = select(rv for rv in m.Topic if rv.node_id ==
-                    self.id)
+            topics = select(rv for rv in m.Topic if rv.node_id == self.id)
             order_by = 'last_reply_date'
 
         else:
@@ -118,23 +120,24 @@ class Node(db.Entity, SessionMixin, ModelMixin):
                 if not topics:
                     now = int(time.time())
                     ago = now - 60 * 60 * 24
-                    topics = select(rv for rv in m.Topic if rv.node_id == self.id
-                            and rv.created_at > ago)
+                    topics = select(rv for rv in m.Topic if
+                                    rv.node_id == self.id and
+                                    rv.created_at > ago)
                     topics = topics.order_by(lambda rv: desc((rv.collect_count +
-                            rv.thank_count - rv.report_count) * 10 + (rv.up_count -
-                                rv.down_count) * 5 + rv.reply_count * 3))
-                    mc.set('node_%s_hot_topics' % self.id, list(topics), 60 *
-                            60 * 3)
+                                                              rv.thank_count - rv.report_count) * 10 +
+                                                             (rv.up_count - rv.down_count) * 5 +
+                                                             rv.reply_count * 3))
+                    mc.set('node_%s_hot_topics' % self.id, list(topics),
+                           60 * 60 * 3)
                 order_by = 'none'
             elif category == 'latest':
-                topics = select(rv for rv in m.Topic if rv.node_id ==
-                        self.id)
+                topics = select(rv for rv in m.Topic if rv.node_id == self.id)
             elif category == 'desert':
-                topics = select(rv for rv in m.Topic if rv.node_id ==
-                        self.id and rv.reply_count == 0)
+                topics = select(rv for rv in m.Topic if
+                                rv.node_id == self.id and rv.reply_count == 0)
             else:
-                topics = select(rv for rv in m.Topic if rv.node_id ==
-                        self.id and rv.role == category)
+                topics = select(rv for rv in m.Topic if
+                                rv.node_id == self.id and rv.role == category)
                 order_by = 'last_reply_date'
 
         if order_by == 'last_reply_date':
@@ -145,8 +148,11 @@ class Node(db.Entity, SessionMixin, ModelMixin):
             topics = topics.order_by(lambda rv: desc(rv.active))
         elif order_by == 'smart':
             topics = topics.order_by(lambda rv: desc((rv.collect_count +
-                    rv.thank_count - rv.report_count) * 10 + (rv.up_count -
-                        rv.down_count) * 5 + rv.reply_count * 3))
+                                                      rv.thank_count -
+                                                      rv.report_count) * 10 +
+                                                     (rv.up_count -
+                                                      rv.down_count) * 5 +
+                                                     rv.reply_count * 3))
 
         if page:
             return topics[(page - 1) * config.paged: page * config.paged]
@@ -181,13 +187,13 @@ class Node(db.Entity, SessionMixin, ModelMixin):
     def get_nodes(page=1, category='all', limit=None):
         if category == 'all':
             nodes = select(rv for rv in Node).order_by(lambda rv:
-                    desc(rv.created_at))
+                                                       desc(rv.created_at))
         elif category == 'hot':
             nodes = select(rv for rv in Node).order_by(lambda rv:
-                    desc(rv.topic_count))
+                                                       desc(rv.topic_count))
         elif category == 'new':
             nodes = select(rv for rv in Node).order_by(lambda rv:
-                    desc(rv.created_at))
+                                                       desc(rv.created_at))
         if limit:
             return nodes[:limit]
         if page:

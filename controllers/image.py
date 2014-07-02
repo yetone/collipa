@@ -10,13 +10,14 @@ import tempfile
 import Image as Img
 from ._base import BaseHandler
 import tornado.web
-from models import Image
-from helpers import strip_tags, get_year, get_month, require_admin, require_permission
-from pony.orm import *
+from models import Image, Album
+from helpers import get_year, get_month, require_permission
+from pony.orm import db_session
 import config
 from .user import EmailMixin
 
 config = config.rec()
+
 
 class HomeHandler(BaseHandler, EmailMixin):
     @db_session
@@ -36,12 +37,12 @@ class HomeHandler(BaseHandler, EmailMixin):
         if self.current_user.is_admin and image.user_id != self.current_user.id:
             subject = "图片删除通知 - " + config.site_name
             template = (
-                    '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-                    '您在 %(site) 的图片由于违反社区规定而被删除。</p>'
-                    ) % {
-                            'nickname': image.author.nickname,
-                            'site': config.site_name,
-                            }
+                '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
+                '您在 %(site) 的图片由于违反社区规定而被删除。</p>'
+            ) % {
+                'nickname': image.author.nickname,
+                'site': config.site_name,
+            }
             self.send_email(self, image.author.email, subject, template)
         if image.user_id == self.current_user.id:
             image.remove()
@@ -58,19 +59,19 @@ class UploadHandler(BaseHandler):
     def post(self):
         if self.request.files == {} or 'myimage' not in self.request.files:
             self.write({"status": "error",
-                "message": "对不起，请选择图片"})
+                        "message": "对不起，请选择图片"})
             return
         image_type_list = ['image/gif', 'image/jpeg', 'image/pjpeg',
-                'image/png', 'image/bmp', 'image/x-png']
+                           'image/png', 'image/bmp', 'image/x-png']
         send_file = self.request.files['myimage'][0]
         if send_file['content_type'] not in image_type_list:
             self.write({"status": "error",
-                "message": "对不起，仅支持 jpg, jpeg, bmp, gif, png\
-                    格式的图片"})
+                        "message": "对不起，仅支持 jpg, jpeg, bmp, gif, png\
+                        格式的图片"})
             return
         if len(send_file['body']) > 100 * 1024 * 1024:
             self.write({"status": "error",
-                "message": "对不起，请上传100M以下的图片"})
+                        "message": "对不起，请上传100M以下的图片"})
             return
         tmp_file = tempfile.NamedTemporaryFile(delete=True)
         tmp_file.write(send_file['body'])
@@ -83,14 +84,14 @@ class UploadHandler(BaseHandler):
             logging.info(self.request.headers)
             tmp_file.close()
             self.write({"status": "error",
-                "message": "对不起，此文件不是图片"})
+                        "message": "对不起，此文件不是图片"})
             return
         width = image_one.size[0]
         height = image_one.size[1]
         if width < 80 or height < 80 or width > 30000 or height > 30000:
             tmp_file.close()
             self.write({"status": "error",
-                "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
+                        "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
             return
         user = self.current_user
         upload_path = sys.path[0] + "/static/upload/image/" + get_year() + '/' +\
@@ -102,7 +103,7 @@ class UploadHandler(BaseHandler):
                 pass
         timestamp = str(int(time.time())) +\
             ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                6)) + '_' + str(user.id)
+                                  6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
         image_one.save(tmp_name)
@@ -113,14 +114,14 @@ class UploadHandler(BaseHandler):
         if not album_id:
             album = user.default_album
         else:
-            album = m.Album.get(id=album_id)
+            album = Album.get(id=album_id)
             if not (album and album.user_id != user.id):
                 album = user.default_album
         image = Image(user_id=user.id,
-                    album_id=album.id,
-                    path=path,
-                    width=width,
-                    height=height).save()
+                      album_id=album.id,
+                      path=path,
+                      width=width,
+                      height=height).save()
         if self.is_ajax:
             return self.write({
                 'id': image.id,
