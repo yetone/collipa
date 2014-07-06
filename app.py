@@ -74,5 +74,5 @@ if __name__ == '__main__':
     if args.subparsers_name == 'shell':
         db.generate_mapping()
         runshell()
-        return
-    main()
+    else:
+        main()
