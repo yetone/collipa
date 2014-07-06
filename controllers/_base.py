@@ -2,7 +2,7 @@
 
 import tornado.web
 
-from pony.orm import db_session
+from pony import orm
 import config
 
 import models as m
@@ -11,7 +11,7 @@ config = config.Config()
 
 
 class BaseHandler(tornado.web.RequestHandler):
-    @db_session
+    @orm.db_session
     def get_current_user(self):
         user_json = self.get_secure_cookie('user')
         if user_json:
