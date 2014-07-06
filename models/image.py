@@ -3,36 +3,36 @@
 import os
 import sys
 import time
-from pony.orm import Required, Optional, select, desc
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Image(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
-    topic_id = Optional(int)
-    reply_id = Optional(int)
-    album_id = Required(int)
-    tweet_id = Optional(int)
-    width = Required(int)
-    height = Required(int)
+    user_id = orm.Required(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
+    album_id = orm.Required(int)
+    tweet_id = orm.Optional(int)
+    width = orm.Required(int)
+    height = orm.Required(int)
 
-    path = Required(unicode, 400)
+    path = orm.Required(unicode, 400)
 
-    role = Required(unicode, 10, default='image')
-    compute_count = Required(int, default=config.reply_compute_count)
+    role = orm.Required(unicode, 10, default='image')
+    compute_count = orm.Required(int, default=config.reply_compute_count)
 
-    thank_count = Required(int, default=0)
-    up_count = Required(int, default=0)
-    down_count = Required(int, default=0)
-    report_count = Required(int, default=0)
-    collect_count = Required(int, default=0)
+    thank_count = orm.Required(int, default=0)
+    up_count = orm.Required(int, default=0)
+    down_count = orm.Required(int, default=0)
+    report_count = orm.Required(int, default=0)
+    collect_count = orm.Required(int, default=0)
 
-    created_at = Required(int, default=int(time.time()))
-    updated_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    updated_at = orm.Required(int, default=int(time.time()))
 
     def __str__(self):
         return self.id
@@ -72,34 +72,28 @@ class Image(db.Entity, SessionMixin, ModelMixin):
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.image_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.image_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.image_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.image_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Up if rv.image_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.image_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.image_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.image_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.image_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.image_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.image_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.image_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users

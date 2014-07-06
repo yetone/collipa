@@ -5,17 +5,17 @@ import tornado.web
 import time
 import config
 from ._base import BaseHandler
-from pony.orm import *
+from pony import orm
 
 from models import Topic, Tweet
 from extensions import mc
 from helpers import force_int
 
-config = config.rec()
+config = config.Config()
 
 
 class CommunityHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         category = self.get_argument('category', None)
@@ -32,30 +32,31 @@ class CommunityHandler(BaseHandler):
             if not topics:
                 now = int(time.time())
                 ago = now - 60 * 60 * 24
-                topics = select(rv for rv in Topic if rv.created_at > ago).order_by(lambda rv:
-                        desc((rv.collect_count + rv.thank_count - rv.report_count) * 10 +
-                        (rv.up_count - rv.down_count) * 5 + rv.reply_count *
-                        3))
+                topics = select(rv for rv in Topic if
+                                rv.created_at > ago).order_by(lambda rv: orm.desc((rv.collect_count + rv.thank_count
+                                                                                   - rv.report_count) * 10 +
+                                                                                  (rv.up_count - rv.down_count) * 5 +
+                                                                                  rv.reply_count * 3))
                 mc.set('hot_topics', list(topics), 60 * 60 * 2)
         elif category == 'timeline':
             topics = user.get_followed_topics(page=None, category=view)
         elif category == 'latest':
             topics = select(rv for rv in Topic).order_by(lambda rv:
-                    desc(rv.created_at))
+                                                         orm.desc(rv.created_at))
         elif category == 'desert':
             topics = select(rv for rv in Topic if rv.reply_count == 0).order_by(lambda rv:
-                    desc(rv.created_at))
+                                                                                orm.desc(rv.created_at))
         else:
-            topics = select(rv for rv in Topic).order_by(lambda rv: desc(rv.last_reply_date))
-        topic_count = count(topics)
+            topics = select(rv for rv in Topic).order_by(lambda rv: orm.desc(rv.last_reply_date))
+        topic_count = orm.count(topics)
         topics = topics[(page - 1) * config.paged: page * config.paged]
         page_count = (topic_count + config.paged - 1) // config.paged
         return self.render("site/index.html", topics=topics, category=category,
-                page=page, view=view, page_count=page_count, url='/')
+                           page=page, view=view, page_count=page_count, url='/')
 
 
 class TimelineHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         from_id = force_int(self.get_argument('from_id', 0), 0)
@@ -64,27 +65,27 @@ class TimelineHandler(BaseHandler):
             return self.redirect('/timeline/public')
         tweets = user.get_timeline(page=page, from_id=from_id)
         return self.render("site/timeline.html",
-                            tweets=tweets,
-                            page=page)
+                           tweets=tweets,
+                           page=page)
 
 class PublicTimelineHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         tweets = Tweet.get_timeline(page=page)
         return self.render("site/timeline.html",
-                            tweets=tweets,
-                            page=page)
+                           tweets=tweets,
+                           page=page)
 
 
 class PageNotFoundHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         return self.render("site/404.html")
 
 
 class PageErrorHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         return self.render("site/502.html")
 

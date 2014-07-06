@@ -3,7 +3,7 @@ from pony.orm import db_session, select
 import config
 
 m.db.generate_mapping()
-config = config.rec()
+config = config.Config()
 
 
 @db_session

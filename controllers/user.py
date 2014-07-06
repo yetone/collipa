@@ -13,7 +13,7 @@ import Image
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session, count, commit
+from pony import orm
 
 from models import User
 from .api import WebSocketHandler
@@ -21,7 +21,7 @@ from forms import SignupForm, SigninForm, MessageForm, SettingForm
 from extensions import rd
 from helpers import force_int, get_year, get_month
 
-config = config.rec()
+config = config.Config()
 
 
 class EmailMixin(object):
@@ -32,7 +32,7 @@ class EmailMixin(object):
         token = "%s|%s|%s|%s" % (user.email, salt, created, hsh)
         return base64.b64encode(token)
 
-    @db_session
+    @orm.db_session
     def _verify_token(self, token):
         try:
             token = base64.b64decode(token)
@@ -73,7 +73,7 @@ class EmailMixin(object):
 
 
 class HomeHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, urlname, view='index', category='all'):
         page = force_int(self.get_argument('page', 1), 1)
         user = User.get(urlname=urlname)
@@ -89,20 +89,20 @@ class HomeHandler(BaseHandler):
         url = user.url
         if view == 'topics':
             items = user.get_topics(page=page, category=category)
-            item_count = count(user.get_topics(page=None, category=category))
-            url = url + '/topics'
+            item_count = orm.count(user.get_topics(page=None, category=category))
+            url += '/topics'
         elif view == 'replies':
             items = user.get_replies(page=page, category=category)
-            item_count = count(user.get_replies(page=None, category=category))
-            url = url + '/replies'
+            item_count = orm.count(user.get_replies(page=None, category=category))
+            url += '/replies'
         elif view == 'followings':
             items = user.get_followings(page=page)
-            item_count = count(user.get_followings(page=None))
-            url = url + '/followings'
+            item_count = orm.count(user.get_followings(page=None))
+            url += '/followings'
         elif view == 'followers':
             items = user.get_followers(page=page)
-            item_count = count(user.get_followers(page=None))
-            url = url + '/followers'
+            item_count = orm.count(user.get_followers(page=None))
+            url += '/followers'
         page_count = (item_count + config.paged - 1) // config.paged
         return self.render("user/index.html", user=user, items=items,
                            view=view, category=category, page=page,
@@ -110,7 +110,7 @@ class HomeHandler(BaseHandler):
 
 
 class SignupHandler(BaseHandler, EmailMixin):
-    @db_session
+    @orm.db_session
     def get(self):
         token = self.get_argument('verify', None)
         if token:
@@ -118,7 +118,7 @@ class SignupHandler(BaseHandler, EmailMixin):
             if user:
                 user.role = 'user'
                 try:
-                    commit()
+                    orm.commit()
                 except:
                     pass
                 result = {'status': 'success', 'message': '您的账户已经激活'}
@@ -130,7 +130,7 @@ class SignupHandler(BaseHandler, EmailMixin):
         form = SignupForm()
         return self.render("user/signup.html", form=form)
 
-    @db_session
+    @orm.db_session
     def post(self):
         if self.current_user and self.get_argument("action", '') == 'email':
             if self.current_user.role != 'unverify':
@@ -174,7 +174,7 @@ class SigninHandler(BaseHandler):
         form = SigninForm()
         return self.render("user/signin.html", form=form)
 
-    @db_session
+    @orm.db_session
     def post(self):
         form = SigninForm(self.request.arguments)
         if form.validate():
@@ -190,7 +190,7 @@ class SignoutHandler(BaseHandler):
 
 
 class NotificationHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
@@ -201,7 +201,7 @@ class NotificationHandler(BaseHandler):
 
 
 class MessageHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
@@ -226,13 +226,13 @@ class MessageHandler(BaseHandler):
         if message_box.status == 0:
             message_box.status = 1
             try:
-                commit()
+                orm.commit()
             except:
                 pass
 
 
 class MessageCreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self):
         user_id = force_int(self.get_argument('user_id', 0), 0)
@@ -262,7 +262,7 @@ class MessageCreateHandler(BaseHandler):
 
 
 class ApiGetUserNameHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         users = User.select()
         user_json = []
@@ -277,7 +277,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
     - GET: 1. form view 2. verify link from email
     - POST: 1. send email to find password. 2. change password
     """
-    @db_session
+    @orm.db_session
     def get(self):
         token = self.get_argument('verify', None)
         if token and self._verify_token(token):
@@ -287,7 +287,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
             return self.redirect('/signin')
         return self.render('user/password.html', token=None)
 
-    @db_session
+    @orm.db_session
     def post(self):
         action = self.get_argument('action', None)
         if action == 'email':
@@ -300,7 +300,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
             return self.change_password()
         self.find_password()
 
-    @db_session
+    @orm.db_session
     def send_password_email(self):
         email = self.get_argument('email', None)
         if self.current_user:
@@ -331,7 +331,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         self.flash_message(result)
         self.send_email(self, user.email, '找回密码', template)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def change_password(self):
         user = User.get(id=self.current_user.id)
@@ -355,7 +355,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         password2 = self.get_argument('password2', None)
         self._change_password(user, password1, password2)
 
-    @db_session
+    @orm.db_session
     def _change_password(self, user, password1, password2):
         if password1 != password2:
             token = self.get_argument('verify', None)
@@ -370,7 +370,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         user.password = user.create_password(password1)
         user.token = user.create_token(16)
         try:
-            commit()
+            orm.commit()
         except:
             pass
         result = {"status": "success", "message": "密码已修改"}
@@ -380,7 +380,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
 
 
 class FindPasswordHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         if self.current_user:
             return self.redirect_next_url()
@@ -388,7 +388,7 @@ class FindPasswordHandler(BaseHandler):
 
 
 class SettingHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         action = self.get_argument("action", None)
@@ -404,7 +404,7 @@ class SettingHandler(BaseHandler):
         form = SettingForm.init(user)
         return self.render("user/setting.html", form=form)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self):
         user = self.current_user
@@ -416,7 +416,7 @@ class SettingHandler(BaseHandler):
 
 
 class AvatarDelHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         user = self.current_user
@@ -428,19 +428,19 @@ class AvatarDelHandler(BaseHandler):
                 pass
             user.avatar = None
             try:
-                commit()
+                orm.commit()
             except:
                 pass
         self.redirect(self.next_url)
 
 
 class AvatarUploadHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         self.render("user/avatar_upload.html")
 
-    @db_session
+    @orm.db_session
     def post(self):
         if self.request.files == {} or 'myavatar' not in self.request.files:
             self.write({"status": "error",
@@ -511,7 +511,7 @@ class AvatarUploadHandler(BaseHandler):
 
 
 class AvatarCropHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         if not self.current_user.avatar_tmp:
@@ -519,7 +519,7 @@ class AvatarCropHandler(BaseHandler):
             return self.send_result(result)
         return self.render("user/avatar_crop.html")
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self):
         user = self.current_user
@@ -553,7 +553,7 @@ class AvatarCropHandler(BaseHandler):
                 pass
         user.avatar = user.avatar_tmp
         try:
-            commit()
+            orm.commit()
         except:
             pass
         src = self.current_user.avatar_tmp
@@ -564,7 +564,7 @@ class AvatarCropHandler(BaseHandler):
 
 
 class BackgroundDelHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def get(self):
         try:
@@ -574,7 +574,7 @@ class BackgroundDelHandler(BaseHandler):
             pass
         self.current_user.background_img = ''
         try:
-            commit()
+            orm.commit()
         except:
             pass
         result = {"status": "success", "message": "已成功重置背景图片"}
@@ -582,7 +582,7 @@ class BackgroundDelHandler(BaseHandler):
 
 
 class ImgUploadHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:
@@ -666,7 +666,7 @@ class ImgUploadHandler(BaseHandler):
 
 
 class ShowHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         category = self.get_argument('category', None)
@@ -677,16 +677,14 @@ class ShowHandler(BaseHandler):
         users = []
         url = '/users'
         if category == 'all':
-            user_count = count(User.get_users(page=None))
+            user_count = orm.count(User.get_users(page=None))
             page_count = (user_count + config.user_paged - 1) // config.user_paged
             users = User.get_users(page=page)
             url = '/users?category=all'
         elif category == 'online':
-            users = set()
             online = rd.smembers("online") or [0]
             online = [int(i) for i in online]
             users = User.select(lambda rv: rv.id in online)
-            print users
             user_count = len(users)
             page_count = (user_count + config.user_paged - 1) // config.user_paged
             url = '/users?category=online'

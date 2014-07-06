@@ -1,17 +1,17 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Notification(db.Entity, SessionMixin, ModelMixin):
-    sender_id = Optional(int)
-    receiver_id = Optional(int)
+    sender_id = orm.Optional(int)
+    receiver_id = orm.Optional(int)
 
     """ 提醒类型
         'reply'   : 评论提醒
@@ -20,26 +20,26 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
         'up'      : 赞同提醒
         'thank'   : 感谢提醒
     """
-    role = Required(unicode, default='reply')
+    role = orm.Required(unicode, default='reply')
 
     """ 状态
         1:      已读
         0:      未读
     """
-    status = Required(int, default=0)
+    status = orm.Required(int, default=0)
 
     """ 开关
         1:      开
         0:      关
     """
-    switch = Required(int, default=1)
+    switch = orm.Required(int, default=1)
 
-    created_at = Required(int, default=int(time.time()))
-    updated_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    updated_at = orm.Required(int, default=int(time.time()))
 
-    topic_id = Optional(int)
-    reply_id = Optional(int)
-    tweet_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
+    tweet_id = orm.Optional(int)
 
     def __str__(self):
         return self.id

@@ -4,16 +4,16 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session
+from pony import orm
 
 from models import Tweet, Image
 from helpers import strip_xss_tags, strip_tags, require_permission
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, tweet_id):
         tweet_id = int(tweet_id)
         tweet = Tweet.get(id=tweet_id)
@@ -21,7 +21,7 @@ class HomeHandler(BaseHandler):
             raise tornado.web.HTTPError(404)
         return self.render("tweet/index.html", tweet=tweet)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def put(self, tweet_id):
         tweet_id = int(tweet_id)
@@ -54,7 +54,7 @@ class HomeHandler(BaseHandler):
             result = user.report(tweet_id=tweet.id)
         return self.send_result(result)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def delete(self, tweet_id):
         if not self.current_user.is_admin:
@@ -68,7 +68,7 @@ class HomeHandler(BaseHandler):
 
 
 class CreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self):
@@ -98,7 +98,7 @@ class CreateHandler(BaseHandler):
                     'width': image.width,
                     'height': image.height,
                 })
-        if images != []:
+        if images:
             tweet.has_img = 'true'
         result = {
             'status': 'success',

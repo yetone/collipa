@@ -8,11 +8,11 @@ import sys
 from ._base import BaseHandler
 import tornado.web
 from helpers import get_year, get_month
-from pony.orm import db_session
+from pony import orm
 
 
 class UploadHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self, category):
         if not self.has_permission:

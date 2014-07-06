@@ -8,7 +8,7 @@ import config
 
 from models import Node, NodeNode
 
-config = config.rec()
+config = config.Config()
 
 
 class NodeForm(BaseForm):

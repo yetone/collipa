@@ -5,70 +5,70 @@ import sys
 import hashlib
 from random import choice
 import time
-from pony.orm import Required, Optional, desc, select, commit
+from pony import orm
+
 from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 from helpers import format_date2, strip_tags
 from extensions import mc, rd, memcached
 
-config = config.rec()
+config = config.Config()
 
 
 class User(db.Entity, SessionMixin, ModelMixin):
-    name = Required(unicode, 40, unique=True)
-    email = Required(unicode, unique=True)
-    password = Required(unicode, 100)
+    name = orm.Required(unicode, 40, unique=True)
+    email = orm.Required(unicode, unique=True)
+    password = orm.Required(unicode, 100)
 
-    urlname = Required(unicode, 80, unique=True)
-    nickname = Required(unicode, 80)
+    urlname = orm.Required(unicode, 80, unique=True)
+    nickname = orm.Required(unicode, 80)
 
-    role = Required(unicode, 10, default='unverify')
-    reputation = Required(int, default=0)
-    active = Required(int, default=int(time.time()))
-    edit_nickname_count = Required(int,
-                                   default=config.user_edit_nickname_count)
-    edit_urlname_count = Required(int, default=config.user_edit_urlname_count)
+    role = orm.Required(unicode, 10, default='unverify')
+    reputation = orm.Required(int, default=0)
+    active = orm.Required(int, default=int(time.time()))
+    edit_nickname_count = orm.Required(int, default=config.user_edit_nickname_count)
+    edit_urlname_count = orm.Required(int, default=config.user_edit_urlname_count)
 
-    topic_count = Required(int, default=0)
-    reply_count = Required(int, default=0)
-    tweet_count = Required(int, default=0)
-    album_count = Required(int, default=0)
-    image_count = Required(int, default=0)
+    topic_count = orm.Required(int, default=0)
+    reply_count = orm.Required(int, default=0)
+    tweet_count = orm.Required(int, default=0)
+    album_count = orm.Required(int, default=0)
+    image_count = orm.Required(int, default=0)
 
     """ 获得的 thank, up, down, report, collect 数目, 便于用户等级评估
     """
-    thank_count = Required(int, default=0)
-    up_count = Required(int, default=0)
-    down_count = Required(int, default=0)
-    report_count = Required(int, default=0)
-    collect_count = Required(int, default=0)
+    thank_count = orm.Required(int, default=0)
+    up_count = orm.Required(int, default=0)
+    down_count = orm.Required(int, default=0)
+    report_count = orm.Required(int, default=0)
+    collect_count = orm.Required(int, default=0)
 
     """ 自己的收藏数目, 与 collect_count 大大不同
     """
-    collection_count = Required(int, default=0)
+    collection_count = orm.Required(int, default=0)
 
     """ following_count 正在关注的数目
         follower_count  关注者的数目
     """
-    following_count = Required(int, default=0)
-    follower_count = Required(int, default=0)
+    following_count = orm.Required(int, default=0)
+    follower_count = orm.Required(int, default=0)
 
-    balance = Required(int, default=config.user_init_coin)
+    balance = orm.Required(int, default=config.user_init_coin)
 
-    created_at = Required(int, default=int(time.time()))
-    token = Required(unicode, 20)
+    created_at = orm.Required(int, default=int(time.time()))
+    token = orm.Required(unicode, 20)
 
-    description = Optional(unicode, 400)
-    address = Optional(unicode, 400)
-    website = Optional(unicode, 400)
-    style = Optional(unicode, 6000)
-    site_style = Optional(unicode, 6000)
+    description = orm.Optional(unicode, 400)
+    address = orm.Optional(unicode, 400)
+    website = orm.Optional(unicode, 400)
+    style = orm.Optional(unicode, 6000)
+    site_style = orm.Optional(unicode, 6000)
 
-    avatar = Optional(unicode, 400)
-    avatar_tmp = Optional(unicode, 400)
-    head_img = Optional(unicode, 400)
-    background_img = Optional(unicode, 400)
+    avatar = orm.Optional(unicode, 400)
+    avatar_tmp = orm.Optional(unicode, 400)
+    head_img = orm.Optional(unicode, 400)
+    background_img = orm.Optional(unicode, 400)
 
     @staticmethod
     def init(**kargs):
@@ -101,15 +101,13 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def head(self):
         if self.head_img:
             return self.head_img
-        else:
-            return config.node_head_url
+        return config.node_head_url
 
     @property
     def background(self):
         if self.background_img:
             return self.background_img
-        else:
-            return config.node_background_url
+        return config.node_background_url
 
     def reset_img(self, category):
         if category == 'background':
@@ -140,18 +138,13 @@ class User(db.Entity, SessionMixin, ModelMixin):
         if user:
             if m.Follow.get(who_id=self.id, whom_id=user.id):
                 return True
-            else:
-                return False
         if topic:
             if m.Follow.get(who_id=self.id, topic_id=topic.id):
                 return True
-            else:
-                return False
         if node:
             if m.Follow.get(who_id=self.id, node_id=node.id):
                 return True
-            else:
-                return False
+        return False
 
     def income(self, coin, role="signup", topic_id=None, reply_id=None):
         self.balance += coin
@@ -295,9 +288,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
                     notification.status = 0
                     notification.updated_at = now
             else:
-                notification = m.Notification(topic_id=topic_id,
-                                              reply_id=reply_id,
-                                              role='thank').save()
+                m.Notification(topic_id=topic_id,
+                               reply_id=reply_id,
+                               role='thank').save()
             result = thank.save()
             if result:
                 return {'status': 'success', 'message': '感谢成功', 'type': 1}
@@ -308,8 +301,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
             if delta < config.thank_delta_time:
                 thank.remove()
                 return {'status': 'success', 'message': '取消感谢成功', 'type': 0}
-            return {'status': 'info', 'message': '已超过取消感谢时间', 'type':
-                    -1}
+            return {'status': 'info', 'message': '已超过取消感谢时间', 'type': -1}
 
     def up(self, topic_id=None, reply_id=None):
         now = int(time.time())
@@ -329,9 +321,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
                     notification.status = 0
                     notification.updated_at = now
             else:
-                notification = m.Notification(topic_id=topic_id,
-                                              reply_id=reply_id,
-                                              role='up').save()
+                m.Notification(topic_id=topic_id,
+                               reply_id=reply_id,
+                               role='up').save()
             result = up.save()
             if result:
                 return {'status': 'success', 'message': '赞同成功', 'type': 1,
@@ -381,32 +373,30 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def get_topics(self, page=1, category='all', order_by='created_at',
                    limit=None):
         if limit:
-            topics = select(rv for rv in m.Topic if
-                            rv.user_id ==
-                            self.id).order_by(lambda rv:
-                                              desc((rv.collect_count +
-                                                    rv.thank_count) * 10 +
-                                                   (rv.up_count -
-                                                    rv.down_count) * 5))
+            topics = orm.select(rv for rv in m.Topic if
+                                rv.user_id == self.id).order_by(lambda rv:
+                                                                orm.desc((rv.collect_count +
+                                                                          rv.thank_count) * 10 +
+                                                                         (rv.up_count -
+                                                                          rv.down_count) * 5))
             return topics[:limit]
 
         if category == 'all':
-            topics = select(rv for rv in m.Topic if rv.user_id == self.id)
+            topics = orm.select(rv for rv in m.Topic if rv.user_id == self.id)
         else:
-            topics = select(rv for rv in m.Topic if rv.user_id == self.id and
-                            rv.role == category)
+            topics = orm.select(rv for rv in m.Topic if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            topics = topics.order_by(lambda rv: desc(rv.created_at))
+            topics = topics.order_by(lambda rv: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            topics = topics.order_by(lambda rv: desc(rv.up_count))
+            topics = topics.order_by(lambda rv: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            topics = topics.order_by(lambda rv: desc(rv.thank_count))
+            topics = topics.order_by(lambda rv: orm.desc(rv.thank_count))
         elif order_by == 'smart':
             topics = topics.order_by(lambda rv:
-                                     desc((rv.collect_count +
-                                           rv.thank_count) * 10 +
-                                          (rv.up_count - rv.down_count) * 5))
+                                     orm.desc((rv.collect_count +
+                                               rv.thank_count) * 10 +
+                                              (rv.up_count - rv.down_count) * 5))
 
         if page:
             return topics[(page - 1) * config.paged: page * config.paged]
@@ -416,33 +406,31 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def get_replies(self, page=1, category='all', order_by='created_at',
                     limit=None):
         if limit:
-            replies = select(rv for rv in m.Reply if
-                             rv.user_id ==
-                             self.id).order_by(lambda rv:
-                                               desc((rv.collect_count +
-                                                     rv.thank_count) * 10 +
-                                                    (rv.up_count -
-                                                     rv.down_count) * 5))
+            replies = orm.select(rv for rv in m.Reply if
+                                 rv.user_id == self.id).order_by(lambda rv:
+                                                                 orm.desc((rv.collect_count +
+                                                                           rv.thank_count) * 10 +
+                                                                          (rv.up_count -
+                                                                           rv.down_count) * 5))
             return replies[:limit]
 
         if category == 'all':
-            replies = select(rv for rv in m.Reply if rv.user_id == self.id)
+            replies = orm.select(rv for rv in m.Reply if rv.user_id == self.id)
         else:
-            replies = select(rv for rv in m.Reply if rv.user_id == self.id and
-                             rv.role == category)
+            replies = orm.select(rv for rv in m.Reply if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            replies = replies.order_by(lambda rv: desc(rv.created_at))
+            replies = replies.order_by(lambda rv: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            replies = replies.order_by(lambda rv: desc(rv.up_count))
+            replies = replies.order_by(lambda rv: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            replies = replies.order_by(lambda rv: desc(rv.thank_count))
+            replies = replies.order_by(lambda rv: orm.desc(rv.thank_count))
         elif order_by == 'smart':
             replies = replies.order_by(lambda rv:
-                                       desc((rv.collect_count +
-                                             rv.thank_count) * 10 +
-                                            (rv.up_count - rv.down_count) * 5 +
-                                            rv.created_at / 4))
+                                       orm.desc((rv.collect_count +
+                                                 rv.thank_count) * 10 +
+                                                (rv.up_count - rv.down_count) * 5 +
+                                                rv.created_at / 4))
 
         if page:
             return replies[(page - 1) * config.paged: page * config.paged]
@@ -452,104 +440,96 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def get_tweets(self, page=1, category='all', order_by='created_at',
                    limit=None):
         if limit:
-            tweets = select(rv for rv in m.Tweet if
-                            rv.user_id ==
-                            self.id).order_by(lambda rv:
-                                              desc((rv.collect_count +
-                                                    rv.thank_count) * 10 +
-                                                   (rv.up_count -
-                                                    rv.down_count) * 5))
+            tweets = orm.select(rv for rv in m.Tweet if
+                                rv.user_id == self.id).order_by(lambda rv:
+                                                                orm.desc((rv.collect_count +
+                                                                          rv.thank_count) * 10 +
+                                                                         (rv.up_count -
+                                                                          rv.down_count) * 5))
             return tweets[:limit]
 
         if category == 'all':
-            tweets = select(rv for rv in m.Tweet if rv.user_id == self.id)
+            tweets = orm.select(rv for rv in m.Tweet if rv.user_id == self.id)
         else:
-            tweets = select(rv for rv in m.Tweet if rv.user_id == self.id and
-                            rv.role == category)
+            tweets = orm.select(rv for rv in m.Tweet if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            tweets = tweets.order_by(lambda rv: desc(rv.created_at))
+            tweets = tweets.order_by(lambda rv: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            tweets = tweets.order_by(lambda rv: desc(rv.up_count))
+            tweets = tweets.order_by(lambda rv: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            tweets = tweets.order_by(lambda rv: desc(rv.thank_count))
+            tweets = tweets.order_by(lambda rv: orm.desc(rv.thank_count))
         elif order_by == 'smart':
             tweets = tweets.order_by(lambda rv:
-                                     desc((rv.collect_count +
-                                           rv.thank_count) * 10 +
-                                          (rv.up_count - rv.down_count) * 5 +
-                                          rv.created_at / 4))
+                                     orm.desc((rv.collect_count +
+                                               rv.thank_count) * 10 +
+                                              (rv.up_count - rv.down_count) * 5 +
+                                              rv.created_at / 4))
 
         if page:
             return tweets[(page - 1) * config.paged: page * config.paged]
         else:
             return tweets
 
-    def get_albums(self, page=1, category='all', order_by='created_at',
-                   limit=None):
+    def get_albums(self, page=1, category='all', order_by='created_at', limit=None):
         if limit:
-            albums = select(rv for rv in m.Album if
-                            rv.user_id ==
-                            self.id).order_by(lambda rv:
-                                              desc((rv.collect_count +
-                                                    rv.thank_count) * 10 +
-                                                   (rv.up_count -
-                                                    rv.down_count) * 5))
+            albums = orm.select(rv for rv in m.Album if
+                                rv.user_id == self.id).order_by(lambda rv:
+                                                                orm.desc((rv.collect_count +
+                                                                          rv.thank_count) * 10 +
+                                                                         (rv.up_count -
+                                                                          rv.down_count) * 5))
             return albums[:limit]
 
         if category == 'all':
-            albums = select(rv for rv in m.Album if rv.user_id == self.id)
+            albums = orm.select(rv for rv in m.Album if rv.user_id == self.id)
         else:
-            albums = select(rv for rv in m.Album if rv.user_id == self.id and
-                            rv.role == category)
+            albums = orm.select(rv for rv in m.Album if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            albums = albums.order_by(lambda rv: desc(rv.created_at))
+            albums = albums.order_by(lambda rv: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            albums = albums.order_by(lambda rv: desc(rv.up_count))
+            albums = albums.order_by(lambda rv: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            albums = albums.order_by(lambda rv: desc(rv.thank_count))
+            albums = albums.order_by(lambda rv: orm.desc(rv.thank_count))
         elif order_by == 'smart':
             albums = albums.order_by(lambda rv:
-                                     desc((rv.collect_count +
-                                           rv.thank_count) * 10 +
-                                          (rv.up_count - rv.down_count) * 5))
+                                     orm.desc((rv.collect_count +
+                                               rv.thank_count) * 10 +
+                                              (rv.up_count - rv.down_count) * 5))
 
         if page:
             return albums[(page - 1) * config.paged: page * config.paged]
         else:
             return albums
 
-    def get_images(self, page=1, category='all', order_by='created_at',
-                   limit=None):
+    def get_images(self, page=1, category='all', order_by='created_at', limit=None):
         if limit:
-            images = select(rv for rv in m.Image if
-                            rv.user_id ==
-                            self.id).order_by(lambda rv:
-                                              desc((rv.collect_count +
-                                                    rv.thank_count) * 10 +
-                                                   (rv.up_count -
-                                                    rv.down_count) * 5))
+            images = orm.select(rv for rv in m.Image if
+                                rv.user_id == self.id).order_by(lambda rv:
+                                                                orm.desc((rv.collect_count +
+                                                                          rv.thank_count) * 10 +
+                                                                         (rv.up_count -
+                                                                          rv.down_count) * 5))
             return images[:limit]
 
         if category == 'all':
-            images = select(rv for rv in m.Image if rv.user_id == self.id)
+            images = orm.select(rv for rv in m.Image if rv.user_id == self.id)
         else:
-            images = select(rv for rv in m.Image if rv.user_id == self.id and
-                            rv.role == category)
+            images = orm.select(rv for rv in m.Image if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            images = images.order_by(lambda rv: desc(rv.created_at))
+            images = images.order_by(lambda rv: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            images = images.order_by(lambda rv: desc(rv.up_count))
+            images = images.order_by(lambda rv: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            images = images.order_by(lambda rv: desc(rv.thank_count))
+            images = images.order_by(lambda rv: orm.desc(rv.thank_count))
         elif order_by == 'smart':
             images = images.order_by(lambda rv:
-                                     desc((rv.collect_count +
-                                           rv.thank_count) * 10 +
-                                          (rv.up_count - rv.down_count) * 5 +
-                                          rv.created_at / 4))
+                                     orm.desc((rv.collect_count +
+                                               rv.thank_count) * 10 +
+                                              (rv.up_count - rv.down_count) * 5 +
+                                              rv.created_at / 4))
 
         if page:
             return images[(page - 1) * config.paged: page * config.paged]
@@ -558,8 +538,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def default_album(self):
-        album = m.Album.select(lambda rv: rv.user_id == self.id and
-                               rv.role == 'default').first()
+        album = m.Album.select(lambda rv: rv.user_id == self.id and rv.role == 'default').first()
         if not album:
             album = m.Album(user_id=self.id,
                             name=u'默认专辑',
@@ -568,13 +547,11 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def followed_node_ids(self):
-        return select(rv.node_id for rv in m.Follow if rv.who_id ==
-                      self.id and rv.node_id is not None)
+        return orm.select(rv.node_id for rv in m.Follow if rv.who_id == self.id and rv.node_id is not None)
 
     @property
     def followed_user_ids(self):
-        return select(rv.whom_id for rv in m.Follow if rv.who_id ==
-                      self.id and rv.whom_id is not None)
+        return orm.select(rv.whom_id for rv in m.Follow if rv.who_id == self.id and rv.whom_id is not None)
 
     def get_timeline(self, page=1, from_id=0, count=0):
         user_ids = self.followed_user_ids[:] or [0]
@@ -582,27 +559,25 @@ class User(db.Entity, SessionMixin, ModelMixin):
         if from_id != 0:
             if count == 0:
                 count = config.paged
-            all_ids = select(rv.id for rv in m.Tweet if rv.user_id in
-                             user_ids).order_by(lambda rv: desc(rv.created_at))
-            for i, id in enumerate(all_ids):
+            all_ids = orm.select(rv.id for rv in m.Tweet if
+                                 rv.user_id in user_ids).order_by(lambda rv: orm.desc(rv.created_at))
+            for i, _id in enumerate(all_ids):
                 if i == 1000:
                     return []
-                if id == from_id:
+                if _id == from_id:
                     break
             tweet_ids = all_ids[i + 1: i + 1 + count]
-            if tweet_ids != []:
-                tweets = select(rv for rv in m.Tweet if
-                                rv.id in tweet_ids)[:][::-1]
+            if tweet_ids:
+                tweets = orm.select(rv for rv in m.Tweet if rv.id in tweet_ids)[:][::-1]
             else:
                 tweets = []
         else:
-            tweets = select(rv for rv in m.Tweet if
-                            rv.user_id in user_ids).order_by(lambda rv:
-                                                             desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
+            tweets = orm.select(rv for rv in m.Tweet if
+                                rv.user_id in user_ids).order_by(lambda rv:
+                                                                 orm.desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
         return tweets
 
-    def get_followed_topics(self, role=None, category='all',
-                            order_by='created_at', page=1):
+    def get_followed_topics(self, role=None, category='all', order_by='created_at', page=1):
         node_ids = self.followed_node_ids
         user_ids = self.followed_user_ids
         if not node_ids:
@@ -613,42 +588,37 @@ class User(db.Entity, SessionMixin, ModelMixin):
             now = int(time.time())
             ago = now - 60 * 60 * 24
             try:
-                return select(rv for rv in m.Topic if
-                              (rv.node_id in node_ids or
-                               rv.user_id in user_ids) and
-                              rv.created_at >
-                              ago).order_by(lambda rv:
-                                            desc((rv.collect_count +
-                                                  rv.thank_count) * 10 +
-                                                 (rv.up_count -
-                                                  rv.down_count) * 5))
+                return orm.select(rv for rv in m.Topic if
+                                  (rv.node_id in node_ids or rv.user_id in user_ids) and
+                                  rv.created_at > ago).order_by(lambda rv:
+                                                                orm.desc((rv.collect_count +
+                                                                          rv.thank_count) * 10 +
+                                                                         (rv.up_count -
+                                                                          rv.down_count) * 5))
             except:
                 return None
         if category == 'all':
-            topics = select(rv for rv in m.Topic if rv.node_id in
-                            node_ids or rv.user_id in user_ids)
+            topics = orm.select(rv for rv in m.Topic if rv.node_id in node_ids or rv.user_id in user_ids)
         if category == 'user':
-            topics = select(rv for rv in m.Topic if rv.user_id in
-                            user_ids)
+            topics = orm.select(rv for rv in m.Topic if rv.user_id in user_ids)
         if category == 'node':
-            topics = select(rv for rv in m.Topic if rv.node_id in
-                            node_ids)
+            topics = orm.select(rv for rv in m.Topic if rv.node_id in node_ids)
 
         if order_by == 'smart':
             topics = topics.order_by(lambda rv:
-                                     desc((rv.collect_count +
-                                           rv.thank_count) * 10 +
-                                          (rv.up_count -
-                                           rv.down_count) * 5 +
-                                          rv.active / 4))
+                                     orm.desc((rv.collect_count +
+                                               rv.thank_count) * 10 +
+                                              (rv.up_count -
+                                               rv.down_count) * 5 +
+                                              rv.active / 4))
         else:
-            topics = topics.order_by(lambda rv: desc(rv.last_reply_date))
+            topics = topics.order_by(lambda rv: orm.desc(rv.last_reply_date))
         if page:
             return topics[(page - 1) * config.paged: page * config.paged]
         else:
             return topics
 
-    def is_uped(self, topic=None, reply=None, tweet=None):
+    def is_upped(self, topic=None, reply=None, tweet=None):
         if topic and m.Up.get(user_id=self.id, topic_id=topic.id):
             return True
         if reply and m.Up.get(user_id=self.id, reply_id=reply.id):
@@ -695,14 +665,16 @@ class User(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def unread_notification_count(self):
-        return m.Notification.select(lambda rv: rv.receiver_id ==
-                                     self.id and rv.status == 0 and
+        return m.Notification.select(lambda rv:
+                                     rv.receiver_id == self.id and
+                                     rv.status == 0 and
                                      rv.switch == 1).count()
 
     @property
     def notification_count(self):
-        return m.Notification.select(lambda rv: rv.receiver_id ==
-                                     self.id and rv.status == 0 and
+        return m.Notification.select(lambda rv:
+                                     rv.receiver_id == self.id and
+                                     rv.status == 0 and
                                      rv.switch == 1).count()
 
     def get_notifications(self, page=1, category='all'):
@@ -710,9 +682,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
             notifications = m.Notification.select(lambda rv:
                                                   rv.receiver_id == self.id)
         elif category == 'unread':
-            notifications = m.Notification.select(lambda rv: rv.receiver_id ==
-                                                  self.id and rv.status == 0)
-        notifications = notifications.order_by(lambda rv: desc(rv.updated_at))
+            notifications = m.Notification.select(lambda rv:
+                                                  rv.receiver_id == self.id and rv.status == 0)
+        notifications = notifications.order_by(lambda rv: orm.desc(rv.updated_at))
         return notifications[(page - 1) * config.paged: page * config.paged]
 
     @property
@@ -732,7 +704,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
         for n in notifications:
             n.status = 1
         try:
-            commit()
+            orm.commit()
         except Exception, e:
             print type(e).__name__
             print e
@@ -748,13 +720,13 @@ class User(db.Entity, SessionMixin, ModelMixin):
             message_boxes = m.MessageBox.select(lambda rv:
                                                 rv.sender_id ==
                                                 self.id).order_by(lambda rv:
-                                                                  desc(rv.updated_at))
+                                                                  orm.desc(rv.updated_at))
         elif category == 'unread':
             message_boxes = m.MessageBox.select(lambda rv:
                                                 rv.sender_id == self.id and
                                                 rv.status ==
                                                 0).order_by(lambda rv:
-                                                            desc(rv.updated_at))
+                                                            orm.desc(rv.updated_at))
         return message_boxes[(page - 1) * config.paged: page *
                              config.paged]
 
@@ -781,7 +753,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
                 v = strip_tags(v)
             setattr(self, k, v)
         try:
-            commit()
+            orm.commit()
         except:
             pass
         return self
@@ -789,23 +761,21 @@ class User(db.Entity, SessionMixin, ModelMixin):
     @staticmethod
     def get_users(page=1, category='all', limit=None):
         if category == 'all':
-            users = select(rv for rv in User).order_by(lambda rv:
-                                                       desc(rv.created_at))
+            users = orm.select(rv for rv in User).order_by(lambda rv:
+                                                           orm.desc(rv.created_at))
         if category == 'hot':
             users = mc.get('hot_users')
             if not users:
                 if not limit:
                     limit = 8
-                users = select(rv for
-                               rv in User).order_by(lambda rv:
-                                                    desc(rv.thank_count * 4 +
-                                                         rv.up_count * 3 +
-                                                         rv.topic_count * 2 +
-                                                         rv.reply_count))[:limit]
+                users = orm.select(rv for rv in User).order_by(lambda rv:
+                                                               orm.desc(rv.thank_count * 4 +
+                                                                        rv.up_count * 3 +
+                                                                        rv.topic_count * 2 +
+                                                                        rv.reply_count))[:limit]
                 mc.set('hot_users', list(users), 60 * 60 * 12)
         if category == 'new':
-            users = select(rv for rv in User).order_by(lambda rv:
-                                                       desc(rv.created_at))
+            users = orm.select(rv for rv in User).order_by(lambda rv: orm.desc(rv.created_at))
         if limit:
             return users[:limit]
         if page:
@@ -818,31 +788,28 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def mention(word):
         @memcached('word_' + str(word), 3600)
         def _func():
-            return word and select(rv for rv in User if
-                                   (word in rv.name or
-                                    word in rv.nickname))[:8] or []
+            return word and orm.select(rv for rv in User if
+                                       (word in rv.name or
+                                        word in rv.nickname))[:8] or []
 
         return _func()
 
     def get_followers(self, page=1):
-        follower_ids = select(rv.who_id for rv in m.Follow if rv.whom_id ==
-                              self.id).order_by(lambda rv: desc(rv)) or [0]
-        followers = select(rv for rv in User if rv.id in follower_ids)
+        follower_ids = orm.select(rv.who_id for rv in m.Follow if
+                                  rv.whom_id == self.id).order_by(lambda rv: orm.desc(rv)) or [0]
+        followers = orm.select(rv for rv in User if rv.id in follower_ids)
         if page:
-            return followers[(page - 1) * config.user_paged: page *
-                             config.user_paged]
+            return followers[(page - 1) * config.user_paged: page * config.user_paged]
         else:
             return followers
 
     def get_followings(self, page=1):
-        following_ids = select(rv.whom_id for rv in m.Follow if rv.who_id ==
-                               self.id and
-                               rv.whom_id).order_by(lambda rv:
-                                                    desc(rv)) or [0]
-        followings = select(rv for rv in User if rv.id in following_ids)
+        following_ids = orm.select(rv.whom_id for rv in m.Follow if
+                                   rv.who_id == self.id and rv.whom_id).order_by(lambda rv:
+                                                                                 orm.desc(rv)) or [0]
+        followings = orm.select(rv for rv in User if rv.id in following_ids)
         if page:
-            return followings[(page - 1) * config.user_paged: page *
-                              config.user_paged]
+            return followings[(page - 1) * config.user_paged: page * config.user_paged]
         else:
             return followings
 

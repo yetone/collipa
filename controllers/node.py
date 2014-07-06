@@ -12,17 +12,17 @@ import Image
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session, count, commit
+from pony import orm
 
 from models import Node
 from forms import NodeForm, NodeEditForm
 from helpers import get_year, get_month, force_int, require_admin
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, urlname, category='all'):
         node = Node.get(urlname=urlname)
         if not node:
@@ -83,7 +83,7 @@ class HomeHandler(BaseHandler):
                     return self.write(result)
                 self.flash_message(result)
                 return self.redirect_next_url()
-        topic_count = count(node.get_topics(page=None, category=category))
+        topic_count = orm.count(node.get_topics(page=None, category=category))
         page_count = (topic_count + config.reply_paged - 1) // config.reply_paged
         url = node.url + '?category=' + category
         topics = node.get_topics(page=page, category=category)
@@ -93,7 +93,7 @@ class HomeHandler(BaseHandler):
 
 
 class CreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def get(self):
@@ -106,7 +106,7 @@ class CreateHandler(BaseHandler):
         form = NodeForm.init(Node.get_node_choices(), selected)
         return self.render("node/create.html", form=form)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def post(self):
@@ -119,7 +119,7 @@ class CreateHandler(BaseHandler):
 
 
 class EditHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def get(self, urlname):
@@ -134,7 +134,7 @@ class EditHandler(BaseHandler):
                                  node=node)
         return self.render("node/edit.html", form=form, node=node)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def post(self, urlname):
@@ -166,7 +166,7 @@ class EditHandler(BaseHandler):
 
 
 class ImgUploadHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def post(self, node_id):
@@ -272,7 +272,7 @@ class ImgUploadHandler(BaseHandler):
             except:
                 pass
         try:
-            commit()
+            orm.commit()
         except:
             pass
         if self.is_ajax:
@@ -281,7 +281,7 @@ class ImgUploadHandler(BaseHandler):
 
 
 class ShowHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         page_count = 0
@@ -292,7 +292,7 @@ class ShowHandler(BaseHandler):
         url = '/nodes'
         if category == 'all':
             nodes = Node.get_nodes(category='all', page=page)
-            node_count = count(Node.get_nodes(page=None))
+            node_count = orm.count(Node.get_nodes(page=None))
             page_count = (node_count + config.node_paged - 1) // config.node_paged
             url = '/nodes?category=' + category
         return self.render("node/show.html", hot_nodes=hot_nodes,

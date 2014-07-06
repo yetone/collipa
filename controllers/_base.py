@@ -7,7 +7,7 @@ import config
 
 import models as m
 
-config = config.rec()
+config = config.Config()
 
 
 class BaseHandler(tornado.web.RequestHandler):

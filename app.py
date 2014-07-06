@@ -17,7 +17,7 @@ from controllers import uimodules
 from models import db
 from routers import routers
 
-config = config.rec()
+config = config.Config()
 define("port", default=8008, help="run on the given port", type=int)
 
 

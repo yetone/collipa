@@ -1,31 +1,31 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, desc
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class MessageBox(db.Entity, SessionMixin, ModelMixin):
-    sender_id = Required(int)
-    receiver_id = Required(int)
+    sender_id = orm.Required(int)
+    receiver_id = orm.Required(int)
 
     """ 信息类型
         'message':        私信
     """
-    role = Required(unicode, default='message')
+    role = orm.Required(unicode, default='message')
 
     """ 状态
         1:      已读
         0:      未读
     """
-    status = Required(int, default=0)
+    status = orm.Required(int, default=0)
 
-    created_at = Required(int, default=int(time.time()))
-    updated_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    updated_at = orm.Required(int, default=int(time.time()))
 
     def __str__(self):
         return self.id
@@ -44,7 +44,7 @@ class MessageBox(db.Entity, SessionMixin, ModelMixin):
     @property
     def message(self):
         message = m.Message.select(lambda rv: rv.message_box1_id == self.id or
-                                   rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
+                                   rv.message_box2_id == self.id).order_by(lambda rv: orm.desc(rv.created_at))
         if message:
             message = message[:][0]
         else:
@@ -53,7 +53,7 @@ class MessageBox(db.Entity, SessionMixin, ModelMixin):
 
     def get_messages(self, page=1):
         messages = m.Message.select(lambda rv: rv.message_box1_id == self.id or
-                                    rv.message_box2_id == self.id).order_by(lambda rv: desc(rv.created_at))
+                                    rv.message_box2_id == self.id).order_by(lambda rv: orm.desc(rv.created_at))
         messages = messages[(page - 1) * config.paged: page * config.paged]
         return messages
 

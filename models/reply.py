@@ -1,38 +1,37 @@
 # coding: utf-8
 
 import time
-from pony.orm import (Required, Optional, LongUnicode, commit, select, desc,
-                      count)
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 from helpers import get_mention_names
 
-config = config.rec()
+config = config.Config()
 
 
 class Reply(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
-    topic_id = Optional(int)
-    tweet_id = Optional(int)
-    image_id = Optional(int)
+    user_id = orm.Required(int)
+    topic_id = orm.Optional(int)
+    tweet_id = orm.Optional(int)
+    image_id = orm.Optional(int)
 
-    content = Required(LongUnicode)
+    content = orm.Required(orm.LongUnicode)
 
-    role = Required(unicode, 10, default='reply')
-    compute_count = Required(int, default=config.reply_compute_count)
+    role = orm.Required(unicode, 10, default='reply')
+    compute_count = orm.Required(int, default=config.reply_compute_count)
 
-    thank_count = Required(int, default=0)
-    up_count = Required(int, default=0)
-    down_count = Required(int, default=0)
-    report_count = Required(int, default=0)
-    collect_count = Required(int, default=0)
+    thank_count = orm.Required(int, default=0)
+    up_count = orm.Required(int, default=0)
+    down_count = orm.Required(int, default=0)
+    report_count = orm.Required(int, default=0)
+    collect_count = orm.Required(int, default=0)
 
-    floor = Required(int, default=1)
+    floor = orm.Required(int, default=1)
 
-    created_at = Required(int, default=int(time.time()))
-    updated_at = Required(int, default=int(time.time()))
-    active = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    updated_at = orm.Required(int, default=int(time.time()))
+    active = orm.Required(int, default=int(time.time()))
 
     def __str__(self):
         return self.id
@@ -80,7 +79,7 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
                             reply_id=self.id)
 
         try:
-            commit()
+            orm.commit()
         except:
             pass
 
@@ -112,9 +111,9 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
                         notification.status = 0
                         notification.updated_at = now
                 else:
-                    notification = m.Notification(receiver_id=receiver_id,
-                                                  topic_id=topic_id,
-                                                  role='reply').save()
+                    m.Notification(receiver_id=receiver_id,
+                                   topic_id=topic_id,
+                                   role='reply').save()
 
         if category == 'edit' and not user:
             self.author.spend(coin=config.reply_edit_coin,
@@ -154,52 +153,44 @@ class Reply(db.Entity, SessionMixin, ModelMixin):
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.reply_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.reply_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Up if rv.reply_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.reply_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.reply_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.reply_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.reply_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.reply_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     @property
     def histories(self):
-        histories = m.History.select(lambda rv: rv.reply_id ==
-                                     self.id).order_by(lambda rv: desc(rv.created_at))
+        histories = m.History.select(lambda rv: rv.reply_id == self.id).order_by(lambda rv: orm.desc(rv.created_at))
         return histories
 
     def get_histories(self, page=1):
-        histories = m.History.select(lambda rv: rv.reply_id ==
-                                     self.id).order_by(lambda rv: desc(rv.created_at))
+        histories = m.History.select(lambda rv: rv.reply_id == self.id).order_by(lambda rv: orm.desc(rv.created_at))
         return histories[(page - 1) * config.paged: page * config.paged]
 
     @property
     def history_count(self):
-        return count(self.histories)
+        return orm.count(self.histories)
 
     def put_notifier(self):
         if 'class="mention"' not in self.content:

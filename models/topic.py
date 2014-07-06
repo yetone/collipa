@@ -1,42 +1,41 @@
 # coding: utf-8
 
 import time
-from pony.orm import (Required, Optional, LongUnicode, desc, commit, select,
-                      count)
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 from helpers import get_mention_names
 
-config = config.rec()
+config = config.Config()
 
 
 class Topic(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
-    node_id = Required(int)
+    user_id = orm.Required(int)
+    node_id = orm.Required(int)
 
-    title = Required(unicode)
-    content = Required(LongUnicode)
+    title = orm.Required(unicode)
+    content = orm.Required(orm.LongUnicode)
 
-    hits = Required(int, default=0)
-    role = Required(unicode, 10, default='topic')
-    compute_count = Required(int, default=config.topic_compute_count)
+    hits = orm.Required(int, default=0)
+    role = orm.Required(unicode, 10, default='topic')
+    compute_count = orm.Required(int, default=config.topic_compute_count)
 
-    reply_count = Required(int, default=0)
-    thank_count = Required(int, default=0)
-    up_count = Required(int, default=0)
-    down_count = Required(int, default=0)
-    report_count = Required(int, default=0)
-    collect_count = Required(int, default=0)
-    follow_count = Required(int, default=0)
+    reply_count = orm.Required(int, default=0)
+    thank_count = orm.Required(int, default=0)
+    up_count = orm.Required(int, default=0)
+    down_count = orm.Required(int, default=0)
+    report_count = orm.Required(int, default=0)
+    collect_count = orm.Required(int, default=0)
+    follow_count = orm.Required(int, default=0)
 
-    created_at = Required(int, default=int(time.time()))
-    updated_at = Required(int, default=int(time.time()))
-    active = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    updated_at = orm.Required(int, default=int(time.time()))
+    active = orm.Required(int, default=int(time.time()))
 
-    last_reply_date = Required(int, default=int(time.time()))
+    last_reply_date = orm.Required(int, default=int(time.time()))
 
-    topic_id = Optional(int)
+    topic_id = orm.Optional(int)
 
     def __str__(self):
         return self.title
@@ -54,49 +53,41 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
 
     @property
     def last_reply(self):
-        reply = m.Reply.select(lambda rv: rv.topic_id ==
-                               self.id).order_by(lambda rv:
-                                                 desc(rv.created_at)).first()
+        reply = m.Reply.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv:
+                                                                           orm.desc(rv.created_at)).first()
         return reply
 
     @property
     def replies(self):
-        replies = m.Reply.select(lambda rv: rv.topic_id ==
-                                 self.id).order_by(lambda rv:
-                                                   desc(rv.created_at))
+        replies = m.Reply.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv:
+                                                                             orm.desc(rv.created_at))
         return replies
 
-    def get_replies(self, page=1, category='all', order_by='created_at',
-                    limit=None):
+    def get_replies(self, page=1, category='all', order_by='created_at', limit=None):
         if category == 'all':
-            replies = m.Reply.select(lambda rv: rv.topic_id ==
-                                     self.id)
+            replies = m.Reply.select(lambda rv: rv.topic_id == self.id)
         else:
             if category == 'hot':
-                replies = m.Reply.select(lambda rv: rv.topic_id ==
-                                         self.id)
+                replies = m.Reply.select(lambda rv: rv.topic_id == self.id)
                 limit = 10
                 order_by = 'smart'
             elif category == 'author':
-                replies = select(rv for rv in m.Reply if rv.topic_id == self.id
-                                 and rv.user_id == self.user_id)
+                replies = orm.select(rv for rv in m.Reply if rv.topic_id == self.id and rv.user_id == self.user_id)
             else:
-                replies = select(rv for rv in m.Reply if rv.topic_id ==
-                                 self.id and rv.role == category)
+                replies = orm.select(rv for rv in m.Reply if rv.topic_id == self.id and rv.role == category)
 
         if order_by == 'smart':
-            replies = replies.order_by(lambda rv: desc((rv.collect_count +
-                                                        rv.thank_count) * 10 +
-                                                       (rv.up_count -
-                                                        rv.down_count) * 5))
+            replies = replies.order_by(lambda rv: orm.desc((rv.collect_count +
+                                                            rv.thank_count) * 10 +
+                                                           (rv.up_count -
+                                                            rv.down_count) * 5))
         else:
             replies = replies.order_by(lambda rv: rv.created_at)
 
         if limit:
             return replies[:limit]
         elif page:
-            return replies[(page - 1) * config.reply_paged: page *
-                           config.reply_paged]
+            return replies[(page - 1) * config.reply_paged: page * config.reply_paged]
         else:
             return replies
 
@@ -142,7 +133,7 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
                             topic_id=self.id)
 
         try:
-            commit()
+            orm.commit()
         except:
             pass
 
@@ -204,7 +195,7 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
         self.node.active = now
 
         try:
-            commit()
+            orm.commit()
         except:
             pass
 
@@ -230,73 +221,65 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.topic_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.topic_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Up if rv.topic_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Up if rv.topic_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     def get_thankers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                              self.id and rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.topic_id == self.id and rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                              self.id and rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.topic_id == self.id and rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Thank if rv.topic_id ==
-                              self.id)
+            user_ids = orm.select(rv.user_id for rv in m.Thank if rv.topic_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     def get_replyers(self, after_date=None, before_date=None):
         if after_date:
-            user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                              self.id and rv.user_id != self.user_id and
-                              rv.created_at > after_date)
+            user_ids = orm.select(rv.user_id for rv in m.Reply if rv.topic_id == self.id and
+                                                                  rv.user_id != self.user_id and
+                                                                  rv.created_at > after_date)
         elif before_date:
-            user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                              self.id and rv.user_id != self.user_id and
-                              rv.created_at < before_date)
+            user_ids = orm.select(rv.user_id for rv in m.Reply if rv.topic_id == self.id and
+                                                                  rv.user_id != self.user_id and
+                                                                  rv.created_at < before_date)
         else:
-            user_ids = select(rv.user_id for rv in m.Reply if rv.topic_id ==
-                              self.id and rv.user_id != self.user_id)
+            user_ids = orm.select(rv.user_id for rv in m.Reply if rv.topic_id == self.id and
+                                                                  rv.user_id != self.user_id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
 
-            users = select(rv for rv in m.User if rv.id in user_ids)
+            users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
     @property
     def histories(self):
-        histories = m.History.select(lambda rv: rv.topic_id ==
-                                     self.id).order_by(lambda rv:
-                                                       desc(rv.created_at))
+        histories = m.History.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv:
+                                                                                 orm.desc(rv.created_at))
         return histories
 
     def get_histories(self, page=1):
-        histories = m.History.select(lambda rv: rv.topic_id ==
-                                     self.id).order_by(lambda rv:
-                                                       desc(rv.created_at))
+        histories = m.History.select(lambda rv: rv.topic_id == self.id).order_by(lambda rv:
+                                                                                 orm.desc(rv.created_at))
         return histories[(page - 1) * config.paged: page * config.paged]
 
     @property
     def history_count(self):
-        return count(self.histories)
+        return orm.count(self.histories)
 
     def put_notifier(self):
         if 'class="mention"' not in self.content:

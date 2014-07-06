@@ -4,18 +4,18 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session
+from pony import orm
 
 from models import Topic, Reply
 from forms import ReplyForm
 from .user import EmailMixin
 from helpers import require_permission
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler, EmailMixin):
-    @db_session
+    @orm.db_session
     def get(self, reply_id):
         reply_id = int(reply_id)
         reply = Reply.get(id=reply_id)
@@ -23,15 +23,18 @@ class HomeHandler(BaseHandler, EmailMixin):
             raise tornado.web.HTTPError(404)
         return self.render("reply/index.html", reply=reply)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def put(self, reply_id):
         reply_id = int(reply_id)
         reply = Reply.get(id=reply_id)
-        if not reply:
-            raise tornado.web.HTTPError(404)
         action = self.get_argument('action', None)
         user = self.current_user
+
+        if not reply:
+            raise tornado.web.HTTPError(404)
+
+        result = {}
         if not action:
             result = {'status': 'info', 'message':
                       '缺少 action 参数'}
@@ -55,7 +58,7 @@ class HomeHandler(BaseHandler, EmailMixin):
             result = user.report(reply_id=reply.id)
         return self.send_result(result)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def delete(self, reply_id):
         if not self.current_user.is_admin:
@@ -80,7 +83,7 @@ class HomeHandler(BaseHandler, EmailMixin):
 
 
 class CreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self):
@@ -118,7 +121,7 @@ class CreateHandler(BaseHandler):
 
 
 class EditHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def get(self, reply_id):
@@ -128,7 +131,7 @@ class EditHandler(BaseHandler):
         form = ReplyForm(content=reply.content)
         return self.render("reply/edit.html", form=form, reply=reply)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self, reply_id):
@@ -148,7 +151,7 @@ class EditHandler(BaseHandler):
 
 
 class HistoryHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, reply_id):
         reply = Reply.get(id=reply_id)
         if not reply:

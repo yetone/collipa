@@ -1,16 +1,16 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Bill(db.Entity, SessionMixin, ModelMixin):
-    coin = Required(int)
-    balance = Required(int)
+    coin = orm.Required(int)
+    balance = orm.Required(int)
 
     """ 账单类型
         'signup':           注册                收入
@@ -29,22 +29,22 @@ class Bill(db.Entity, SessionMixin, ModelMixin):
         'collect':          主题/评论被收藏     收入/支出
         'active-gift':      活跃赠送            收入
     """
-    role = Required(unicode, default='signup')
+    role = orm.Required(unicode, default='signup')
 
     """ 支收类型
         1   收入
         0   支出
     """
-    category = Required(int, default=1)
-    created_at = Required(int, default=int(time.time()))
+    category = orm.Required(int, default=1)
+    created_at = orm.Required(int, default=int(time.time()))
 
-    user_id = Optional(int)
+    user_id = orm.Optional(int)
 
-    topic_id = Optional(int)
-    reply_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
 
-    spender_id = Optional(int)
-    incomer_id = Optional(int)
+    spender_id = orm.Optional(int)
+    incomer_id = orm.Optional(int)
 
     def __str__(self):
         return self.id

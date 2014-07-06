@@ -3,22 +3,21 @@
 import models as m
 from helpers import format_date, cached_property
 import config
-from pony.orm import Database, commit
+from pony import orm
 
 __all__ = [
     'db', 'SessionMixin', 'ModelMixin',
 ]
 
-config = config.rec()
+config = config.Config()
 
-db = Database('mysql', config.db_host, config.db_user, config.db_pass,
-              config.db_name)
+db = orm.Database('mysql', config.db_host, config.db_user, config.db_pass, config.db_name)
 
 
 class SessionMixin(object):
     def save(self):
         try:
-            commit()
+            orm.commit()
         except:
             pass
         return self
@@ -26,7 +25,7 @@ class SessionMixin(object):
     def remove(self):
         self.delete()
         try:
-            commit()
+            orm.commit()
         except:
             pass
         return self

@@ -1,21 +1,21 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional, commit
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Down(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
+    user_id = orm.Required(int)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
-    topic_id = Optional(int)
-    reply_id = Optional(int)
-    tweet_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
+    tweet_id = orm.Optional(int)
 
     def __str__(self):
         return self.id
@@ -32,13 +32,12 @@ class Down(db.Entity, SessionMixin, ModelMixin):
             if topic.user_id == self.user_id:
                 self.delete()
                 try:
-                    commit()
+                    orm.commit()
                 except:
                     pass
                 return None
 
-            if topic.compute_count > 0 and topic.down_count in\
-                    config.topic_compute_key_list:
+            if topic.compute_count > 0 and topic.down_count in config.topic_compute_key_list:
                 topic.compute_role()
 
             topic.down_count += 1
@@ -49,13 +48,12 @@ class Down(db.Entity, SessionMixin, ModelMixin):
             if reply.user_id == self.user_id:
                 self.delete()
                 try:
-                    commit()
+                    orm.commit()
                 except:
                     pass
                 return None
 
-            if reply.compute_count > 0 and reply.down_count in\
-                    config.reply_compute_key_list:
+            if reply.compute_count > 0 and reply.down_count in config.reply_compute_key_list:
                 reply.compute_role()
 
             reply.down_count += 1

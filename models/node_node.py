@@ -1,19 +1,19 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class NodeNode(db.Entity, SessionMixin, ModelMixin):
-    parent_id = Required(int)
-    child_id = Required(int)
-    user_id = Required(int, default=1)
+    parent_id = orm.Required(int)
+    child_id = orm.Required(int)
+    user_id = orm.Required(int, default=1)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
     def __str__(self):
         return self.id

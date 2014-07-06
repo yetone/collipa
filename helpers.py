@@ -7,7 +7,7 @@ import time
 import config
 from libs import xss
 
-config = config.rec()
+config = config.Config()
 
 
 class UsernameParser(HTMLParser):
