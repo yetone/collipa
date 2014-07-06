@@ -7,12 +7,12 @@ import tornado.escape
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session
+from pony import orm
 
 from models import User
 from extensions import rd
 
-config = config.rec()
+config = config.Config()
 
 
 class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
@@ -23,7 +23,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
         # for iOS 5.0 Safari
         return True
 
-    @db_session
+    @orm.db_session
     def open(self):
         if self not in WebSocketHandler.users:
             self.user_id = 0
@@ -69,7 +69,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                         pass
 
     @classmethod
-    @db_session
+    @orm.db_session
     def send_message(cls, user_id, message):
         logging.info("Message send")
         for this in cls.users:
@@ -93,7 +93,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                     logging.error("Error sending message", exc_info=True)
 
     @classmethod
-    @db_session
+    @orm.db_session
     def send_notification(cls, user_id):
         logging.info("Notification send")
         for this in cls.users:
@@ -111,7 +111,7 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
 
 
 class GetUserNameHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         users = User.select()
         user_json = []
@@ -121,7 +121,7 @@ class GetUserNameHandler(BaseHandler):
 
 
 class MentionHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self):
         word = self.get_argument('word', None)
         if not word:

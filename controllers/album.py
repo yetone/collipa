@@ -4,16 +4,16 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session
+from pony import orm
 
 from models import Tweet
 from helpers import strip_xss_tags, strip_tags
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, tweet_id):
         tweet_id = int(tweet_id)
         tweet = Tweet.get(id=tweet_id)
@@ -21,7 +21,7 @@ class HomeHandler(BaseHandler):
             raise tornado.web.HTTPError(404)
         return self.render("tweet/index.html", tweet=tweet)
 
-    @db_session
+    @orm.db_session
     def put(self, tweet_id):
         tweet_id = int(tweet_id)
         tweet = Tweet.get(id=tweet_id)
@@ -53,7 +53,7 @@ class HomeHandler(BaseHandler):
             self.flash_message(result)
             return self.redirect_next_url()
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def delete(self, tweet_id):
         if not self.current_user.is_admin:
@@ -67,7 +67,7 @@ class HomeHandler(BaseHandler):
 
 
 class CreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:

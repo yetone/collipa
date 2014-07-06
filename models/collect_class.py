@@ -1,23 +1,23 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class CollectClass(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
-    name = Required(unicode)
+    user_id = orm.Required(int)
+    name = orm.Required(unicode)
 
-    collect_count = Required(int, default=0)
+    collect_count = orm.Required(int, default=0)
 
-    created_at = Required(int, default=int(time.time()))
-    active = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
+    active = orm.Required(int, default=int(time.time()))
 
-    description = Optional(unicode)
+    description = orm.Optional(unicode)
 
     def __str__(self):
         return self.id

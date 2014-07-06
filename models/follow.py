@@ -1,24 +1,24 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 from helpers import cached_property
 
-config = config.rec()
+config = config.Config()
 
 
 class Follow(db.Entity, SessionMixin, ModelMixin):
-    who_id = Required(int)
-    whom_id = Optional(int)
-    topic_id = Optional(int)
-    node_id = Optional(int)
+    who_id = orm.Required(int)
+    whom_id = orm.Optional(int)
+    topic_id = orm.Optional(int)
+    node_id = orm.Optional(int)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
-    follow_class_id = Optional(int)
+    follow_class_id = orm.Optional(int)
 
     def __str__(self):
         return self.id

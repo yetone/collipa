@@ -10,7 +10,7 @@ from libs import ghdiff
 
 from models import Reply, History
 
-config = config.rec()
+config = config.Config()
 
 
 class ReplyForm(BaseForm):

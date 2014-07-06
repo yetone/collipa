@@ -1,15 +1,15 @@
 # coding: utf-8
 
-from pony.orm import Required
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Bank(db.Entity, SessionMixin, ModelMixin):
-    balance = Required(int, default=config.bank_init_coin)
+    balance = orm.Required(int, default=config.bank_init_coin)
 
     def __str__(self):
         return self.id

@@ -6,7 +6,7 @@ import MySQLdb
 from pony.orm import db_session
 import config
 
-config = config.rec()
+config = config.Config()
 
 m = MySQLdb.Connect(host=config.db_host, user=config.db_user,
                     passwd=config.db_pass)

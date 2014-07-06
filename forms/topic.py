@@ -10,7 +10,7 @@ from models import Topic, Node, History
 from helpers import strip_tags, strip_xss_tags
 from libs import ghdiff
 
-config = config.rec()
+config = config.Config()
 
 
 class TopicForm(BaseForm):

@@ -1,35 +1,35 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, LongUnicode
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Message(db.Entity, SessionMixin, ModelMixin):
-    message_box1_id = Required(int, default=0)
-    message_box2_id = Required(int, default=0)
+    message_box1_id = orm.Required(int, default=0)
+    message_box2_id = orm.Required(int, default=0)
 
-    sender_id = Required(int)
-    receiver_id = Required(int)
+    sender_id = orm.Required(int)
+    receiver_id = orm.Required(int)
 
-    content = Required(LongUnicode)
+    content = orm.Required(orm.LongUnicode)
 
     """ 信息类型
         'message':        私信
     """
-    role = Required(unicode, default='message')
+    role = orm.Required(unicode, default='message')
 
     """ 状态
         1:      已读
         0:      未读
     """
-    status = Required(int, default=0)
+    status = orm.Required(int, default=0)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
     def __str__(self):
         return self.sender_id

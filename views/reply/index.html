@@ -53,7 +53,7 @@
         <div class="meta">
           {% if current_user %}
           <ul class="vote clearfix">
-            {% if current_user.is_uped(reply=reply) %}
+            {% if current_user.is_upped(reply=reply) %}
             <li class="up pressed">
               <a title="取消赞同" href="{{ reply.url }}?action=up"><i class="icon-thumbs-up"></i> 已赞同({{ reply.up_count }})</a>
             </li>

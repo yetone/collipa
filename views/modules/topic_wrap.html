@@ -33,7 +33,7 @@
     </span>
     {% if current_user %}
     <ul class="vote clearfix">
-      {% if current_user.is_uped(topic=topic) %}
+      {% if current_user.is_upped(topic=topic) %}
       <li class="up pressed">
         <a title="取消赞同" href="{{ topic.url }}?action=up"><i class="icon-thumbs-up"></i> 已赞同({{ topic.up_count }})</a>
       </li>

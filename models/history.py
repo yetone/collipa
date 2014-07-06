@@ -1,22 +1,22 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional, LongUnicode
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 import models as m
 
-config = config.rec()
+config = config.Config()
 
 
 class History(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
-    content = Required(LongUnicode)
+    user_id = orm.Required(int)
+    content = orm.Required(orm.LongUnicode)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
-    topic_id = Optional(int)
-    reply_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
 
     def __str__(self):
         return self.id

@@ -6,7 +6,7 @@ import memcache
 import redis
 import cPickle as pickle
 
-config = config.rec()
+config = config.Config()
 
 mc = memcache.Client(['127.0.0.1:11211'], debug=1)
 

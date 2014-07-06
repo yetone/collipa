@@ -4,18 +4,18 @@ import tornado.web
 
 import config
 from ._base import BaseHandler
-from pony.orm import db_session, count
+from pony import orm
 
 from models import Topic, Node, User
 from forms import TopicForm, ReplyForm
 from helpers import force_int, require_admin, require_permission
 from .user import EmailMixin
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler, EmailMixin):
-    @db_session
+    @orm.db_session
     def get(self, topic_id):
         topic_id = int(topic_id)
         page = force_int(self.get_argument('page', 0), 0)
@@ -29,8 +29,8 @@ class HomeHandler(BaseHandler, EmailMixin):
             reply_count = topic.reply_count
             url = topic.url
         elif category == 'hot':
-            reply_count = count(topic.get_replies(page=None,
-                                                  category=category))
+            reply_count = orm.count(topic.get_replies(page=None,
+                                                      category=category))
             url = topic.url + '?category=hot'
         page_count = (reply_count + config.reply_paged - 1) // config.reply_paged
         if page == 0:
@@ -41,7 +41,7 @@ class HomeHandler(BaseHandler, EmailMixin):
                            form=form, category=category, page=page,
                            page_count=page_count, url=url)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def put(self, topic_id):
         topic_id = int(topic_id)
@@ -77,7 +77,7 @@ class HomeHandler(BaseHandler, EmailMixin):
             self.flash_message(result)
             return self.redirect_next_url()
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_admin
     def delete(self, topic_id):
@@ -122,7 +122,7 @@ class HomeHandler(BaseHandler, EmailMixin):
 
 
 class CreateHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def get(self):
@@ -136,7 +136,7 @@ class CreateHandler(BaseHandler):
         form = TopicForm.init(choices=choices, selected=selected)
         return self.render("topic/create.html", form=form, node=node)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self):
@@ -159,7 +159,7 @@ class CreateHandler(BaseHandler):
 
 
 class EditHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def get(self, topic_id):
@@ -175,7 +175,7 @@ class EditHandler(BaseHandler):
         form = TopicForm.init(choices=choices, selected=selected, args=args)
         return self.render("topic/create.html", form=form, node=topic.node)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self, topic_id):
@@ -199,7 +199,7 @@ class EditHandler(BaseHandler):
 
 
 class HistoryHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     def get(self, topic_id):
         topic = Topic.get(id=topic_id)
         if not topic:

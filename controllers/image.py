@@ -8,19 +8,20 @@ import sys
 import logging
 import tempfile
 import Image as Img
+from pony import orm
 from ._base import BaseHandler
 import tornado.web
 from models import Image, Album
 from helpers import get_year, get_month, require_permission
-from pony.orm import db_session
+
 import config
 from .user import EmailMixin
 
-config = config.rec()
+config = config.Config()
 
 
 class HomeHandler(BaseHandler, EmailMixin):
-    @db_session
+    @orm.db_session
     def get(self, image_id):
         image_id = int(image_id)
         image = Image.get(id=image_id)
@@ -28,7 +29,7 @@ class HomeHandler(BaseHandler, EmailMixin):
             raise tornado.web.HTTPError(404)
         return self.render("image/index.html", image=image)
 
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     def delete(self, image_id):
         image = Image.get(id=image_id)
@@ -53,7 +54,7 @@ class HomeHandler(BaseHandler, EmailMixin):
 
 
 class UploadHandler(BaseHandler):
-    @db_session
+    @orm.db_session
     @tornado.web.authenticated
     @require_permission
     def post(self):

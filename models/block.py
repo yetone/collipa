@@ -1,18 +1,18 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Block(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
+    user_id = orm.Required(int)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
     """ 屏蔽类型
         topic_id    屏蔽主题
@@ -20,11 +20,11 @@ class Block(db.Entity, SessionMixin, ModelMixin):
         node_id     屏蔽节点
         blocker_id  屏蔽用户
     """
-    topic_id = Optional(int)
-    reply_id = Optional(int)
-    tweet_id = Optional(int)
-    node_id = Optional(int)
-    blocker_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
+    tweet_id = orm.Optional(int)
+    node_id = orm.Optional(int)
+    blocker_id = orm.Optional(int)
 
     def __str__(self):
         return self.id

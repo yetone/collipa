@@ -1,21 +1,21 @@
 # coding: utf-8
 
 import time
-from pony.orm import Required, Optional, commit
+from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import config
 
-config = config.rec()
+config = config.Config()
 
 
 class Thank(db.Entity, SessionMixin, ModelMixin):
-    user_id = Required(int)
+    user_id = orm.Required(int)
 
-    created_at = Required(int, default=int(time.time()))
+    created_at = orm.Required(int, default=int(time.time()))
 
-    topic_id = Optional(int)
-    reply_id = Optional(int)
-    tweet_id = Optional(int)
+    topic_id = orm.Optional(int)
+    reply_id = orm.Optional(int)
+    tweet_id = orm.Optional(int)
 
     def __str__(self):
         return self.id
@@ -32,7 +32,7 @@ class Thank(db.Entity, SessionMixin, ModelMixin):
             if topic.user_id == self.user_id:
                 self.delete()
                 try:
-                    commit()
+                    orm.commit()
                 except:
                     pass
                 return None
@@ -52,7 +52,7 @@ class Thank(db.Entity, SessionMixin, ModelMixin):
             if reply.user_id == self.user_id:
                 self.delete()
                 try:
-                    commit()
+                    orm.commit()
                 except:
                     pass
                 return None
