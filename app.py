@@ -5,11 +5,13 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+import argparse
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 from tornado.options import define, options
 
+from pony import orm
 from libs.tornadomail.backends.smtp import EmailBackend
 
 import config
@@ -56,5 +58,21 @@ def main():
     print("App started. Listenning on %d" % options.port)
     tornado.ioloop.IOLoop.instance().start()
 
+
+@orm.db_session
+def runshell():
+    from models import *
+    from IPython import embed
+    embed()
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(dest='subparsers_name')
+    subparsers_shell = subparsers.add_parser('shell', help='run shell')
+    args = parser.parse_args()
+
+    if args.subparsers_name == 'shell':
+        db.generate_mapping()
+        runshell()
+        return
     main()
