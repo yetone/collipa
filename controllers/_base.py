@@ -126,19 +126,19 @@ class BaseHandler(tornado.web.RequestHandler):
         if self.is_ajax:
             self.write(result)
         else:
-            self.flash_message(result)
+            self.flash_message(**result)
             self.redirect_next_url()
         return False
 
     def send_result(self, result, redirect_url=None):
         if self.is_ajax:
             return self.write(result)
-        self.flash_message(result)
+        self.flash_message(**result)
         return self.redirect(redirect_url or self.next_url)
 
     def send_result_and_render(self, result, tpl, data=None):
         data = data or dict()
         if self.is_ajax:
             return self.write(result)
-        self.flash_message(result)
+        self.flash_message(**result)
         return self.render(tpl, **data)
