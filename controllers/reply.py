@@ -87,12 +87,10 @@ class CreateHandler(BaseHandler):
     @tornado.web.authenticated
     @require_permission
     def post(self):
-        page = int(self.get_argument('page', 1))
         topic_id = int(self.get_argument('topic_id', 0))
         topic = Topic.get(id=topic_id)
         if not topic_id:
-            result = {'status': 'error', 'message':
-                      '无此主题，不能创建评论'}
+            result = {'status': 'error', 'message': '无此主题，不能创建评论'}
             if self.is_ajax:
                 return self.write(result)
             else:
@@ -111,13 +109,12 @@ class CreateHandler(BaseHandler):
                       'author_nickname': reply.author.nickname,
                       'reply_url': reply.url, 'created': reply.created,
                       'id': reply.id, 'floor': reply.floor}
-            if self.is_ajax:
-                return self.write(result)
-            self.flash_message(**result)
-            return self.redirect(topic.url)
-        data = dict(form=form, topic=topic,
-                    category='index', page=page)
-        return self.send_result_and_render(form.result, "topic/index.html", data)
+        else:
+            result = form.result
+        if self.is_ajax:
+            return self.write(result)
+        self.flash_message(**result)
+        return self.redirect(topic.url)
 
 
 class EditHandler(BaseHandler):
