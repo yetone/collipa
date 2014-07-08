@@ -89,7 +89,7 @@ class BaseHandler(tornado.web.RequestHandler):
                 self._messages = tornado.escape.json_decode(messages)
         return self._messages
 
-    def flash_message(self, kargs=None):
+    def flash_message(self, **kargs):
         def get_category_message(messages):
             for cat, msg in messages:
                 yield (cat, msg)
