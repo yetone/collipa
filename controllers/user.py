@@ -53,8 +53,7 @@ class EmailMixin(object):
             return None
         if delta > 3600:
             # 1 hour
-            result = {"status": "info", "message":
-                      "此验证链接已过期，请再次验证"}
+            result = {"status": "info", "message": "此验证链接已过期，请再次验证"}
             self.flash_message(result)
             return None
         user = User.get(email=email)
@@ -62,7 +61,8 @@ class EmailMixin(object):
             return None
         if hsh == hashlib.sha1(salt + created + user.token).hexdigest():
             return user
-        self.flash_message("验证链接错误", 'error')
+        result = {"status": "error", "message": "验证链接错误"}
+        self.flash_message(result)
         return None
 
     def send_email(self, this, email, subject, content):
