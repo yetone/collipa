@@ -87,6 +87,8 @@ class CreateHandler(BaseHandler):
     @tornado.web.authenticated
     @require_permission
     def post(self):
+        page = int(self.get_argument('page', 1))
+        category = self.get_argument('category', 'index')
         topic_id = int(self.get_argument('topic_id', 0))
         topic = Topic.get(id=topic_id)
         if not topic_id:
@@ -109,12 +111,17 @@ class CreateHandler(BaseHandler):
                       'author_nickname': reply.author.nickname,
                       'reply_url': reply.url, 'created': reply.created,
                       'id': reply.id, 'floor': reply.floor}
-        else:
-            result = form.result
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(**result)
-        return self.redirect(topic.url)
+            if self.is_ajax:
+                return self.write(result)
+            self.flash_message(**result)
+            return self.redirect(topic.url)
+
+        reply_count = topic.reply_count
+        page_count = (reply_count + config.reply_paged - 1) // config.reply_paged
+        replies = topic.get_replies(page=page, category=category)
+        data = dict(form=form, topic=topic, replies=replies, category=category, page=page, page_count=page_count,
+                    url=topic.url)
+        return self.send_result_and_render(form.result, "topic/index.html", data)
 
 
 class EditHandler(BaseHandler):

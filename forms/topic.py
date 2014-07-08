@@ -25,18 +25,17 @@ class TopicForm(BaseForm):
 
     @property
     def result(self):
-        result = {'status': 'error', 'message': '主题创建失败'}
+        msg = u'主题创建失败'
         for field in self:
             if field.errors:
-                for error in field.errors:
-                    if field.name == 'title':
-                        prev = '标题至少 4 字节'
-                    elif field.name == 'content':
-                        prev = '内容至少 3 字节'
-                    elif field.name == 'node_name':
-                        prev = '节点必须选择'
+                if field.name == 'title':
+                    msg = '标题至少 4 字节'
+                elif field.name == 'content':
+                    msg = '内容至少 3 字节'
+                elif field.name == 'node_name':
+                    msg = '节点必须选择'
 
-                    result = {'status': 'error', 'message': prev}
+        result = {'status': 'error', 'message': msg}
         return result
 
     @classmethod

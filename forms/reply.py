@@ -32,14 +32,12 @@ class ReplyForm(BaseForm):
 
     @property
     def result(self):
-        result = {'status': 'error', 'message': '评论创建失败'}
+        msg = u'评论创建失败'
         for field in self:
             if field.errors:
-                for error in field.errors:
-                    if field.name == 'content':
-                        prev = '内容至少 3 字节'
-
-                    result = {'status': 'error', 'message': prev}
+                if field.name == 'content':
+                    msg = u'内容至少 3 字节'
+        result = {'status': 'error', 'message': msg}
         return result
 
     def save(self, user, topic, reply=None):
