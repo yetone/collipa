@@ -81,7 +81,7 @@ class HomeHandler(BaseHandler):
                 result = user.follow(node_id=node.id)
                 if self.is_ajax:
                     return self.write(result)
-                self.flash_message(result)
+                self.flash_message(**result)
                 return self.redirect_next_url()
         topic_count = orm.count(node.get_topics(page=None, category=category))
         page_count = (topic_count + config.reply_paged - 1) // config.reply_paged
@@ -158,7 +158,7 @@ class EditHandler(BaseHandler):
                       'node_url': node.url}
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect(node.url)
         if self.is_ajax:
             return self.write(form.result)

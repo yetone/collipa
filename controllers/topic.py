@@ -74,7 +74,7 @@ class HomeHandler(BaseHandler, EmailMixin):
         if self.is_ajax:
             return self.write(result)
         else:
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect_next_url()
 
     @orm.db_session
@@ -151,7 +151,7 @@ class CreateHandler(BaseHandler):
                       'topic_url': topic.url}
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect(topic.url)
         if self.is_ajax:
             return self.write(form.result)
@@ -191,7 +191,7 @@ class EditHandler(BaseHandler):
                       'topic_url': topic.url}
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect(topic.url)
         if self.is_ajax:
             return self.write(form.result)

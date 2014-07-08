@@ -89,19 +89,19 @@ class BaseHandler(tornado.web.RequestHandler):
                 self._messages = tornado.escape.json_decode(messages)
         return self._messages
 
-    def flash_message(self, **kargs):
+    def flash_message(self, **kwargs):
         def get_category_message(messages):
             for cat, msg in messages:
                 yield (cat, msg)
 
-        if not kargs:
+        if not kwargs:
             messages = self.messages
             self._messages = []
             self.clear_cookie('flash_messages')
             return get_category_message(messages)
 
-        msg = kargs.get('message', None)
-        category = kargs.get('status', None)
+        msg = kwargs.get('message', None)
+        category = kwargs.get('status', None)
         message = (category, msg)
         self.messages.append(message)
         self.set_secure_cookie('flash_messages',
@@ -126,19 +126,19 @@ class BaseHandler(tornado.web.RequestHandler):
         if self.is_ajax:
             self.write(result)
         else:
-            self.flash_message(result)
+            self.flash_message(**result)
             self.redirect_next_url()
         return False
 
     def send_result(self, result, redirect_url=None):
         if self.is_ajax:
             return self.write(result)
-        self.flash_message(result)
+        self.flash_message(**result)
         return self.redirect(redirect_url or self.next_url)
 
     def send_result_and_render(self, result, tpl, data=None):
         data = data or dict()
         if self.is_ajax:
             return self.write(result)
-        self.flash_message(result)
+        self.flash_message(**result)
         return self.render(tpl, **data)

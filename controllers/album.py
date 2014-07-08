@@ -50,7 +50,7 @@ class HomeHandler(BaseHandler):
                 result = user.report(tweet_id=tweet.id)
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect_next_url()
 
     @orm.db_session
@@ -93,7 +93,7 @@ class CreateHandler(BaseHandler):
             }
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect('/timeline')
         result = {
             'status': 'error',
@@ -101,5 +101,5 @@ class CreateHandler(BaseHandler):
         }
         if self.is_ajax:
             return self.write(result)
-        self.flash_message(result)
+        self.flash_message(**result)
         return self.redirect('/timeline')

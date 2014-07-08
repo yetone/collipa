@@ -38,31 +38,31 @@ class EmailMixin(object):
             token = base64.b64decode(token)
         except:
             result = {"status": "error", "message": "验证链接错误"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return None
         splits = token.split('|')
         if len(splits) != 4:
             result = {"status": "error", "message": "验证链接错误"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return None
         email, salt, created, hsh = splits
         delta = time.time() - int(created)
         if delta < 1:
             result = {"status": "error", "message": "验证链接错误"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return None
         if delta > 3600:
             # 1 hour
-            result = {"status": "info", "message":
-                      "此验证链接已过期，请再次验证"}
-            self.flash_message(result)
+            result = {"status": "info", "message": "此验证链接已过期，请再次验证"}
+            self.flash_message(**result)
             return None
         user = User.get(email=email)
         if not user:
             return None
         if hsh == hashlib.sha1(salt + created + user.token).hexdigest():
             return user
-        self.flash_message("验证链接错误", 'error')
+        result = {"status": "error", "message": "验证链接错误"}
+        self.flash_message(**result)
         return None
 
     def send_email(self, this, email, subject, content):
@@ -122,7 +122,7 @@ class SignupHandler(BaseHandler, EmailMixin):
                 except:
                     pass
                 result = {'status': 'success', 'message': '您的账户已经激活'}
-                self.flash_message(result)
+                self.flash_message(**result)
             return self.redirect('/account/setting')
         if self.current_user:
             return self.redirect_next_url()
@@ -135,7 +135,7 @@ class SignupHandler(BaseHandler, EmailMixin):
         if self.current_user and self.get_argument("action", '') == 'email':
             if self.current_user.role != 'unverify':
                 result = {'status': 'success', 'message': '您的账户已经激活'}
-                self.flash_message(result)
+                self.flash_message(**result)
             else:
                 self.send_register_email(self.current_user)
                 return self.redirect("/account/setting")
@@ -166,7 +166,7 @@ class SignupHandler(BaseHandler, EmailMixin):
         self.send_email(self, user.email, subject, template)
         result = {'status': 'info', 'message':
                   '激活邮件已经发到您的邮箱，请去邮箱进行激活'}
-        self.flash_message(result)
+        self.flash_message(**result)
 
 
 class SigninHandler(BaseHandler):
@@ -307,13 +307,13 @@ class PasswordHandler(BaseHandler, EmailMixin):
             user = self.current_user
         elif not email:
             result = {"status": "error", "message": "请输入邮箱地址"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect('/signin')
         else:
             user = User.get(email=email)
             if not user:
                 result = {"status": "error", "message": "用户不存在"}
-                self.flash_message(result)
+                self.flash_message(**result)
                 return self.redirect('/signin')
 
         token = self._create_token(user)
@@ -328,7 +328,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
             '%(url)s </div>'
         ) % {'nickname': user.nickname, 'url': url}
         result = {"status": "success", "message": "邮件已经发送，请检查您的邮箱"}
-        self.flash_message(result)
+        self.flash_message(**result)
         self.send_email(self, user.email, '找回密码', template)
 
     @orm.db_session
@@ -338,7 +338,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         password = self.get_argument('password', None)
         if not user.check_password(password):
             result = {"status": "error", "message": "旧密码有误"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.render('user/password.html', token=None)
         password1 = self.get_argument('password1', None)
         password2 = self.get_argument('password2', None)
@@ -360,12 +360,12 @@ class PasswordHandler(BaseHandler, EmailMixin):
         if password1 != password2:
             token = self.get_argument('verify', None)
             result = {"status": "error", "message": "两次输入的密码不匹配"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.render('user/password.html', token=token)
         if not password1:
             token = self.get_argument('verify', None)
             result = {"status": "error", "message": "新密码不能为空"}
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.render('user/password.html', token=token)
         user.password = user.create_password(password1)
         user.token = user.create_token(16)
@@ -374,7 +374,7 @@ class PasswordHandler(BaseHandler, EmailMixin):
         except:
             pass
         result = {"status": "success", "message": "密码已修改"}
-        self.flash_message(result)
+        self.flash_message(**result)
         self.set_current_user(user)
         return self.redirect('/account/password')
 

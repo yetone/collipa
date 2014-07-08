@@ -96,7 +96,7 @@ class CreateHandler(BaseHandler):
             if self.is_ajax:
                 return self.write(result)
             else:
-                self.flash_message(result)
+                self.flash_message(**result)
                 return self.redirect_next_url()
         user = self.current_user
         form = ReplyForm(self.request.arguments)
@@ -113,7 +113,7 @@ class CreateHandler(BaseHandler):
                       'id': reply.id, 'floor': reply.floor}
             if self.is_ajax:
                 return self.write(result)
-            self.flash_message(result)
+            self.flash_message(**result)
             return self.redirect(topic.url)
         data = dict(form=form, topic=topic,
                     category='index', page=page)
