@@ -4,7 +4,9 @@ import time
 from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
+from extensions import memcached, mc
 import config
+import helpers
 
 config = config.Config()
 
@@ -37,8 +39,32 @@ class Album(db.Entity, SessionMixin, ModelMixin):
         return '<Album: %s>' % self.id
 
     @property
+    def cover_cache_key(self):
+        return 'album.cover.%d' % self.id
+
+    @property
     def url(self):
         return '/album/%s' % self.id
+
+    @property
+    def cover(self):
+        @memcached(self.cover_cache_key)
+        def _cover():
+            images = self.get_images(page=1, limit=1)
+            cover = config.default_album_cover
+            if images:
+                cover = images[0].path
+            return cover
+        cover = _cover()
+        size = (128, 128)
+        return helpers.generate_thumb_url(cover, size)
+
+    @cover.setter
+    def cover(self, value):
+        if isinstance(value, m.Image):
+            value = value.path
+        mc.set(self.cover_cache_key, value)
+
 
     def save(self, category='create', user=None):
         now = int(time.time())
@@ -80,20 +106,19 @@ class Album(db.Entity, SessionMixin, ModelMixin):
             users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
 
-    def get_images(self, page=1, category='all', order_by='created_at',
-                   limit=None):
+    def get_images(self, page=1, category='all', order_by='created_at', limit=None, desc=True):
         if category == 'all':
-            images = m.Image.select(lambda rv: rv.topic_id == self.id)
+            images = m.Image.select(lambda rv: rv.album_id == self.id)
         else:
             if category == 'hot':
-                images = m.Image.select(lambda rv: rv.topic_id == self.id)
+                images = m.Image.select(lambda rv: rv.album_id == self.id)
                 limit = 10
                 order_by = 'smart'
             elif category == 'author':
                 images = orm.select(rv for rv in m.Image if
                                     rv.topic_id == self.id and rv.user_id == self.user_id)
             else:
-                images = orm.select(rv for rv in m.Image if rv.topic_id == self.id and rv.role == category)
+                images = orm.select(rv for rv in m.Image if rv.album_id == self.id and rv.role == category)
 
         if order_by == 'smart':
             images = images.order_by(lambda rv: orm.desc((rv.collect_count +
@@ -101,7 +126,10 @@ class Album(db.Entity, SessionMixin, ModelMixin):
                                                          (rv.up_count -
                                                           rv.down_count) * 5))
         else:
-            images = images.order_by(lambda rv: rv.created_at)
+            if desc:
+                images = images.order_by(lambda rv: orm.desc(rv.created_at))
+            else:
+                images = images.order_by(lambda rv: rv.created_at)
 
         if limit:
             return images[:limit]

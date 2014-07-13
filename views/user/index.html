@@ -110,6 +110,9 @@
         <li {% if view == 'replies' %}class="on"{% end %}>
           <a href="{{ user.url }}/replies">评论</a>
         </li>
+        <li {% if view == 'albums' %}class="on"{% end %}>
+        <a href="{{ user.url }}/albums">专辑</a>
+        </li>
       </ul>
       <div class="nav-bottom">
         <div class="nav-bottom-span"></div>
@@ -147,6 +150,8 @@
       <script type="text/javascript">
         SyntaxHighlighter.all();
       </script>
+    {% elif view == 'albums' %}
+      {% module Template('modules/album_list.html', albums=items) %}
     {% end %}
     {% if view != 'index' %}
       {{ modules.Page(page=page, page_count=page_count, url=url) }}

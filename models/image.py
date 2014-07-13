@@ -7,6 +7,7 @@ from pony import orm
 from ._base import db, SessionMixin, ModelMixin
 import models as m
 import config
+import helpers
 
 config = config.Config()
 
@@ -43,6 +44,18 @@ class Image(db.Entity, SessionMixin, ModelMixin):
     @property
     def url(self):
         return '/image/%s' % self.id
+
+    @property
+    def small_path(self):
+        return helpers.generate_thumb_url(self.path, (256, 0))
+
+    @property
+    def middle_path(self):
+        return helpers.generate_thumb_url(self.path, (512, 0))
+
+    @property
+    def large_path(self):
+        return helpers.generate_thumb_url(self.path, (1024, 0))
 
     def save(self, category='create', user=None):
         now = int(time.time())
@@ -97,3 +110,8 @@ class Image(db.Entity, SessionMixin, ModelMixin):
 
             users = orm.select(rv for rv in m.User if rv.id in user_ids)
         return users
+
+    def crop(self):
+        size_list = [(128, 128), (256, 256), (512, 512), (1024, 1024), (128, 0), (256, 0), (512, 0), (1024, 0)]
+        for size in size_list:
+            helpers.crop(self.path, size)

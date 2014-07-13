@@ -6,7 +6,7 @@ import config
 from ._base import BaseHandler
 from pony import orm
 
-from models import Tweet
+from models import Album
 from helpers import strip_xss_tags, strip_tags
 
 config = config.Config()
@@ -14,12 +14,12 @@ config = config.Config()
 
 class HomeHandler(BaseHandler):
     @orm.db_session
-    def get(self, tweet_id):
-        tweet_id = int(tweet_id)
-        tweet = Tweet.get(id=tweet_id)
-        if not tweet:
+    def get(self, album_id):
+        album_id = int(album_id)
+        album = Album.get(id=album_id)
+        if not album:
             raise tornado.web.HTTPError(404)
-        return self.render("tweet/index.html", tweet=tweet)
+        return self.render("album/index.html", album=album, page=self.page)
 
     @orm.db_session
     def put(self, tweet_id):

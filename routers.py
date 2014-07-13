@@ -5,6 +5,7 @@ from controllers import (site,
                          topic,
                          reply,
                          node,
+                         album,
                          image,
                          api,
                          upload,
@@ -47,6 +48,8 @@ routers = [
     (r"/tweet/create[/]*", tweet.CreateHandler),
     (r"/tweet/(\d+)[/]*", tweet.HomeHandler),
 
+    (r"/album/(\d+)[/]*", album.HomeHandler),
+
     (r"/image/(\d+)[/]*", image.HomeHandler),
     (r"/image/upload[/]*", image.UploadHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
@@ -65,7 +68,7 @@ routers = [
     (r"/302[/]*", site.OtherPageErrorHandler),
 
     (r"/([A-Za-z0-9%_]+)[/]*", user.HomeHandler),
-    (r"/([A-Za-z0-9%_]+)/(topics|replies|followings|followers)[/]*", user.HomeHandler),
+    (r"/([A-Za-z0-9%_]+)/(topics|replies|albums|followings|followers)[/]*", user.HomeHandler),
     (r"/([A-Za-z0-9%_]+)/(topics|replies)/(hot)[/]*", user.HomeHandler),
     (r".*", site.PageNotFoundHandler),
 ]

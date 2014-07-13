@@ -5,6 +5,7 @@ import config
 import memcache
 import redis
 import cPickle as pickle
+from functools import wraps
 
 config = config.Config()
 
@@ -20,12 +21,13 @@ def md(text):
 '''
 
 
-def memcached(key, limit):
+def memcached(key, limit=86400):
     def wrap(func):
-        def get_value():
+        @wraps(func)
+        def get_value(*args, **kwargs):
             value = mc.get(key)
             if not value:
-                value = func()
+                value = func(*args, **kwargs)
                 mc.set(key, value, limit)
             return value
         return get_value

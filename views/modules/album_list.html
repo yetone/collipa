@@ -1,0 +1,20 @@
+{% if albums %}
+<ul class="album-list clearfix">
+  {% for album in albums %}
+  <li data-id="{{ album.id }}" class="album">
+    <a class="album-cover" href="{{ album.url }}">
+      <img src="{{ album.cover }}">
+    </a>
+    <a class="album-name" href="{{ album.url }}">
+      {{ album.name }}
+    </a>
+  </li>
+  {% end %}
+</ul>
+{% else %}
+<div class="explain">
+  <div>
+    暂无专辑
+  </div>
+</div>
+{% end %}

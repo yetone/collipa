@@ -6,6 +6,7 @@ from pony import orm
 import config
 
 import models as m
+from helpers import force_int
 
 config = config.Config()
 
@@ -142,3 +143,7 @@ class BaseHandler(tornado.web.RequestHandler):
             return self.write(result)
         self.flash_message(**result)
         return self.render(tpl, **data)
+
+    @property
+    def page(self):
+        return force_int(self.get_argument('page', 1))

@@ -4,10 +4,14 @@ from HTMLParser import HTMLParser
 import os
 import re
 import time
+import logging
+import math
 import config
 from libs import xss
+from PIL import Image
 
 config = config.Config()
+ROOT = os.path.dirname(__file__)
 
 
 class UsernameParser(HTMLParser):
@@ -235,3 +239,88 @@ class cached_property(object):
             value = self.func(obj)
             obj.__dict__[self.__name__] = value
         return value
+
+
+def pattern_image_url(url):
+    ret = {}
+    m = re.findall(r"(.*)\.thumb\.(\d+)_(\d+)[_]?([tcb]?)\.(\w+)", url)
+    if m:
+        ret['thumb'] = True
+        ori, w, h, crop, suffix = m[0]
+        ret['resize'] = (int(w), int(h))
+        ret['width'] = int(w)
+        ret['height'] = int(h)
+        ret['crop'] = crop
+        ret['gaussian'] = True if crop == 'g' else False
+        ret['origin'] = '%s.%s' % (ori, suffix)
+    return ret
+
+
+def generate_thumb_url(url, size, position='c'):
+    width, height = size
+    img_param = pattern_image_url(url)
+    if img_param:
+        url = img_param['origin']
+    m = re.findall(r"(.*)\.(\w+)$", url)
+    if not m:
+        return url
+    ori, suffix = m[0]
+    return '%s.thumb.%d_%d_%s.%s' % (ori, width, height, position, suffix)
+
+
+def save_image(image, path):
+    image.save(path)
+
+
+def rcd(x):
+    return int(math.ceil(x))
+
+
+def crop(url, size, position='c', force=False):
+    url = "%s/%s" % (ROOT, url.lstrip('/'))
+    path = generate_thumb_url(url, size, position=position)
+    width, height = size
+    try:
+        image = Image.open(url)
+    except IOError:
+        logging.error('cannot open %s' % url)
+        return
+    w, h = image.size
+    if (w, h) == (width, height):
+        return save_image(image, path)
+    if force and (width >= w or height >= h):
+        return save_image(image, path)
+
+    hr = height * 1.0 / h
+    wr = width * 1.0 / w
+    if hr > wr:
+        wf = rcd(w * hr)
+        hf = height
+    else:
+        wf = width
+        hf = rcd(h * wr)
+    resize = (wf, hf)
+    image = image.resize(resize, Image.ANTIALIAS)
+
+    if width * height == 0:
+        return save_image(image, path)
+
+    coo = None
+    if wf > width:
+        if position == 't':
+            coo = (0, 0, width, height)
+        elif position == 'b':
+            coo = (wf - width, 0, wf, height)
+        else:
+            coo = (rcd((wf - width) / 2.0), 0, rcd((wf + width) / 2.0), height)
+    elif hf > height:
+        if position == 't':
+            coo = (0, 0, width, height)
+        elif position == 'b':
+            coo = (0, hf - height, width, hf)
+        else:
+            coo = (0, rcd((hf - height) / 2.0), width, rcd((hf + height) / 2.0))
+
+    if coo:
+        image = image.crop(coo)
+    return save_image(image, path)

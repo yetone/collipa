@@ -1,0 +1,15 @@
+{% if images %}
+<div class="image-list clearfix">
+  {% for image in images %}
+  <a data-id="{{ image.id }}" data-width="{{ image.width }}" data-height="{{ image.height }}" class="image-item" href="{{ image.url }}">
+    <img src="{{ image.small_path }}">
+  </a>
+  {% end %}
+</div>
+{% else %}
+<div class="explain">
+  <div>
+    暂无图片
+  </div>
+</div>
+{% end %}
