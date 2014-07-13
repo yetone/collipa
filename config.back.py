@@ -13,7 +13,7 @@ _SMTPPORT = '587'  # email port
 _RDPORT = 6379  # Redis port
 
 
-class rec:
+class Config(object):
     debug = True
 
     database = 'mysql://%s:%s@%s/%s?charset=utf8' % (_DBUSER, _DBPASS, _DBHOST,
@@ -46,6 +46,8 @@ class rec:
     node_icon_url = '/static/public/img/node_icon.png'
     node_head_url = '/static/public/img/node_head.jpg'
     node_background_url = '/static/public/img/node_background.jpg'
+
+    default_album_cover = '/static/public/img/cover.jpg'
 
     smtp_user = _SMTPUSER
     smtp_password = _SMTPPASS
