@@ -1990,6 +1990,7 @@ ul.users li a div.username span {
 
 .image-item {
   position: absolute;
+  -webkit-transition: all 0.5s ease;
 }
 
 .image-item img {
