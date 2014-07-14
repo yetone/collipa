@@ -19,27 +19,49 @@ Array.prototype.maxIndex = function() {
   return this.indexOf(max);
 };
 
-function waterfall() {
-  var $imgs = $('.image-item'),
-      hl = [0, 0, 0],
-      marginTop = 20,
-      marginLeft = 20;
+function waterfall(opt, undefined) {
+  opt = $.extend({
+    selector: '.image-item',
+    wrapper: '.image-list',
+  }, opt);
+  var $imgs = $(opt.selector),
+      $wrapper = $(opt.wrapper),
+      hl = [];
+  if (!opt.width) {
+    opt.width = $imgs.width();
+  }
+  if (opt.marginLeft === undefined) {
+    opt.marginLeft = $imgs.css('margin-left');
+  }
+  if (opt.marginTop === undefined) {
+    opt.marginTop = $imgs.css('margin-top');
+  }
+  if (!opt.count) {
+    opt.count = Math.floor($wrapper.width() / (opt.width + opt.marginLeft));
+  }
+  for (var i = 0; i < opt.count; i++) {
+    hl.push(0);
+  }
+
   $imgs.each(function(i, e) {
     var $img = $(e),
-        width = $img.width(),
-        height = width / $img.data('width') * $img.data('height'),
+        height = opt.width / $img.data('width') * $img.data('height'),
         min = hl.min(),
         minIndex = hl.minIndex();
     $img.css({
-      left: minIndex * (marginLeft + width),
-      top: min + marginTop
+      left: minIndex * (opt.marginLeft + opt.width),
+      top: min + opt.marginTop,
+      display: 'block'
     });
-    hl[minIndex] = min + height + marginTop;
-    console.log(hl);
+    hl[minIndex] = min + height + opt.marginTop;
+    $wrapper.height(hl.max() + 20);
   });
-  $('.image-list').height(hl.max() + 20);
 }
 
 $(function() {
-  waterfall();
+  waterfall({
+    marginTop: 20,
+    marginLeft: 20,
+    count: 3
+  });
 });
