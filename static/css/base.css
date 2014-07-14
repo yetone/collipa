@@ -31,7 +31,7 @@ body {
   padding: 0;
   font-size: 13px;
   line-height: 18px;
-  font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei",微软雅黑;
+  font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei";
   background: url(/static/public/background/bg.png);
   background-color: rgb(228, 228, 228);
   color: #333333;
@@ -1368,7 +1368,7 @@ a.avatar {
   margin-left: 3px;
 }
 span.count {
-  font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei",微软雅黑 !important;
+  font-family: 'Ubuntu',"Helvetica Neue",Helvetica,Arial,sans-serif,"Microsoft YaHei" !important;
 }
 .footer {
   padding: 10px;
@@ -1952,6 +1952,49 @@ ul.users li a div.username span {
 }
 .tweet-layout-header {
   padding: 10px 16px;
+}
+
+.album-list {
+  padding-bottom: 30px;
+}
+
+.album {
+  float: left;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.album-cover {
+}
+
+.album-cover img {
+  width: 128px;
+  height: 128px;
+}
+
+.album-name {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.image-list-wrap {
+  background-color: #fff;
+}
+
+.image-list {
+  position: relative;
+  margin-left: 10px;
+}
+
+.image-item {
+  position: absolute;
+  -webkit-transition: all 0.5s ease;
+}
+
+.image-item img {
+  width: 220px;
 }
 
 @media screen and (max-width: 720px) {

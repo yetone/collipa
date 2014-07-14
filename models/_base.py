@@ -18,7 +18,7 @@ class SessionMixin(object):
     def save(self):
         try:
             orm.commit()
-        except:
+        except Exception:
             pass
         return self
 
@@ -26,7 +26,7 @@ class SessionMixin(object):
         self.delete()
         try:
             orm.commit()
-        except:
+        except Exception:
             pass
         return self
 

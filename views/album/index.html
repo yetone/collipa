@@ -1,0 +1,12 @@
+{% extends "../layout.html" %}
+
+{% block subtitle %}专辑 - {{ album.name }}{% end %}
+{% block script %}
+<script type="text/javascript" src="{{ static_url('js/album.js') }}"></script>
+{% end %}
+{% block body %}
+    <div class="image-list-wrap">
+      {% set images = album.get_images(page=page) %}
+      {% module Template('modules/image_list.html', images=images) %}
+    </div>
+{% end %}

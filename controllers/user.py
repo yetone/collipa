@@ -103,6 +103,10 @@ class HomeHandler(BaseHandler):
             items = user.get_followers(page=page)
             item_count = orm.count(user.get_followers(page=None))
             url += '/followers'
+        elif view == 'albums':
+            items = user.get_albums(page=page)
+            item_count = orm.count(user.get_albums(page=None))
+            url += '/albums'
         page_count = (item_count + config.paged - 1) // config.paged
         return self.render("user/index.html", user=user, items=items,
                            view=view, category=category, page=page,
