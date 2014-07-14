@@ -831,6 +831,17 @@ $(function() {
     });
   });
 
+  $D.on('click', '.add-sth', function(e) {
+    e.preventDefault();
+    var $this = $(this),
+        $menu = $this.next('.min-menu');
+    if ($menu.hasClass('dn')) {
+      $menu.removeClass('dn');
+    } else {
+      $menu.addClass('dn');
+    }
+  });
+
   function Notifier() {
   }
   Notifier.prototype.notify = function(title, options) {

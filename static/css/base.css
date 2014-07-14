@@ -271,15 +271,19 @@ a.node:hover {
   right: 20px;
   bottom: 10px;
 }
-#head .menu li {
+#head .menu .menu-bar {
   float: left;
   margin-left: 20px;
   position: relative;
+  font-size: 18px;
+  color: rgb(236, 236, 236);
+  padding: 5px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.65);
 }
-#head .menu li span {
+#head .menu .menu-bar .count {
   display: inline-block;
   padding: 0 4px;
-  border-radius: 16px;
+  border-radius: 50%;
   background-color: #C3412F;
   height: 16px;
   font-size: 10px;
@@ -287,17 +291,31 @@ a.node:hover {
   line-height: 16px;
   text-align: center;
   position: absolute;
-  top: -6px;
-  right: -3px;
+  top: -2px;
+  right: -4px;
   color: white;
   text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
   box-shadow: 1px 1px 1px rgba(0,0,0,0.15);
 }
-#head .menu a {
-  font-size: 18px;
-  color: rgb(236, 236, 236);
-  padding: 5px;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.65);
+
+.min-menu {
+  position: absolute;
+  top: 30px;
+  background-color: #fff;
+  z-index: 10005;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.min-menu-bar:link,
+.min-menu-bar:visited {
+  display: block;
+  padding: 0px 20px;
+  line-height: 32px;
+  color: rgb(104, 104, 104) !important;
+}
+
+.min-menu-bar:hover {
+  color: #333 !important;
 }
 
 /**
@@ -1996,6 +2014,14 @@ ul.users li a div.username span {
 
 .image-item img {
   width: 220px;
+}
+
+.add-sth {
+  position: relative;
+}
+
+.min-menu {
+  position: absolute;
 }
 
 @media screen and (max-width: 720px) {
