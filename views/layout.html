@@ -42,41 +42,41 @@
       <div id="head">
         {% block head %}
         <div class="logo"></div>
-        <ul class="menu">
+        <div class="menu">
           {% if current_user %}
           {% if current_user.is_admin %}
-          <li class="add-node"><a title="添加节点" class="icon-tag" href="/node/create{% block node_id_param %}{% end %}"></a></li>
+          <a title="添加节点" class="menu-bar add-node icon-tag" href="/node/create{% block node_id_param %}{% end %}"></a>
           {% end %}
-          <li class="add-topic"><a title="添加主题" class="icon-plus" href="/topic/create{% block node_id_param %}{% end %}"></a></li>
-          <li class="notification">
-            {% if current_user.unread_notification_count > 0 %}
-            <a title="提醒" class="icon-bell-alt" href="/notifications?category=unread">
-              <span class="count">
-                {{ current_user.unread_notification_count }}
-              </span>
-            </a>
-            {% else %}
-            <a title="提醒" class="icon-bell-alt" href="/notifications"></a>
-            {% end %}
-          </li>
-          <li class="message">
-            {% if current_user.unread_message_box_count > 0 %}
-            <a title="私信" class="icon-envelope-alt" href="/messages?category=unread">
-              <span class="count">
-                {{ current_user.unread_message_box_count }}
-              </span>
-            </a>
-            {% else %}
-            <a title="私信" class="icon-envelope-alt" href="/messages"></a>
-            {% end %}
-          </li>
-          <li class="setting"><a title="设置" class="icon-cog" href="/account/setting"></a></li>
-          <li class="home"><a title="个人主页" class="icon-user" href="{{ current_user.url }}"></a></li>
+          <a title="添加" class="menu-bar add-sth icon-plus" href="javascript;"></a>
+          <div class="min-menu dn">
+            <a class="min-menu-bar min-add-topic" title="添加主题" href="/topic/create{% block node_id_param %}{% end %}">添加主题</a>
+            <a class="min-menu-bar min-add-image" title="添加图片" href="javascript:;">添加图片</a>
+          </div>
+          {% if current_user.unread_notification_count > 0 %}
+          <a title="提醒" class="menu-bar notification icon-bell-alt" href="/notifications?category=unread">
+            <span class="count">
+              {{ current_user.unread_notification_count }}
+            </span>
+          </a>
           {% else %}
-          <li class="signin"><a title="登录" class="icon-signin" href="/signin"></a></li>
-          <li class="signup"><a title="注册" class="icon-plus-sign" href="/signup"></a></li>
+          <a title="提醒" class="menu-bar notification icon-bell-alt" href="/notifications"></a>
           {% end %}
-        </ul>
+          {% if current_user.unread_message_box_count > 0 %}
+          <a title="私信" class="menu-bar message icon-envelope-alt" href="/messages?category=unread">
+            <span class="count">
+              {{ current_user.unread_message_box_count }}
+            </span>
+          </a>
+          {% else %}
+          <a title="私信" class="menu-bar message icon-envelope-alt" href="/messages"></a>
+          {% end %}
+          <a title="设置" class="menu-bar setting icon-cog" href="/account/setting"></a>
+          <a title="个人主页" class="menu-bar home icon-user" href="{{ current_user.url }}"></a>
+          {% else %}
+          <a title="登录" class="menu-bar signin icon-signin" href="/signin"></a>
+          <a title="注册" class="menu-bar signup icon-plus-sign" href="/signup"></a>
+          {% end %}
+        </div>
         {% end %}
       </div>
       <div id="body">
