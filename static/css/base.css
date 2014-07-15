@@ -275,9 +275,13 @@ a.node:hover {
   float: left;
   margin-left: 20px;
   position: relative;
+  padding: 5px;
+}
+.menu-icon:link,
+.menu-icon:visited,
+.menu-icon:hover {
   font-size: 18px;
   color: rgb(236, 236, 236);
-  padding: 5px;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.65);
 }
 #head .menu .menu-bar .count {
@@ -309,6 +313,7 @@ a.node:hover {
 .min-menu-bar:link,
 .min-menu-bar:visited {
   display: block;
+  cursor: pointer;
   padding: 0px 20px;
   line-height: 32px;
   color: rgb(104, 104, 104) !important;
@@ -2018,10 +2023,6 @@ ul.users li a div.username span {
 
 .add-sth {
   position: relative;
-}
-
-.min-menu {
-  position: absolute;
 }
 
 @media screen and (max-width: 720px) {

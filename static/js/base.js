@@ -834,7 +834,7 @@ $(function() {
   $D.on('click', '.add-sth', function(e) {
     e.preventDefault();
     var $this = $(this),
-        $menu = $this.next('.min-menu');
+        $menu = $this.find('.min-menu');
     if ($menu.hasClass('dn')) {
       $menu.removeClass('dn');
     } else {
