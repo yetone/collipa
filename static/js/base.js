@@ -1,3 +1,4 @@
+var G = {};
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
@@ -831,15 +832,24 @@ $(function() {
     });
   });
 
-  $D.on('click', '.add-sth .icon-plus', function(e) {
+  $D.on('mouseover', '.add-sth', function(e) {
+    clearTimeout(G.addMenuTimer);
     e.preventDefault();
     var $this = $(this),
-        $menu = $this.next('.min-menu');
-    if ($menu.hasClass('dn')) {
+        $menu = $this.find('.min-menu');
+    G.addMenuTimer = window.setTimeout(function() {
       $menu.removeClass('dn');
-    } else {
+    }, 100);
+  });
+
+  $D.on('mouseout', '.add-sth', function(e) {
+    clearTimeout(G.addMenuTimer);
+    e.preventDefault();
+    var $this = $(this),
+        $menu = $this.find('.min-menu');
+    G.addMenuTimer = window.setTimeout(function() {
       $menu.addClass('dn');
-    }
+    }, 300);
   });
 
   $('#global-pic-select').imageUpload({
