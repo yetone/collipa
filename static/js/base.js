@@ -831,15 +831,29 @@ $(function() {
     });
   });
 
-  $D.on('click', '.add-sth', function(e) {
+  $D.on('click', '.add-sth .icon-plus', function(e) {
     e.preventDefault();
     var $this = $(this),
-        $menu = $this.find('.min-menu');
+        $menu = $this.next('.min-menu');
     if ($menu.hasClass('dn')) {
       $menu.removeClass('dn');
     } else {
       $menu.addClass('dn');
     }
+  });
+
+  $('#global-pic-select').imageUpload({
+    cbk: function(data) {
+    }
+  });
+
+  $D.on('click', '.min-add-image', function(e) {
+    e.preventDefault();
+    noty({
+      'status': 'info',
+      'message': '还不能用'
+    });
+    //$('#global-pic-select').click();
   });
 
   function Notifier() {

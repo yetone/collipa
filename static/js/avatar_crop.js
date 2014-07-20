@@ -71,7 +71,7 @@ $(function(){
     });
     $this.html('正在保存..');
   });
-  $('#pic-select').fileupload({
+  $('#avatar-select').fileupload({
     url: '/upload/avatar?_xsrf=' + xsrf,
     type: 'POST',
     dataType: 'json',
@@ -117,7 +117,7 @@ $(function(){
   });
   $D.on('click', '#set-avatar-btn', function(e) {
     e.preventDefault();
-    $('#pic-select').click();
+    $('#avatar-select').click();
   });
 });
 

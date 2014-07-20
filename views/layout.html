@@ -121,6 +121,7 @@
     </div>
     <div class="hidden">
       {% block hidden %}{% end %}
+      {% include "./includes/upload_form.html" %}
     </div>
   </body>
   <script src="{{ static_url('js/jquery.js') }}"></script>
@@ -129,6 +130,9 @@
   <script src="{{ static_url('js/ext/jquery.history.js') }}"></script>
   <script src="{{ static_url('js/base.js') }}"></script>
   <script src="{{ static_url('js/websocket.js') }}"></script>
+
+  {% include "./includes/upload_script.html" %}
+
   {% set flash_messages = handler.flash_message() %}
   {% if flash_messages %}
     <script>
