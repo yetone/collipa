@@ -842,6 +842,20 @@ $(function() {
     }
   });
 
+  $('#global-pic-select').imageUpload({
+    cbk: function(data) {
+    }
+  });
+
+  $D.on('click', '.min-add-image', function(e) {
+    e.preventDefault();
+    noty({
+      'status': 'info',
+      'message': '还不能用'
+    });
+    //$('#global-pic-select').click();
+  });
+
   function Notifier() {
   }
   Notifier.prototype.notify = function(title, options) {
