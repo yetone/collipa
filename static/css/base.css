@@ -308,15 +308,30 @@ a.node:hover {
   background-color: #fff;
   z-index: 10005;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  min-width: 100px;
+  margin-left: -43px;
+}
+
+.min-menu:before {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  margin-left: -8px;
+  content:"";
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color: #fff;
 }
 
 .min-menu-bar:link,
 .min-menu-bar:visited {
   display: block;
   cursor: pointer;
-  padding: 0px 20px;
   line-height: 32px;
   color: rgb(104, 104, 104) !important;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .min-menu-bar:hover {

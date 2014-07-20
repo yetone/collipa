@@ -29,20 +29,6 @@
   ue.render("editor");
 </script>
 <script src="{{ static_url('js/ext/chosen/chosen.jquery.min.js') }}"></script>
-
-<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.iframe-transport.js') }}"></script>
-<!-- The basic File Upload plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload.js') }}"></script>
-<!-- The File Upload file processing plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-fp.js') }}"></script>
-<!-- The File Upload user interface plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-ui.js') }}"></script>
-<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
-<!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
-
 <script src="{{ static_url('js/node_create.js') }}"></script>
 {% end %}
 {% block body %}
@@ -66,10 +52,6 @@
   </div>
   <div class="organ-body">
     {{ modules.NodeForm(form=form, button="创建") }}
-    <form style="display: none;" method="post" action="/image/upload" enctype="multipart/form-data" method="post">
-      <input id='pic-select' type="file" name="myimage" data-url="/image/upload" multiple />
-      {{ xsrf_form_html() }}
-    </form>
   </div>
 </div>
 <div class="organ topic-create node-pic-edit nav-shadow">

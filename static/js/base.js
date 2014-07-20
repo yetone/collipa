@@ -831,10 +831,10 @@ $(function() {
     });
   });
 
-  $D.on('click', '.add-sth', function(e) {
+  $D.on('click', '.add-sth .icon-plus', function(e) {
     e.preventDefault();
     var $this = $(this),
-        $menu = $this.find('.min-menu');
+        $menu = $this.next('.min-menu');
     if ($menu.hasClass('dn')) {
       $menu.removeClass('dn');
     } else {
