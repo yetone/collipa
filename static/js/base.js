@@ -485,7 +485,7 @@ $(function() {
     imageUpload: function(opt) {
       opt = $.extend({
         url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
-        paramString: '',
+        paramString: ''
       }, opt);
       this.fileupload({
         url: opt.url + opt.paramString,
@@ -646,7 +646,7 @@ $(function() {
                 success: function(d) {
                   var state = {
                         title: '',
-                        html: $pjaxContent.html(),
+                        html: $pjaxContent.html()
                       },
                       $ploading = $('.ploading');
                   $ploading.animate(
