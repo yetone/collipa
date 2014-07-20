@@ -65,6 +65,7 @@ def main(argv):
 
     for opt, val in opts:
         if opt == "--init":
+            # create database
             try:
                 c.execute("create database %s" % config.db_name)
                 c.execute("grant all privileges on %s.* to '%s'@'localhost' identified by '%s'" % (config.db_name, config.db_user, config.db_pass))
@@ -73,11 +74,13 @@ def main(argv):
                 c.close()
                 m.commit()
                 m.close()
-            except:
+            except Exception:
                 pass
+
+            # create tables
             try:
                 merge()
-            except:
+            except Exception:
                 pass
             from models import db
             db.generate_mapping(create_tables=True)
