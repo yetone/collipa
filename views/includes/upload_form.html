@@ -1,0 +1,8 @@
+<form style="display: none;" method="post" action="/image/upload" enctype="multipart/form-data" method="post">
+  <input id='pic-select' type="file" name="myimage" data-url="/image/upload" multiple />
+  {{ xsrf_form_html() }}
+</form>
+<form style="display: none;" method="post" action="/image/upload" enctype="multipart/form-data" method="post">
+  <input id='global-pic-select' type="file" name="myimage" data-url="/image/upload" multiple />
+  {{ xsrf_form_html() }}
+</form>
