@@ -7,7 +7,7 @@ import os
 import sys
 import logging
 import tempfile
-import Image as Img
+from PIL import Image as Img
 from pony import orm
 from ._base import BaseHandler
 import tornado.web
