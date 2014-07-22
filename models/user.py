@@ -565,6 +565,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
             count = config.paged
         all_ids = orm.select(rv.id for rv in m.Tweet if
                              rv.user_id in user_ids).order_by(lambda rv: orm.desc(rv.created_at))
+        i = -1
         for i, _id in enumerate(all_ids):
             if i == 1000:
                 return []
