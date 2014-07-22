@@ -52,6 +52,7 @@ routers = [
 
     (r"/image/(\d+)[/]*", image.HomeHandler),
     (r"/image/upload[/]*", image.UploadHandler),
+    (r"/image/list[/]*", image.ListHandler),
     (r"/upload/avatar[/]*", user.AvatarUploadHandler),
     (r"/upload/(\w+)[/]*", upload.UploadHandler),
     (r"/account/setting/avatar/crop[/]*", user.AvatarCropHandler),
