@@ -112,12 +112,23 @@ var love = function() {
   return "You are my love.";
 };
 
-var get_cookie = function(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-    return r?r[1]:undefined;
-  },
+function get_cookie(name) {
+  var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+  return r?r[1]:undefined;
+}
 
-  mousePosition = function(e) {
+$.ajaxPrefilter(function(options, originalOptions, xhr) {
+  if (options.type !== 'GET' || originalOptions.type !== 'GET') {
+    var xsrf = get_cookie('_xsrf');
+    if (options.url.indexOf('?') >= 0) {
+      options.url += '&_xsrf=' + xsrf;
+    } else {
+      options.url += '?_xsrf=' + xsrf;
+    }
+  }
+});
+
+var mousePosition = function(e) {
     if (e.pageX && e.pageY) {
       return {x: e.pageX, y: e.pageY};
     }
