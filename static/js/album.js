@@ -80,8 +80,22 @@ $(function() {
       .append('<div class="confirm"><i title="删除" class="delete icon-remove-sign"></i></div>');
   });
 
+  $D.on('click', function() {
+    var $waitings = $('.image-item.waiting');
+    $waitings.each(function(_, e) {
+      $(e).find('.confirm').remove();
+    });
+    $waitings.removeClass('waiting').removeClass('animate');
+  });
+
+  $D.on('click', '.image-item', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
   $D.on('click', '.image-item .delete', function(e) {
     e.preventDefault();
+    e.stopPropagation();
     var $this = $(this),
         $image = $this.parents('.image-item');
     $.Collipa.request({
