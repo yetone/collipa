@@ -88,7 +88,7 @@ $(function() {
     $waitings.removeClass('waiting').removeClass('animate');
   });
 
-  $D.on('click', '.image-item', function(e) {
+  $D.on('click', '.image-item,#request', function(e) {
     e.preventDefault();
     e.stopPropagation();
   });
