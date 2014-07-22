@@ -77,11 +77,10 @@ class Image(db.Entity, SessionMixin, ModelMixin):
 
         try:
             os.system('rm -f %s%s' % (sys.path[0], self.path))
+            super(Image, self).remove()
             return True
         except:
             return False
-
-        super(Image, self).remove()
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
