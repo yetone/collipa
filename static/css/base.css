@@ -2018,6 +2018,7 @@ ul.users li a div.username span {
 }
 
 .image-list-wrap {
+  overflow: hidden;
   background-color: #fff;
 }
 

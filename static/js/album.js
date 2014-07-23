@@ -120,4 +120,38 @@ $(function() {
       }
     });
   });
+
+  G.imageLoadedId = [];
+  function loadNextPage() {
+    var $images = $('.image-item'),
+        fromId = $images.last().data('id'),
+        albumId = $('.image-list-wrap').data('album-id'),
+        url = '/image/list/?album_id=' + albumId + '&from_id=' + fromId,
+        pageLoading = new G.PageLoading();
+
+    if (pageLoading.isLoading() || typeof fromId !== 'number' || G.imageLoadedId.indexOf(fromId) >= 0) {
+      return;
+    }
+    G.imageLoadedId.push(fromId);
+    pageLoading.start();
+
+
+    $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'JSON',
+      success: function(data) {
+        pageLoading.stop();
+        var source = $('#image-list-template').html(),
+            render = template.compile(source),
+            html = render(data);
+        $('.image-list').append(html);
+        initWaterfall();
+      }
+    })
+  }
+
+  $W.on('scroll', function() {
+    ($(document).scrollTop() + $(window).height() > $(document).height() - G.autoLoadHeight) && loadNextPage();
+  });
 });

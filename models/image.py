@@ -134,6 +134,7 @@ class Image(db.Entity, SessionMixin, ModelMixin):
             'id': self.id,
             'url': self.url,
             'path': self.path,
+            'small_path': self.small_path,
             'width': self.width,
             'height': self.height,
             'author': {
@@ -151,9 +152,13 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         return data
 
     @staticmethod
-    def query_by_album_id(album_id, from_id=None, limit=None):
+    def query_by_album_id(album_id, from_id=None, limit=None, desc=True):
         limit = limit or config.paged
         images = orm.select(rv for rv in Image if rv.album_id == album_id)
+        if desc:
+            images = images.order_by(lambda rv: orm.desc(rv.created_at))
+        else:
+            images = images.order_by(lambda rv: rv.created_at)
         if from_id:
             i = -1
             for i, image in enumerate(images):
