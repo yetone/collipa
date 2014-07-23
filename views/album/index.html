@@ -5,7 +5,7 @@
 <script type="text/javascript" src="{{ static_url('js/album.js') }}"></script>
 {% end %}
 {% block body %}
-    <div class="image-list-wrap">
+    <div class="image-list-wrap"{% if current_user and (current_user.is_admin or current_user.id == album.user_id) %} data-access="1"{% end %}>
       {% set images = album.get_images(page=page) %}
       {% module Template('modules/image_list.html', images=images) %}
     </div>

@@ -73,7 +73,7 @@ $(function() {
     hold_timeout: 1000,
     stop_browser_behavior: {userSelect: ''}
   }).on('hold', '.image-item', function(e) {
-    if (!is_login()) return;
+    if (!$('.image-list-wrap').data('access')) return;
     e.preventDefault();
     var $this = $(this);
     $this.addClass('waiting')
