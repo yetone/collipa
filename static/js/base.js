@@ -1,4 +1,28 @@
-var G = {};
+var G = {
+  autoLoadHeight: 300,
+  PageLoading: (function() {
+    var pageLoading = function() {
+      this.$ploading = $('<span class="ploading style-2"></span>');
+    };
+
+    pageLoading.prototype.start = function() {
+      if (!this.isLoading()) {
+        $('body').append(this.$ploading);
+      }
+    };
+
+    pageLoading.prototype.stop = function() {
+      $('.ploading').remove();
+    };
+
+    pageLoading.prototype.isLoading = function() {
+      return !!$('.ploading').length;
+    };
+
+    return pageLoading;
+  })()
+};
+
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
@@ -111,6 +135,10 @@ var love = function() {
 
   return "You are my love.";
 };
+
+function is_login() {
+  return $('#head .home').length > 0;
+}
 
 function get_cookie(name) {
   var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
