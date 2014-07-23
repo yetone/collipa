@@ -112,6 +112,10 @@ var love = function() {
   return "You are my love.";
 };
 
+function is_login() {
+  return $('#head .home').length > 0;
+}
+
 function get_cookie(name) {
   var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
   return r?r[1]:undefined;
