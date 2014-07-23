@@ -65,6 +65,7 @@ class Album(db.Entity, SessionMixin, ModelMixin):
             return cover_id
 
         cover = _cover_id()
+        # 某一夜，脑残用了 image.id 作为 album 的 cover
         if type(cover) in (int, long):
             image = m.Image.get(id=cover)
             if image:
@@ -77,7 +78,7 @@ class Album(db.Entity, SessionMixin, ModelMixin):
     @cover.setter
     def cover(self, value):
         if isinstance(value, m.Image):
-            value = value.id
+            value = value.path
         mc.set(self.cover_cache_key, value)
 
     def save(self, category='create', user=None):

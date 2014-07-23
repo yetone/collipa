@@ -89,7 +89,8 @@ class Image(db.Entity, SessionMixin, ModelMixin):
             image_id = self.id
             image_path = self.path
             super(Image, self).remove()
-            if album.cover_id == image_id or album.cover_id == image_path:
+            # 某一夜，脑残用了 image.id 作为 album 的 cover
+            if album.cover_id in (image_id, image_path):
                 album.update_cover()
             return True
         except:
