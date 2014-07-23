@@ -7,12 +7,12 @@ import os
 import sys
 import logging
 import tempfile
-import Image as Img
+from PIL import Image as Img
 from pony import orm
 from ._base import BaseHandler
 import tornado.web
 from models import Image, Album
-from helpers import get_year, get_month, require_permission
+from helpers import get_year, get_month, require_permission, force_int
 
 import config
 from .user import EmailMixin
@@ -51,6 +51,23 @@ class HomeHandler(BaseHandler, EmailMixin):
         else:
             result = {'status': 'error', 'message': '你没有权限啊, baby'}
         return self.write(result)
+
+
+class ListHandler(BaseHandler):
+    @orm.db_session
+    def get(self):
+        album_id = self.get_argument('album_id', None)
+        from_id = force_int(self.get_argument('from_id', 0), 0)
+        limit = force_int(self.get_argument('limit', config.paged), config.paged)
+        if not album_id:
+            result = {'status': 'error', 'message': '没有指定专辑'}
+            return self.write(result)
+        images = Image.query_by_album_id(album_id, from_id=from_id, limit=limit + 1)
+        has_more = len(images) > limit
+        object_list = []
+        for image in images:
+            object_list.append(image.to_dict())
+        return self.write({'status': 'success', 'object_list': object_list, 'has_more': has_more})
 
 
 class UploadHandler(BaseHandler):

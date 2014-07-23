@@ -46,16 +46,32 @@ class Album(db.Entity, SessionMixin, ModelMixin):
     def url(self):
         return '/album/%s' % self.id
 
+    def update_cover(self):
+        mc.delete(self.cover_cache_key)
+        return self.cover
+
+    @property
+    def cover_id(self):
+        return mc.get(self.cover_cache_key)
+
     @property
     def cover(self):
         @memcached(self.cover_cache_key)
-        def _cover():
+        def _cover_id():
             images = self.get_images(page=1, limit=1)
-            cover = config.default_album_cover
+            cover_id = config.default_album_cover
             if images:
-                cover = images[0].path
-            return cover
-        cover = _cover()
+                cover_id = images[0].id
+            return cover_id
+
+        cover = _cover_id()
+        # 某一夜，脑残用了 image.id 作为 album 的 cover
+        if type(cover) in (int, long):
+            image = m.Image.get(id=cover)
+            if image:
+                cover = image.path
+            else:
+                cover = config.default_album_cover
         size = (128, 128)
         return helpers.generate_thumb_url(cover, size)
 
@@ -64,7 +80,6 @@ class Album(db.Entity, SessionMixin, ModelMixin):
         if isinstance(value, m.Image):
             value = value.path
         mc.set(self.cover_cache_key, value)
-
 
     def save(self, category='create', user=None):
         now = int(time.time())

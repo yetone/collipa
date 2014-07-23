@@ -8,7 +8,7 @@ import os
 import sys
 import logging
 import tempfile
-import Image
+from PIL import Image
 
 import config
 from ._base import BaseHandler

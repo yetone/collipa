@@ -1,3 +1,4 @@
+var G = {};
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
@@ -111,12 +112,23 @@ var love = function() {
   return "You are my love.";
 };
 
-var get_cookie = function(name) {
-    var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
-    return r?r[1]:undefined;
-  },
+function get_cookie(name) {
+  var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
+  return r?r[1]:undefined;
+}
 
-  mousePosition = function(e) {
+$.ajaxPrefilter(function(options, originalOptions, xhr) {
+  if (options.type !== 'GET' || originalOptions.type !== 'GET') {
+    var xsrf = get_cookie('_xsrf');
+    if (options.url.indexOf('?') >= 0) {
+      options.url += '&_xsrf=' + xsrf;
+    } else {
+      options.url += '?_xsrf=' + xsrf;
+    }
+  }
+});
+
+var mousePosition = function(e) {
     if (e.pageX && e.pageY) {
       return {x: e.pageX, y: e.pageY};
     }
@@ -484,7 +496,7 @@ $(function() {
     imageUpload: function(opt) {
       opt = $.extend({
         url: '/image/upload?_xsrf=' + get_cookie('_xsrf'),
-        paramString: '',
+        paramString: ''
       }, opt);
       this.fileupload({
         url: opt.url + opt.paramString,
@@ -645,7 +657,7 @@ $(function() {
                 success: function(d) {
                   var state = {
                         title: '',
-                        html: $pjaxContent.html(),
+                        html: $pjaxContent.html()
                       },
                       $ploading = $('.ploading');
                   $ploading.animate(
@@ -831,15 +843,38 @@ $(function() {
     });
   });
 
-  $D.on('click', '.add-sth', function(e) {
+  $D.on('mouseover', '.add-sth', function(e) {
+    clearTimeout(G.addMenuTimer);
     e.preventDefault();
     var $this = $(this),
         $menu = $this.find('.min-menu');
-    if ($menu.hasClass('dn')) {
+    G.addMenuTimer = window.setTimeout(function() {
       $menu.removeClass('dn');
-    } else {
+    }, 100);
+  });
+
+  $D.on('mouseout', '.add-sth', function(e) {
+    clearTimeout(G.addMenuTimer);
+    e.preventDefault();
+    var $this = $(this),
+        $menu = $this.find('.min-menu');
+    G.addMenuTimer = window.setTimeout(function() {
       $menu.addClass('dn');
+    }, 300);
+  });
+
+  $('#global-pic-select').imageUpload({
+    cbk: function(data) {
     }
+  });
+
+  $D.on('click', '.min-add-image', function(e) {
+    e.preventDefault();
+    noty({
+      'status': 'info',
+      'message': '还不能用'
+    });
+    //$('#global-pic-select').click();
   });
 
   function Notifier() {

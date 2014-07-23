@@ -12,20 +12,6 @@
 
 {% block script %}
 <script type="text/javascript" src="{{ static_url('js/ext/jcrop/js/jquery.Jcrop.min.js') }}"></script>
-
-<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
-<script src="{{ static_url('js/ext/jfu/js/vendor/jquery.ui.widget.js') }}"></script>
-<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.iframe-transport.js') }}"></script>
-<!-- The basic File Upload plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload.js') }}"></script>
-<!-- The File Upload file processing plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-fp.js') }}"></script>
-<!-- The File Upload user interface plugin -->
-<script src="{{ static_url('js/ext/jfu/js/jquery.fileupload-ui.js') }}"></script>
-<!-- The XDomainRequest Transport is included for cross-domain file deletion for IE8+ -->
-<!--[if gte IE 8]><script src="{{ static_url('js/ext/jfu/js/cors/jquery.xdr-transport.js') }}"></script><![endif]-->
-
 <script src="{{ static_url('js/user_setting.js') }}"></script>
 <script src="{{ static_url('js/avatar_crop.js') }}"></script>
 {% end %}
@@ -100,7 +86,7 @@
     <form class="hidden" method="post" action="/upload/avatar" enctype="multipart/form-data" method="post">
         <div class="form-goup">
           <label for="avatar-upload">头像设置</label>
-          <input id="pic-select" type="file" name="myavatar" />
+          <input id="avatar-select" type="file" name="myavatar" />
           {{ xsrf_form_html() }}
           <button id="upload" class="btn mini-btn">上传</button>
         </div>

@@ -57,6 +57,14 @@ class Image(db.Entity, SessionMixin, ModelMixin):
     def large_path(self):
         return helpers.generate_thumb_url(self.path, (1024, 0))
 
+    # def __setattr__(self, key, value):
+    #     self.__dict__[key] = value
+    #
+    #     if key == 'album_id':
+    #         album = m.Album.get(id=value)
+    #         if album:
+    #             album.cover = self
+
     def save(self, category='create', user=None):
         now = int(time.time())
         self.created_at = now
@@ -77,11 +85,16 @@ class Image(db.Entity, SessionMixin, ModelMixin):
 
         try:
             os.system('rm -f %s%s' % (sys.path[0], self.path))
+            album = self.album
+            image_id = self.id
+            image_path = self.path
+            super(Image, self).remove()
+            # 某一夜，脑残用了 image.id 作为 album 的 cover
+            if album.cover_id in (image_id, image_path):
+                album.update_cover()
             return True
         except:
             return False
-
-        super(Image, self).remove()
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:
@@ -115,3 +128,39 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         size_list = [(128, 128), (256, 256), (512, 512), (1024, 1024), (128, 0), (256, 0), (512, 0), (1024, 0)]
         for size in size_list:
             helpers.crop(self.path, size)
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'url': self.url,
+            'path': self.path,
+            'width': self.width,
+            'height': self.height,
+            'author': {
+                'avatar': self.author.get_avatar(),
+                'nickname': self.author.nickname,
+                'url': self.author.url,
+                'id': self.author.id,
+            },
+            'album': {
+                'name': self.album.name,
+                'cover': self.album.cover,
+                'description': self.album.description,
+            },
+        }
+        return data
+
+    @staticmethod
+    def query_by_album_id(album_id, from_id=None, limit=None):
+        limit = limit or config.paged
+        images = orm.select(rv for rv in Image if rv.album_id == album_id)
+        if from_id:
+            i = -1
+            for i, image in enumerate(images):
+                if i == 1000:
+                    return []
+                if image.id == from_id:
+                    break
+            images = images[i + 1: i + 1 + limit]
+            return images
+        return images

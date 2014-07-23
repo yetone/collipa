@@ -1,6 +1,6 @@
 BeautifulSoup==3.2.1
 MySQL-python==1.2.4
-PIL==1.1.7
+pillow==2.5.1
 argparse==1.2.1
 ipython==1.1.0
 meld3==0.6.10
@@ -10,3 +10,4 @@ redis==2.8.0
 supervisor==3.0
 tornado==3.1.1
 wsgiref==0.1.2
+python-memcached

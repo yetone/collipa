@@ -1,9 +1,11 @@
 {% if images %}
 <div class="image-list clearfix">
   {% for image in images %}
-  <a data-id="{{ image.id }}" data-width="{{ image.width }}" data-height="{{ image.height }}" class="image-item" href="{{ image.url }}">
-    <img src="{{ image.small_path }}">
-  </a>
+  <div class="image-item" data-id="{{ image.id }}">
+    <a class="image-p" data-href="{{ image.url }}" href="javascript:;">
+      <img class="image-src" data-width="{{ image.width }}" data-height="{{ image.height }}" src="{{ image.small_path }}">
+    </a>
+  </div>
   {% end %}
 </div>
 {% else %}

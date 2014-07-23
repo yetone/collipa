@@ -23,6 +23,7 @@ function waterfall(opt, undefined) {
   opt = $.extend({
     selector: '.image-item',
     wrapper: '.image-list',
+    src: '.image-src'
   }, opt);
   var $imgs = $(opt.selector),
       $wrapper = $(opt.wrapper),
@@ -45,7 +46,8 @@ function waterfall(opt, undefined) {
 
   $imgs.each(function(i, e) {
     var $img = $(e),
-        height = opt.width / $img.data('width') * $img.data('height'),
+        $src = $img.find(opt.src),
+        height = opt.width / $src.data('width') * $src.data('height'),
         min = hl.min(),
         minIndex = hl.minIndex();
     $img.css({
@@ -58,10 +60,63 @@ function waterfall(opt, undefined) {
   });
 }
 
-$(function() {
+function initWaterfall() {
   waterfall({
     marginTop: 20,
     marginLeft: 20,
     count: 3
+  });
+}
+$(function() {
+  initWaterfall();
+  $('.image-list').hammer({
+    hold_timeout: 1000,
+    stop_browser_behavior: {userSelect: ''}
+  }).on('hold', '.image-item', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    $this.addClass('waiting')
+      .addClass('animate')
+      .append('<div class="confirm"><i title="删除" class="delete icon-remove-sign"></i></div>');
+  });
+
+  $D.on('click', function() {
+    var $waitings = $('.image-item.waiting');
+    $waitings.each(function(_, e) {
+      $(e).find('.confirm').remove();
+    });
+    $waitings.removeClass('waiting').removeClass('animate');
+  });
+
+  $D.on('click', '.image-item,#request', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  $D.on('click', '.image-item .delete', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var $this = $(this),
+        $image = $this.parents('.image-item');
+    $.Collipa.request({
+      content: '确定删除？',
+      ok: function(obj) {
+        $.ajax({
+          url: $image.find('.image-p').data('href'),
+          type: 'DELETE',
+          success: function(jsn) {
+            noty(jsn);
+            obj.cbk();
+            if (jsn.status === 'success') {
+              console.log(jsn);
+              $image.animate({opacity: 0}, 800, function() {
+                $(this).remove();
+                initWaterfall();
+              });
+            }
+          }
+        });
+      }
+    });
   });
 });

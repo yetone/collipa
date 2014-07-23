@@ -308,15 +308,30 @@ a.node:hover {
   background-color: #fff;
   z-index: 10005;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  min-width: 100px;
+  margin-left: -43px;
+}
+
+.min-menu:before {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  margin-left: -8px;
+  content:"";
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+  border-bottom-color: #fff;
 }
 
 .min-menu-bar:link,
 .min-menu-bar:visited {
   display: block;
   cursor: pointer;
-  padding: 0px 20px;
   line-height: 32px;
   color: rgb(104, 104, 104) !important;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .min-menu-bar:hover {
@@ -2014,6 +2029,7 @@ ul.users li a div.username span {
 .image-item {
   display: none;
   position: absolute;
+  width: 220px;
   -webkit-transition: all 0.5s ease;
 }
 
@@ -2024,6 +2040,163 @@ ul.users li a div.username span {
 .add-sth {
   position: relative;
 }
+
+.image-p {
+  display: block;
+}
+
+.image-item .confirm {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.image-item .confirm i {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.confirm .delete {
+  color: #b86158;
+}
+
+.waiting{
+  -webkit-animation-name: scaleBox;
+  -webkit-animation-duration: 0.4s;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count: 1;
+
+  -moz-animation-name: scaleBox;
+  -moz-animation-duration: 0.4s;
+  -moz-animation-timing-function: ease-in-out;
+  -moz-animation-iteration-count: 1;
+}
+
+.waiting .confirm{
+  -webkit-animation-name:scaleConfirmBox;
+  -webkit-animation-duration:0.2s;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count:1;
+
+  -moz-animation-name:scaleConfirmBox;
+  -moz-animation-duration:0.2s;
+  -moz-animation-timing-function: ease-in-out;
+  -moz-animation-iteration-count:1;
+}
+
+/* keyframes scaleBox for .chat-box animate */
+@-webkit-keyframes scaleBox{
+  0%{
+    -webkit-transform:scale(1);
+  }
+  50%{
+    -webkit-transform:scale(1.1);
+  }
+  100%{
+    -webkit-transform:scale(1);
+  }
+}
+@-moz-keyframes scaleBox{
+  0%{
+    -moz-transform:scale(1);
+  }
+  50%{
+    -moz-transform:scale(1.1);
+  }
+  100%{
+    -moz-transform:scale(1);
+  }
+}
+
+/* keyframes scaleConfirmBox for .confirm animate */
+@-webkit-keyframes scaleConfirmBox{
+  0%{
+    -webkit-transform:scale(0.1);
+    opacity: 0;
+  }
+  100%{
+    -webkit-transform:scale(1);
+    opacity: 1;
+  }
+}
+@-moz-keyframes scaleConfirmBox{
+  0%{
+    -moz-transform:scale(0.1);
+    opacity: 0;
+  }
+  100%{
+    -moz-transform:scale(1);
+    opacity: 1;
+  }
+}
+
+.animate .image-p {
+  -webkit-animation-name:rotateLeft;
+  -webkit-animation-duration:0.25s;
+  -webkit-animation-timing-function: ease-in-out;
+  -webkit-animation-iteration-count:infinite;
+
+  -moz-animation-name:rotateLeft;
+  -moz-animation-duration:0.25s;
+  -moz-animation-timing-function: ease-in-out;
+  -moz-animation-iteration-count:infinite;
+}
+
+@-webkit-keyframes rotateLeft{
+  0%{
+    -webkit-transform:rotate(0);
+    margin-left: -1px;
+    margin-top:-1px;
+  }
+  25%{
+    -webkit-transform:rotate(-0.6deg);
+    margin-left: 0px;
+    margin-top:0px;
+  }
+  50%{
+    -webkit-transform:rotate(0deg);
+    margin-left: 1px;
+    margin-top:1px;
+  }
+  75%{
+    -webkit-transform:rotate(0.6deg);
+    margin-left: 0px;
+    margin-top:0px;
+  }
+  100%{
+    -webkit-transform:rotate(0deg);
+    margin-left: -1px;
+    margin-top:-1px;
+  }
+}
+@-moz-keyframes rotateLeft{
+  0%{
+    -moz-transform:rotate(0);
+    margin-left: -1px;
+    margin-top:-1px;
+  }
+  25%{
+    -moz-transform:rotate(-0.6deg);
+    margin-left: 0px;
+    margin-top:0px;
+  }
+  50%{
+    -moz-transform:rotate(0deg);
+    margin-left: 1px;
+    margin-top:1px;
+  }
+  75%{
+    -moz-transform:rotate(0.6deg);
+    margin-left: 0px;
+    margin-top:0px;
+  }
+  100%{
+    -moz-transform:rotate(0deg);
+    margin-left: -1px;
+    margin-top:-1px;
+  }
+}
+
 
 @media screen and (max-width: 720px) {
   .nav li {
