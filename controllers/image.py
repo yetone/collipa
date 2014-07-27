@@ -141,8 +141,6 @@ class UploadHandler(BaseHandler):
                       width=width,
                       height=height).save()
         image.crop()
-        if album:
-            album.cover = image
         if self.is_ajax:
             return self.write({
                 'id': image.id,
