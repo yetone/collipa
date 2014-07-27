@@ -6,7 +6,7 @@ import config
 from ._base import BaseHandler
 from pony import orm
 
-from models import Album
+from models import Album, User
 from helpers import strip_xss_tags, strip_tags, require_permission
 
 config = config.Config()
@@ -84,3 +84,20 @@ class CreateHandler(BaseHandler):
 
         album = Album(name=name, user_id=user.id).save()
         return self.send_success_result(data=album.to_dict())
+
+
+class ListHandler(BaseHandler):
+    @orm.db_session
+    def get(self):
+        user = self.current_user
+        user_id = self.get_int('user_id', None)
+        if user_id:
+            user = User.get(id=user_id)
+        if not user:
+            return self.send_error_result(msg=u'没有指定用户 id')
+        albums = user.get_albums(page=None)
+        object_list = [album.to_simple_dict() for album in albums]
+        data = {
+            'object_list': object_list,
+        }
+        return self.send_success_result(data=data)

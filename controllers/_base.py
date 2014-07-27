@@ -63,6 +63,8 @@ class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def is_ajax(self):
+        if '_ajax' in self.request.arguments:
+            return True
         if 'X-Requested-With' in self.request.headers and\
                 self.request.headers['X-Requested-With'].lower() ==\
                 'xmlhttprequest':
