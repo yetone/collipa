@@ -57,13 +57,13 @@ class Image(db.Entity, SessionMixin, ModelMixin):
     def large_path(self):
         return helpers.generate_thumb_url(self.path, (1024, 0))
 
-    # def __setattr__(self, key, value):
-    #     self.__dict__[key] = value
-    #
-    #     if key == 'album_id':
-    #         album = m.Album.get(id=value)
-    #         if album:
-    #             album.cover = self
+    def __setattr__(self, key, value):
+        super(Image, self).__setattr__(key, value)
+
+        if key == 'album_id':
+            album = m.Album.get(id=value)
+            if album:
+                album.cover = self
 
     def save(self, category='create', user=None):
         now = int(time.time())
@@ -73,6 +73,9 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         self.author.image_count += 1
         self.album.image_count += 1
         self.author.active = now
+
+        if category == 'create':
+            self.album.cover = self
 
         return super(Image, self).save()
 
