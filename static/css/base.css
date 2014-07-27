@@ -1663,6 +1663,7 @@ ul.users li a div.username span {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
 }
 
+#popout-wrap,
 #request {
   width: 360px;
   text-align: center;
@@ -1671,10 +1672,12 @@ ul.users li a div.username span {
   z-index: 10008;
 }
 
+#popout-wrap .popout-content,
 #request .request-content {
   padding: 30px 20px 0 20px;
 }
 
+#popout-wrap .popout-action,
 #request .request-action {
   padding: 30px 20px;
 }
@@ -1748,6 +1751,7 @@ ul.users li a div.username span {
 #request .request-ok {
 }
 
+#popout-wrap .popout-cancel,
 #request .request-cancel {
   margin-left: 70px;
 }
