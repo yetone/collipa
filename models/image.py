@@ -64,6 +64,7 @@ class Image(db.Entity, SessionMixin, ModelMixin):
             album = m.Album.get(id=value)
             if album:
                 album.cover = self
+                self.created_at = int(time.time())
 
     def save(self, category='create', user=None):
         now = int(time.time())
@@ -132,7 +133,7 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         for size in size_list:
             helpers.crop(self.path, size)
 
-    def to_dict(self):
+    def to_simple_dict(self):
         data = {
             'id': self.id,
             'url': self.url,
@@ -140,18 +141,17 @@ class Image(db.Entity, SessionMixin, ModelMixin):
             'small_path': self.small_path,
             'width': self.width,
             'height': self.height,
-            'author': {
-                'avatar': self.author.get_avatar(),
-                'nickname': self.author.nickname,
-                'url': self.author.url,
-                'id': self.author.id,
-            },
-            'album': {
-                'name': self.album.name,
-                'cover': self.album.cover,
-                'description': self.album.description,
-            },
+            }
+        return data
+
+    def to_dict(self):
+        data = {
+            'created': self.created,
+            'author': self.author.to_simple_dict(),
+            'album': self.album.to_simple_dict(),
         }
+
+        data.update(self.to_simple_dict())
         return data
 
     @staticmethod

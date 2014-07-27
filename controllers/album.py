@@ -6,8 +6,8 @@ import config
 from ._base import BaseHandler
 from pony import orm
 
-from models import Album
-from helpers import strip_xss_tags, strip_tags
+from models import Album, User
+from helpers import strip_xss_tags, strip_tags, require_permission
 
 config = config.Config()
 
@@ -68,38 +68,36 @@ class HomeHandler(BaseHandler):
 
 class CreateHandler(BaseHandler):
     @orm.db_session
+    @require_permission
     @tornado.web.authenticated
     def post(self):
         if not self.has_permission:
             return
         user = self.current_user
-        content = self.get_argument('content', None)
-        if content and len(strip_tags(content)) >= 3:
-            tweet = Tweet(content=strip_xss_tags(content), user_id=user.id).save()
-            tweet.put_notifier()
-            result = {
-                'status': 'success',
-                'message': '推文创建成功',
-                'content': tweet.content,
-                'name': tweet.author.name,
-                'nickname': tweet.author.nickname,
-                'author_avatar': tweet.author.get_avatar(size=48),
-                'author_url': tweet.author.url,
-                'author_name': tweet.author.name,
-                'author_nickname': tweet.author.nickname,
-                'tweet_url': tweet.url,
-                'created': tweet.created,
-                'id': tweet.id
-            }
-            if self.is_ajax:
-                return self.write(result)
-            self.flash_message(**result)
-            return self.redirect('/timeline')
-        result = {
-            'status': 'error',
-            'message': '推文内容至少 3 字符'
+        name = self.get_argument('name', None)
+        name = strip_tags(name)
+        if not name:
+            return self.send_error_result(msg=u'没有填写专辑名')
+
+        if len(name) >= 10:
+            return self.send_error_result(msg=u'专辑名不能超过 10 个字符')
+
+        album = Album(name=name, user_id=user.id).save()
+        return self.send_success_result(data=album.to_dict())
+
+
+class ListHandler(BaseHandler):
+    @orm.db_session
+    def get(self):
+        user = self.current_user
+        user_id = self.get_int('user_id', None)
+        if user_id:
+            user = User.get(id=user_id)
+        if not user:
+            return self.send_error_result(msg=u'没有指定用户 id')
+        albums = user.get_albums(page=None)
+        object_list = [album.to_simple_dict() for album in albums]
+        data = {
+            'object_list': object_list,
         }
-        if self.is_ajax:
-            return self.write(result)
-        self.flash_message(**result)
-        return self.redirect('/timeline')
+        return self.send_success_result(data=data)

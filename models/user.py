@@ -70,26 +70,48 @@ class User(db.Entity, SessionMixin, ModelMixin):
     head_img = orm.Optional(unicode, 400)
     background_img = orm.Optional(unicode, 400)
 
-    @staticmethod
-    def init(**kargs):
-        token = User.create_token(16)
-        kargs.update(dict(token=token))
+    @classmethod
+    def init(cls, **kwargs):
+        token = cls.create_token(16)
+        kwargs.update(dict(token=token))
 
-        if 'name' in kargs:
-            name = kargs.pop('name')
-            kargs.update(dict(name=name.lower(),
-                              urlname=name.lower(),
-                              nickname=name))
+        if 'name' in kwargs:
+            name = kwargs.pop('name')
+            kwargs.update(dict(name=name.lower(),
+                               urlname=name.lower(),
+                               nickname=name))
 
-        if 'email' in kargs:
-            email = kargs.pop('email')
-            kargs.update(dict(email=email.lower()))
+        if 'email' in kwargs:
+            email = kwargs.pop('email')
+            kwargs.update(dict(email=email.lower()))
 
-        if 'password' in kargs:
-            password = kargs.pop('password')
-            kargs.update(dict(password=User.create_password(password)))
+        if 'password' in kwargs:
+            password = kwargs.pop('password')
+            kwargs.update(dict(password=User.create_password(password)))
 
-        return User(**kargs)
+        return cls(**kwargs)
+
+    def to_simple_dict(self):
+        data = {
+            'id': self.id,
+            'url': self.url,
+            'name': self.nickname,
+            'avatar': self.get_avatar(),
+            }
+
+        return data
+
+    def to_dict(self):
+        data = {
+            'created': self.created,
+            'topic_count': self.topic_count,
+            'reply_count': self.reply_count,
+            'tweet_count': self.tweet_count,
+            'album_count': self.album_count,
+            'image_count': self.image_count,
+        }
+        data.update(self.to_simple_dict())
+        return data
 
     def __str__(self):
         return self.nickname or self.name
