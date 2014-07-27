@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from HTMLParser import HTMLParser
+from functools import wraps
 import os
 import re
 import time
@@ -30,6 +31,7 @@ class UsernameParser(HTMLParser):
 
 
 def require_admin(func):
+    @wraps(func)
     def wrap(self, *args, **kwargs):
         if self.current_user and self.current_user.is_admin:
             return func(self, *args, **kwargs)
@@ -39,11 +41,15 @@ def require_admin(func):
 
 
 def require_permission(func):
+    @wraps(func)
     def wrap(self, *args, **kwargs):
         if self.current_user and (self.current_user.role != 'unverify' or
                                   self.current_user.is_admin):
             return func(self, *args, **kwargs)
-        if self.current_user.role == 'unverify':
+        if not self.current_user:
+            result = {"status": "error",
+                      "message": "请登陆"}
+        elif self.current_user.role == 'unverify':
             result = {"status": "error",
                       "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
         else:
@@ -209,7 +215,7 @@ def get_img_list(text):
 def force_int(value, default=1):
     try:
         return int(value)
-    except:
+    except TypeError:
         return default
 
 

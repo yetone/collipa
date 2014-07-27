@@ -32,6 +32,26 @@ class Album(db.Entity, SessionMixin, ModelMixin):
     updated_at = orm.Required(int, default=int(time.time()))
     active = orm.Required(int, default=int(time.time()))
 
+    def to_simple_dict(self):
+        data = {
+            'id': self.id,
+            'url': self.url,
+            'name': self.name,
+            'cover': self.cover,
+            'description': self.description,
+        }
+
+        return data
+
+    def to_dict(self):
+        data = {
+            'created': self.created,
+            'author': self.author.to_simple_dict(),
+        }
+        data.update(self.to_simple_dict())
+
+        return data
+
     def __str__(self):
         return self.id
 
@@ -81,7 +101,7 @@ class Album(db.Entity, SessionMixin, ModelMixin):
             value = value.path
         mc.set(self.cover_cache_key, value)
 
-    def save(self, category='create', user=None):
+    def save(self, category='create'):
         now = int(time.time())
         if category == 'create':
             self.created_at = now

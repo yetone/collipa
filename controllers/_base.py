@@ -147,3 +147,16 @@ class BaseHandler(tornado.web.RequestHandler):
     @property
     def page(self):
         return force_int(self.get_argument('page', 1))
+
+    def send_error_result(self, msg, redirect_url=None):
+        result = {'status': 'error', 'message': msg}
+        return self.send_result(result, redirect_url)
+
+    def send_success_result(self, msg=u'操作成功', data=None, redirect_url=None):
+        result = {'status': 'success', 'message': msg}
+        if data:
+            result.update({'data': data})
+        return self.send_result(result, redirect_url)
+
+    def get_int(self, name, default=None):
+        return force_int(self.get_argument(name, default), default)
