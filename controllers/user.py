@@ -431,10 +431,6 @@ class AvatarDelHandler(BaseHandler):
             except:
                 pass
             user.avatar = None
-            try:
-                orm.commit()
-            except:
-                pass
         self.redirect(self.next_url)
 
 
