@@ -170,9 +170,9 @@ class EditHandler(BaseHandler):
         else:
             return self.redirect_next_url()
         choices = Node.get_node_choices()
-        args = {'node_name': [selected], 'title': [topic.title], 'content':
-                [topic.content]}
-        form = TopicForm.init(choices=choices, selected=selected, args=args)
+        kwargs = {'node_name': [selected], 'title': [topic.title],
+                  'content': [topic.content]}
+        form = TopicForm.init(choices=choices, selected=selected, **kwargs)
         return self.render("topic/create.html", form=form, node=topic.node)
 
     @orm.db_session

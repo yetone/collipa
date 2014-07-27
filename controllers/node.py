@@ -128,10 +128,9 @@ class EditHandler(BaseHandler):
             selected = [n.name for n in node.parent_nodes]
         else:
             return self.redirect_next_url()
-        args = {'name': [node.name], 'urlname': [node.urlname],
-                'description': [node.description], 'style': [node.style]}
-        form = NodeEditForm.init(Node.get_node_choices(), selected, args=args,
-                                 node=node)
+        kwargs = {'name': [node.name], 'urlname': [node.urlname],
+                  'description': [node.description], 'style': [node.style]}
+        form = NodeEditForm.init(Node.get_node_choices(), selected, node=node, **kwargs)
         return self.render("node/edit.html", form=form, node=node)
 
     @orm.db_session
@@ -142,16 +141,15 @@ class EditHandler(BaseHandler):
         if not node:
             return self.redirect_next_url()
         user = self.current_user
-        args = self.request.arguments
+        kwargs = self.request.arguments
         try:
-            selected = args.get('parent_name')
+            selected = kwargs.get('parent_name')
             print(selected)
         except:
             selected = [n.name for n in node.parent_nodes]
-            args = {'name': [node.name], 'urlname': [node.urlname],
-                    'description': [node.description], 'style': [node.style]}
-        form = NodeEditForm.init(Node.get_node_choices(), selected, args=args,
-                                 node=node)
+            kwargs = {'name': [node.name], 'urlname': [node.urlname],
+                      'description': [node.description], 'style': [node.style]}
+        form = NodeEditForm.init(Node.get_node_choices(), selected, node=node, **kwargs)
         if form.validate():
             node = form.save(user, node=node)
             result = {'status': 'success', 'message': '节点修改成功',

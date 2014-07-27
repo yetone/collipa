@@ -120,7 +120,7 @@ class SigninForm(BaseForm):
 
 class SettingForm(BaseForm):
     @classmethod
-    def init(cls, user=None, args=None):
+    def init(cls, user=None, **kwargs):
         cls.nickname = TextField(
             '昵称', [
                 validators.Required(),
@@ -165,31 +165,22 @@ class SettingForm(BaseForm):
             ],
         )
 
-        if not args:
-            if user:
-                args = {
-                    'nickname': [user.nickname],
-                    'urlname': [user.urlname],
-                    'address': [user.address],
-                    'website': [user.website],
-                    'description': [user.description],
-                    'style': [user.style],
-                    'site_style': [user.site_style]
-                }
-                sf = cls(args)
-                sf.edit_nickname_count = user.edit_nickname_count
-                sf.edit_urlname_count = user.edit_urlname_count
-                sf.user = user
-            else:
-                sf = cls()
-        else:
-            if user:
-                sf = cls(args)
-                sf.edit_nickname_count = user.edit_nickname_count
-                sf.edit_urlname_count = user.edit_urlname_count
-                sf.user = user
-            else:
-                sf = cls(args)
+        if not kwargs and user:
+            kwargs = {
+                'nickname': [user.nickname],
+                'urlname': [user.urlname],
+                'address': [user.address],
+                'website': [user.website],
+                'description': [user.description],
+                'style': [user.style],
+                'site_style': [user.site_style]
+            }
+
+        sf = cls(kwargs)
+        if user:
+            sf.edit_nickname_count = user.edit_nickname_count
+            sf.edit_urlname_count = user.edit_urlname_count
+            sf.user = user
         return sf
 
     def validate_nickname(self, field):

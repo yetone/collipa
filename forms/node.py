@@ -12,20 +12,20 @@ config = config.Config()
 
 
 class NodeForm(BaseForm):
-    @staticmethod
-    def init(choices, selected):
-        NodeForm.parent_name = SelectMultipleField(
+    @classmethod
+    def init(cls, choices, selected):
+        cls.parent_name = SelectMultipleField(
             '父节点', [
             ],
             choices=choices,
         )
-        NodeForm.name = TextField(
+        cls.name = TextField(
             '节点名', [
                 validators.Required(),
                 validators.Length(min=1, max=16),
             ],
         )
-        NodeForm.urlname = TextField(
+        cls.urlname = TextField(
             '节点地址', [
                 validators.Required(),
                 validators.Length(min=2, max=32),
@@ -36,13 +36,13 @@ class NodeForm(BaseForm):
             ],
             description='节点地址只能包含英文字母和数字'
         )
-        NodeForm.description = TextAreaField(
+        cls.description = TextAreaField(
             '描述', [
                 validators.Length(min=0, max=3000),
             ],
             description='节点描述'
         )
-        nf = NodeForm()
+        nf = cls()
         nf.parent_name.data = selected
         return nf
 
@@ -55,11 +55,6 @@ class NodeForm(BaseForm):
         data = field.data.lower()
         if Node.get(urlname=data):
             raise ValidationError('此节点地址已存在')
-
-    def validate_description(self, field):
-        data = field.data
-        if not data:
-            data = ''
 
     def save(self, user, role=None):
         data = self.data
@@ -82,20 +77,20 @@ class NodeForm(BaseForm):
 
 
 class NodeEditForm(BaseForm):
-    @staticmethod
-    def init(choices, selected, args=None, node=None):
-        NodeEditForm.parent_name = SelectMultipleField(
+    @classmethod
+    def init(cls, choices, selected, node=None, **kwargs):
+        cls.parent_name = SelectMultipleField(
             '父节点', [
             ],
             choices=choices,
         )
-        NodeEditForm.name = TextField(
+        cls.name = TextField(
             '节点名', [
                 validators.Required(),
                 validators.Length(min=1, max=16),
             ],
         )
-        NodeEditForm.urlname = TextField(
+        cls.urlname = TextField(
             '节点地址', [
                 validators.Required(),
                 validators.Length(min=2, max=32),
@@ -106,22 +101,19 @@ class NodeEditForm(BaseForm):
             ],
             description='节点地址只能包含英文字母和数字'
         )
-        NodeEditForm.description = TextAreaField(
+        cls.description = TextAreaField(
             '描述', [
                 validators.Length(min=0, max=3000),
             ],
             description='节点描述'
         )
-        NodeEditForm.style = TextAreaField(
+        cls.style = TextAreaField(
             '样式', [
                 validators.Length(min=0, max=1000),
             ],
             description='节点样式'
         )
-        if args:
-            nf = NodeEditForm(args)
-        else:
-            nf = NodeEditForm()
+        nf = cls(kwargs)
         nf.parent_name.data = selected
         nf.node = node
         return nf

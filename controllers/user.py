@@ -412,7 +412,7 @@ class SettingHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         user = self.current_user
-        form = SettingForm.init(user=user, args=self.request.arguments)
+        form = SettingForm.init(user=user, **self.request.arguments)
         if form.validate():
             user = form.save(user)
             return self.redirect_next_url()

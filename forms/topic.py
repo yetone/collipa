@@ -39,7 +39,7 @@ class TopicForm(BaseForm):
         return result
 
     @classmethod
-    def init(cls, choices, selected, args=None):
+    def init(cls, choices, selected, **kwargs):
         cls.node_name = SelectField(
             '节点', [
                 validators.Required(),
@@ -58,10 +58,7 @@ class TopicForm(BaseForm):
                 validators.Length(min=3, max=1000000),
             ],
         )
-        if args:
-            tf = cls(args)
-        else:
-            tf = cls()
+        tf = cls(kwargs)
         tf.node_name.data = selected
         return tf
 
