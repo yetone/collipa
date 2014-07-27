@@ -161,24 +161,4 @@ class UploadHandler(BaseHandler):
                       width=width,
                       height=height).save()
         image.crop()
-        if self.is_ajax:
-            return self.write({
-                'id': image.id,
-                'path': path,
-                'status': 'success',
-                'message': '上传成功',
-                'author': {
-                    'id': user.id,
-                    'name': user.name,
-                    'nickname': user.nickname,
-                    'avatar': user.avatar,
-                    'url': user.url,
-                    },
-                'album': {
-                    'id': album.id,
-                    'name': album.name,
-                    'description': album.description,
-                    'url': album.url,
-                    },
-                })
-        return
+        return self.send_success_result(msg=u'上传成功', data=image.to_dict())

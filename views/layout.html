@@ -26,6 +26,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}{% block subtitle %}首页{% end %} - {{ handler.settings['site_title'] }}{% end %}</title>
     <link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('js/ext/chosen/chosen.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ static_url('css/base.css') }}" />
     {% if current_user and current_user.site_style %}
     <style type="text/css">
@@ -129,7 +130,9 @@
   <script src="{{ static_url('js/ext/template.min.js') }}"></script>
   <script src="{{ static_url('js/ext/desktop-notify-min.js') }}"></script>
   <script src="{{ static_url('js/ext/jquery.history.js') }}"></script>
+  <script src="{{ static_url('js/ext/chosen/chosen.jquery.min.js') }}"></script>
   <script src="{{ static_url('js/base.js') }}"></script>
+  <script src="{{ static_url('js/all.js') }}"></script>
   <script src="{{ static_url('js/websocket.js') }}"></script>
 
   {% include "./includes/upload_script.html" %}
@@ -143,6 +146,7 @@
       {% end %}
     </script>
   {% end %}
+  {% include "./includes/upload_tpl.html" %}
   <script id="mention-template" type="text/template">
     <ul class="user-list">
       <% for (var i=0, l=user_list.length; i < l; i++) { %>

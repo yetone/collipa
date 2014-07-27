@@ -65,8 +65,8 @@ $(function(){
         $('.avatar-show img').show();
         $('#avatar-status').hide();
 
-        $('.avatar-show img').attr('src', data.avatar);
-        $('#avatar-src').val(data.src);
+        $('.avatar-show img').attr('src', data.data.avatar);
+        $('#avatar-src').val(data.data.src);
       }
     });
     $this.html('正在保存..');
@@ -86,6 +86,7 @@ $(function(){
     done: function(e, result) {
       data = result.result;
       if(data.status == "success"){
+        data = data.data;
         $('.hide-coat').hide();
         $('#avatar-cropper').show();
         var width = parseInt(data.width),
