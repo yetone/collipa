@@ -68,16 +68,117 @@ $(function() {
   });
 
   $('#global-pic-select').imageUpload({
-    cbk: function(data) {
-      var source = $('#upload-tpl').html(),
+    cbk: function(_data) {
+      var $imagePreview = $('.upload-popout .image-preview'),
+          source = $('#upload-tpl').html(),
           render = template.compile(source),
-          html = render(data);
-      $.Collipa.popout({
-        ok: function(opt) {
-          opt.cbk();
-        },
+          width = 0;
+      if ($imagePreview.length) {
+        $imagePreview.append('<img data-id="' + _data.id + '" src="' + _data.path + '">');
+        var $imgs = $imagePreview.find('img');
+        $imgs.each(function(i, e) {
+          var $e = $(e);
+          width += $e.width() + parseInt($e.css('margin-right'));
+          if (i === $imgs.length - 1) {
+            $imagePreview.width(width);
+          }
+        });
+        return;
+      }
+      $.ajax({
+        url: '/album/list',
+        type: 'GET',
+        dataType: 'json',
+        success: function(jsn) {
+          var html;
+          jsn.image = _data;
+          html = render(jsn);
+          $.Collipa.popout({
+            html: html,
+            cbk: function() {
+              initChosen();
+            },
+            ok: function(opt) {
+              var $select = $('.album-select select'),
+                  $images = $('.upload-popout .image-preview img'),
+                  album_id = $select.val(),
+                  image_id;
+              $images.each(function(i, e) {
+                var $e = $(e),
+                    image_id = $e.data('id');
+                $.ajax({
+                  url: '/image/' + image_id,
+                  type: 'PUT',
+                  data: {
+                    album_id: album_id
+                  },
+                  dataType: 'json',
+                  success: function(jsn) {
+                    if (jsn.status !== 'success') {
+                      return noty(jsn);
+                    }
+                    if (i === $images.length - 1) {
+                      opt.cbk();
+                    }
+                  }
+                })
+              });
+            },
+          })
+        }
       })
     }
+  });
+
+  function initChosen() {
+    var $select = $('.album-select select'),
+        id = $select.attr('id');
+    $select.removeClass('chzn-done').removeAttr('id');
+    $('#' + id + '_chzn').remove();
+    $select.chosen({width: '145px', no_results_text: '没有专辑'});
+  }
+
+  function createAlbum() {
+    var $input = $('input.album-create'),
+        $btn = $('.album-create-btn'),
+        name = $input.val();
+    if ($btn.hasClass('sending')) {
+      return;
+    }
+    $btn.addClass('sending').text('正在创建..');
+    $.ajax({
+      url: '/album/create',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        name: name
+      },
+      success: function(jsn) {
+        $btn.removeClass('sending').text('创建');
+        if (jsn.status !== 'success') {
+          return noty(jsn);
+        }
+        $input.val('');
+        var $select = $('.album-select select'),
+            $selected = $select.find('option[selected]'),
+            $opt = $('<option selected value="' + jsn.data.id + '">' + jsn.data.name + '</option>');
+        $selected.removeAttr('selected');
+        $select.prepend($opt);
+        initChosen();
+      }
+    });
+  }
+  $D.on('keyup', 'input.album-create', function(e) {
+    // 回车
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      createAlbum();
+    }
+  });
+
+  $D.on('click', '.album-create-btn', function(e) {
+    e.preventDefault();
+    createAlbum();
   });
 
   $D.on('click', '.min-add-image', function(e) {

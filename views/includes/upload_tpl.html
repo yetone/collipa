@@ -1,4 +1,19 @@
 <script id="upload-tpl" type="text/template">
   <div class="upload-popout">
+    <div class="image-preview-wrap">
+      <div class="image-preview">
+        <img data-id="<%= image.id %>" src="<%= image.path %>">
+      </div>
+    </div>
+    <div class="album-select">
+      <select name="album_id" data-placehold="请选择一个专辑">
+        <% for (var i = 0, l = data.object_list.length; i < l; i++) { %>
+        <% var album = data.object_list[i]; %>
+        <option value="<%= album.id %>"><%= album.name %></option>
+        <% } %>
+      </select>
+      <input class="album-create" placeholder="新建专辑" name="name">
+      <a class="album-create-btn nbtn nbtn-p">创建</a>
+    </div>
   </div>
 </script>

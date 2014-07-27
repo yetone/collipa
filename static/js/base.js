@@ -508,6 +508,7 @@ $(function() {
       $old.remove();
       $('body').append($wrap);
       $(opt.wrap + ' .popout-content').html(opt.html);
+      opt.cbk && opt.cbk();
       $new = $(opt.wrap);
       $new.popslide();
       $D.off('click', opt.wrap + ' .popout-ok');

@@ -1672,6 +1672,29 @@ ul.users li a div.username span {
   z-index: 10008;
 }
 
+#popout-wrap {
+  width: 450px;
+  height: 350px;
+}
+
+.upload-popout .image-preview-wrap {
+  height: 200px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+.image-preview img {
+  max-height: 200px;
+  float: left;
+  margin-right: 10px;
+}
+
+.album-create {
+  width: 100px;
+}
+.album-create-btn {
+  padding: 3px 10px !important;
+}
 #popout-wrap .popout-content,
 #request .request-content {
   padding: 30px 20px 0 20px;

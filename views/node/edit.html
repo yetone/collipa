@@ -2,7 +2,6 @@
 
 {% block subtitle %}节点修改{% end %}
 {% block style %}
-<link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('js/ext/chosen/chosen.css') }}" />
   {% if node.icon_img %}
   <link rel="shortcut icon" href="{{ node.icon }}" type="image/x-icon" />
   {% end %}
@@ -28,7 +27,6 @@
   var ue = new UE.ui.Editor({initialFrameWidth: width * 0.75, initialFrameHeight: 300});
   ue.render("editor");
 </script>
-<script src="{{ static_url('js/ext/chosen/chosen.jquery.min.js') }}"></script>
 <script src="{{ static_url('js/node_create.js') }}"></script>
 {% end %}
 {% block body %}
