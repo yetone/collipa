@@ -42,6 +42,7 @@ $(function() {
       }
       data = result.result;
       if (data.status === "success") {
+        data = data.data;
         if (category === 'icon') {
           $('.ico-preview img').attr('src', data.path);
         } else if (category === 'head') {

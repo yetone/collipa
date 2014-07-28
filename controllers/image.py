@@ -30,6 +30,26 @@ class HomeHandler(BaseHandler, EmailMixin):
         return self.render("image/index.html", image=image)
 
     @orm.db_session
+    @require_permission
+    def put(self, image_id):
+        image_id = int(image_id)
+        image = Image.get(id=image_id)
+        if not image:
+            raise tornado.web.HTTPError(404)
+        album_id = self.get_int('album_id', None)
+        if not album_id:
+            return self.send_error_result(msg=u'没有指定专辑哦')
+        album = Album.get(id=album_id)
+        if not album:
+            return self.send_error_result(msg=u'专辑不存在')
+        if album.user_id != self.current_user.id:
+            return self.send_error_result(msg=u'此专辑不是您的专辑')
+        if image.album_id != album_id:
+            image.album_id = album_id
+        return self.send_success_result()
+
+
+    @orm.db_session
     @tornado.web.authenticated
     def delete(self, image_id):
         image = Image.get(id=image_id)
@@ -141,26 +161,4 @@ class UploadHandler(BaseHandler):
                       width=width,
                       height=height).save()
         image.crop()
-        if album:
-            album.cover = image
-        if self.is_ajax:
-            return self.write({
-                'id': image.id,
-                'path': path,
-                'status': 'success',
-                'message': '上传成功',
-                'author': {
-                    'id': user.id,
-                    'name': user.name,
-                    'nickname': user.nickname,
-                    'avatar': user.avatar,
-                    'url': user.url,
-                    },
-                'album': {
-                    'id': album.id,
-                    'name': album.name,
-                    'description': album.description,
-                    'url': album.url,
-                    },
-                })
-        return
+        return self.send_success_result(msg=u'上传成功', data=image.to_dict())

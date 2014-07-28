@@ -46,6 +46,7 @@ $(function () {
       var $status_msg = $('.status-msg');
       data = result.result;
       if (data.status === "success") {
+        data = data.data;
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-topic-image" src="' + data.path + '" style="max-width:480px;">');
       } else {

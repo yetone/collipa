@@ -1,4 +1,28 @@
-var G = {};
+var G = {
+  autoLoadHeight: 300,
+  PageLoading: (function() {
+    var pageLoading = function() {
+      this.$ploading = $('<span class="ploading style-2"></span>');
+    };
+
+    pageLoading.prototype.start = function() {
+      if (!this.isLoading()) {
+        $('body').append(this.$ploading);
+      }
+    };
+
+    pageLoading.prototype.stop = function() {
+      $('.ploading').remove();
+    };
+
+    pageLoading.prototype.isLoading = function() {
+      return !!$('.ploading').length;
+    };
+
+    return pageLoading;
+  })()
+};
+
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
@@ -111,6 +135,10 @@ var love = function() {
 
   return "You are my love.";
 };
+
+function is_login() {
+  return $('#head .home').length > 0;
+}
 
 function get_cookie(name) {
   var r = document.cookie.match("\\b" + name + "=([^;]*)\\b");
@@ -454,6 +482,57 @@ $(function() {
         $(this).remove();
       });
     },
+    popout: function(opt) {
+      opt = $.extend({
+        wrap: '#popout-wrap'
+      }, opt);
+      var head = opt.wrap[0],
+          tail = opt.wrap.slice(1);
+      switch (head) {
+        case '.':
+          attr = 'class';
+          break;
+        default:
+          attr = 'id';
+      }
+      var oldTop,
+          $new,
+          $old = $(opt.wrap),
+          $wrap = $('<div ' + attr + '="' + tail + '"><div class="popout-content"></div><div class="popout-action"><a href="javascript:;" class="popout-ok nbtn nbtn-p">确定</a><a href="javascript:;" class="popout-cancel nbtn nbtn-d">取消</a></div></div>'),
+          cbk = function() {
+            $.Collipa.removeBg();
+            $(opt.wrap).animate({opacity: 0}, 500, function() {
+              $(this).remove();
+            });
+          };
+      $old.remove();
+      $('body').append($wrap);
+      $(opt.wrap + ' .popout-content').html(opt.html);
+      opt.cbk && opt.cbk();
+      $new = $(opt.wrap);
+      $new.popslide();
+      $D.off('click', opt.wrap + ' .popout-ok');
+      $D.one('click', opt.wrap + ' .popout-ok', function(e) {
+        e.preventDefault();
+        if (opt.ok) {
+          opt.ok({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+      $D.on('click', opt.wrap + ' .popout-cancel', function(e) {
+        e.preventDefault();
+        if (opt.cancel) {
+          opt.cancel({
+            cbk: cbk
+          });
+        } else {
+          cbk();
+        }
+      });
+    },
     request: function(opt) {
       var oldTop,
           $old = $('#request'),
@@ -522,6 +601,7 @@ $(function() {
               data = result.result;
 
           if (data.status === "success") {
+            data = data.data;
             opt.cbk && opt.cbk(data);
           } else {
             $status_msg.removeClass('loader-bar').html('图片上传失败');
@@ -773,7 +853,7 @@ $(function() {
       return self;
     }
   });
-  var shape_resize = function(data) {
+  $.Collipa.shape_resize = function(data) {
     var window_height = $(window).height(),
         window_width = $(window).width(),
         shape_width = $('#shape').width(),
@@ -800,108 +880,4 @@ $(function() {
     }
   };
 
-  $('.body-nav').fix();
-  $('.nav-wrap .nav li').navBottomPosition();
-
-  shape_resize();
-
-  $W.resize(function() {
-    if ($('#head > .menu.fixed').length) {
-      shape_resize(true);
-    } else {
-      shape_resize();
-    }
-  });
-
-  $D.on('click', '.layout-close', function(e) {
-    e.preventDefault();
-    $('#layout').fadeOut();
-    $.Collipa.removeBg();
-  });
-
-  $D.on('keypress', function(e) {
-    if (e.ctrlKey && e.which == 13 || e.which == 10) {
-      $('form button').click();
-    }
-  });
-
-  $D.click(function() {
-    var $d = $('#noty.static');
-    $d.fadeOut(1200);
-  });
-
-  if (notify.permissionLevel() === notify.PERMISSION_DEFAULT) {
-    var html = '<div id="open-notification" class="tc"><a href="#;">点我开启桌面提醒</a></div>';
-    $('body').prepend(html);
-  }
-
-  $D.on('click', '#open-notification a', function() {
-    notify.requestPermission(function(){
-      if (notify.permissionLevel() === notify.PERMISSION_GRANTED) {
-        $('#open-notification').remove();
-      }
-    });
-  });
-
-  $D.on('mouseover', '.add-sth', function(e) {
-    clearTimeout(G.addMenuTimer);
-    e.preventDefault();
-    var $this = $(this),
-        $menu = $this.find('.min-menu');
-    G.addMenuTimer = window.setTimeout(function() {
-      $menu.removeClass('dn');
-    }, 100);
-  });
-
-  $D.on('mouseout', '.add-sth', function(e) {
-    clearTimeout(G.addMenuTimer);
-    e.preventDefault();
-    var $this = $(this),
-        $menu = $this.find('.min-menu');
-    G.addMenuTimer = window.setTimeout(function() {
-      $menu.addClass('dn');
-    }, 300);
-  });
-
-  $('#global-pic-select').imageUpload({
-    cbk: function(data) {
-    }
-  });
-
-  $D.on('click', '.min-add-image', function(e) {
-    e.preventDefault();
-    noty({
-      'status': 'info',
-      'message': '还不能用'
-    });
-    //$('#global-pic-select').click();
-  });
-
-  function Notifier() {
-  }
-  Notifier.prototype.notify = function(title, options) {
-    var n;
-    if (window.webkitNotifications) {
-      n = window.webkitNotifications.createNotification(options.icon, title, options.body);
-      n.onclick = function() {
-        window.focus();
-        this.cancel();
-      };
-      n.show();
-    } else if (navigator.mozNotification) {
-    }
-  };
-  notifier = new Notifier();
-
-  var cslMessage = "             ___    ___                            \n"+
-                   "            /\\_ \\  /\\_ \\    __                     \n"+
-                   "  ___    ___\\//\\ \\ \\//\\ \\  /\\_\\  _____      __     \n"+
-                   " /'___\\ / __`\\\\ \\ \\  \\ \\ \\ \\/\\ \\/\\ '__`\\  /'__`\\   \n"+
-                   "/\\ \\__//\\ \\L\\ \\\\_\\ \\_ \\_\\ \\_\\ \\ \\ \\ \\L\\ \\/\\ \\L\\.\\_ \n"+
-                   "\\ \\____\\ \\____//\\____\\/\\____\\\\ \\_\\ \\ ,__/\\ \\__/.\\_\\\n"+
-                   " \\/____/\\/___/ \\/____/\\/____/ \\/_/\\ \\ \\/  \\/__/\\/_/\n"+
-                   "                                   \\ \\_\\           \n"+
-                   "                                    \\/_/           \n"+
-                   "\n联系方式：i@yetone.net";
-  window.console && console.info && console.info(cslMessage);
 });

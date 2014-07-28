@@ -128,10 +128,9 @@ class EditHandler(BaseHandler):
             selected = [n.name for n in node.parent_nodes]
         else:
             return self.redirect_next_url()
-        args = {'name': [node.name], 'urlname': [node.urlname],
-                'description': [node.description], 'style': [node.style]}
-        form = NodeEditForm.init(Node.get_node_choices(), selected, args=args,
-                                 node=node)
+        kwargs = {'name': [node.name], 'urlname': [node.urlname],
+                  'description': [node.description], 'style': [node.style]}
+        form = NodeEditForm.init(Node.get_node_choices(), selected, node=node, **kwargs)
         return self.render("node/edit.html", form=form, node=node)
 
     @orm.db_session
@@ -142,16 +141,15 @@ class EditHandler(BaseHandler):
         if not node:
             return self.redirect_next_url()
         user = self.current_user
-        args = self.request.arguments
+        kwargs = self.request.arguments
         try:
-            selected = args.get('parent_name')
+            selected = kwargs.get('parent_name')
             print(selected)
         except:
             selected = [n.name for n in node.parent_nodes]
-            args = {'name': [node.name], 'urlname': [node.urlname],
-                    'description': [node.description], 'style': [node.style]}
-        form = NodeEditForm.init(Node.get_node_choices(), selected, args=args,
-                                 node=node)
+            kwargs = {'name': [node.name], 'urlname': [node.urlname],
+                      'description': [node.description], 'style': [node.style]}
+        form = NodeEditForm.init(Node.get_node_choices(), selected, node=node, **kwargs)
         if form.validate():
             node = form.save(user, node=node)
             result = {'status': 'success', 'message': '节点修改成功',
@@ -226,22 +224,21 @@ class ImgUploadHandler(BaseHandler):
                 os.system('mkdir -p %s' % upload_path)
             except:
                 pass
-        timestamp = str(int(time.time())) +\
-            ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                                    6)) + '_' + str(user.id)
+        timestamp = str(int(time.time())) + \
+                    ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
+                                          6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
         image_one.save(tmp_name)
         tmp_file.close()
         path = '/' +\
             '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-        print category
         del_path = None
         if category == 'head':
             del_path = node.head_img
             node.head_img = path
-            result = {'path': path, 'status': "success", 'message':
-                      '节点头部背景设置成功', 'category': 'head'}
+            msg = '节点头部背景设置成功'
+            data = {'path': path, 'category': 'head'}
         elif category == 'icon':
             image_two = image_one.resize((75, 75), Image.ANTIALIAS)
 
@@ -255,29 +252,23 @@ class ImgUploadHandler(BaseHandler):
                 '/'.join(tmp_name2.split('/')[tmp_name2.split('/').index("static"):])
             del_path = node.icon_img
             node.icon_img = path
-            result = {'path': path, 'status': "success", 'message':
-                      '节点图标设置成功', 'category': 'icon'}
+            msg = '节点图标设置成功'
+            data = {'path': path, 'category': 'icon'}
         elif category == 'background':
             del_path = node.background_img
             node.background_img = path
-            result = {'path': path, 'status': "success", 'message':
-                      '节点背景设置成功', 'category': 'background'}
+            msg = '节点背景设置成功'
+            data = {'path': path, 'category': 'background'}
         else:
-            result = {'path': path, 'status': "success", 'message':
-                      '图片上传成功'}
+            msg = '图片上传成功'
+            data = {'path': path}
         if del_path:
             try:
                 os.system('rm -f %s%s' % (sys.path[0],
                                           del_path))
             except:
                 pass
-        try:
-            orm.commit()
-        except:
-            pass
-        if self.is_ajax:
-            return self.write(result)
-        return
+        return self.send_success_result(msg=msg, data=data)
 
 
 class ShowHandler(BaseHandler):

@@ -57,13 +57,20 @@ class Image(db.Entity, SessionMixin, ModelMixin):
     def large_path(self):
         return helpers.generate_thumb_url(self.path, (1024, 0))
 
-    # def __setattr__(self, key, value):
-    #     self.__dict__[key] = value
-    #
-    #     if key == 'album_id':
-    #         album = m.Album.get(id=value)
-    #         if album:
-    #             album.cover = self
+    def __setattr__(self, key, value):
+        old_album_id = self.album_id
+        super(Image, self).__setattr__(key, value)
+
+        if key == 'album_id':
+            album = m.Album.get(id=value)
+            if album:
+                album.cover = self
+                self.created_at = int(time.time())
+                try:
+                    old_album = m.Album.get(id=old_album_id)
+                    old_album.update_cover()
+                except (TypeError, orm.ConstraintError, AttributeError):
+                    pass
 
     def save(self, category='create', user=None):
         now = int(time.time())
@@ -73,6 +80,9 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         self.author.image_count += 1
         self.album.image_count += 1
         self.author.active = now
+
+        if category == 'create':
+            self.album.cover = self
 
         return super(Image, self).save()
 
@@ -129,31 +139,35 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         for size in size_list:
             helpers.crop(self.path, size)
 
-    def to_dict(self):
+    def to_simple_dict(self):
         data = {
             'id': self.id,
             'url': self.url,
             'path': self.path,
+            'small_path': self.small_path,
             'width': self.width,
             'height': self.height,
-            'author': {
-                'avatar': self.author.get_avatar(),
-                'nickname': self.author.nickname,
-                'url': self.author.url,
-                'id': self.author.id,
-            },
-            'album': {
-                'name': self.album.name,
-                'cover': self.album.cover,
-                'description': self.album.description,
-            },
+            }
+        return data
+
+    def to_dict(self):
+        data = {
+            'created': self.created,
+            'author': self.author.to_simple_dict(),
+            'album': self.album.to_simple_dict(),
         }
+
+        data.update(self.to_simple_dict())
         return data
 
     @staticmethod
-    def query_by_album_id(album_id, from_id=None, limit=None):
+    def query_by_album_id(album_id, from_id=None, limit=None, desc=True):
         limit = limit or config.paged
         images = orm.select(rv for rv in Image if rv.album_id == album_id)
+        if desc:
+            images = images.order_by(lambda rv: orm.desc(rv.created_at))
+        else:
+            images = images.order_by(lambda rv: rv.created_at)
         if from_id:
             i = -1
             for i, image in enumerate(images):

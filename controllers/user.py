@@ -412,7 +412,7 @@ class SettingHandler(BaseHandler):
     @tornado.web.authenticated
     def post(self):
         user = self.current_user
-        form = SettingForm.init(user=user, args=self.request.arguments)
+        form = SettingForm.init(user=user, **self.request.arguments)
         if form.validate():
             user = form.save(user)
             return self.redirect_next_url()
@@ -431,10 +431,6 @@ class AvatarDelHandler(BaseHandler):
             except:
                 pass
             user.avatar = None
-            try:
-                orm.commit()
-            except:
-                pass
         self.redirect(self.next_url)
 
 
@@ -510,8 +506,8 @@ class AvatarUploadHandler(BaseHandler):
             src = user.avatar_tmp
         else:
             src = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-        return self.write({"status": "success", "message": "成功上传头像",
-                           "src": src, "height": height, "width": width})
+        data = {"src": src, "height": height, "width": width}
+        return self.send_success_result(msg=u'成功上传头像', data=data)
 
 
 class AvatarCropHandler(BaseHandler):
@@ -562,9 +558,8 @@ class AvatarCropHandler(BaseHandler):
             pass
         src = self.current_user.avatar_tmp
         avatar = self.current_user.get_avatar(size=128)
-        result = {"status": "success", "message": "头像设置成功", "src": src,
-                  "avatar": avatar}
-        self.send_result(result)
+        data = {"src": src, "avatar": avatar}
+        return self.send_success_result(msg=u'头像设置成功', data=data)
 
 
 class BackgroundDelHandler(BaseHandler):

@@ -179,6 +179,7 @@ $(function() {
           data = result.result;
 
       if (data.status === "success") {
+        data = data.data;
         ue.focus(true);
         ue.execCommand('inserthtml', '<img class="upload-reply-image" src="' + data.path + '" style="max-width:480px;">');
       } else {

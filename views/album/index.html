@@ -5,8 +5,20 @@
 <script type="text/javascript" src="{{ static_url('js/album.js') }}"></script>
 {% end %}
 {% block body %}
-    <div class="image-list-wrap">
+    <div class="image-list-wrap" data-album-id="{{ album.id }}"{% if current_user and (current_user.is_admin or current_user.id == album.user_id) %} data-access="1"{% end %}>
       {% set images = album.get_images(page=page) %}
       {% module Template('modules/image_list.html', images=images) %}
     </div>
+{% end %}
+{% block hidden %}
+    <script id="image-list-template" type="text/template">
+      <% for (var i = 0, l = object_list.length; i < l; i++) { %>
+        <% var image = object_list[i] %>
+        <div class="image-item" data-id="<%= image.id %>">
+          <a class="image-p" data-href="<%= image.url %>" href="javascript:;">
+            <img class="image-src" data-width="<%= image.width %>" data-height="<%= image.height %>" src="<%= image.small_path %>">
+          </a>
+        </div>
+      <% } %>
+    </script>
 {% end %}

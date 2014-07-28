@@ -2,7 +2,6 @@
 
 {% block subtitle %}主题创建{% end %}
 {% block style %}
-<link rel="stylesheet" type="text/css" media="screen" href="{{ static_url('js/ext/chosen/chosen.css') }}" />
   {% if node and node.icon_img %}
   <link rel="shortcut icon" href="{{ node.icon }}" type="image/x-icon" />
   {% end %}
@@ -23,7 +22,6 @@
 {% block script %}
 <script src="{{ static_url('js/ext/ueditor/ueditor.config.js') }}"></script>
 <script src="{{ static_url('js/ext/ueditor/ueditor.all.min.js') }}"></script>
-<script src="{{ static_url('js/ext/chosen/chosen.jquery.min.js') }}"></script>
 <script type="text/javascript">
   var width = $('#shape').width();
   var ue = new UE.ui.Editor({initialFrameWidth: width * 0.75, initialFrameHeight: 300});
