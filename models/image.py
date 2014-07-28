@@ -58,7 +58,9 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         return helpers.generate_thumb_url(self.path, (1024, 0))
 
     def __setattr__(self, key, value):
-        old_album_id = self.album_id
+        old_album_id = None
+        if key == 'album_id':
+            old_album_id = self.album_id
         super(Image, self).__setattr__(key, value)
 
         if key == 'album_id':
