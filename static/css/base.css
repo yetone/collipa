@@ -1679,14 +1679,18 @@ ul.users li a div.username span {
 
 .upload-popout .image-preview-wrap {
   height: 200px;
-  overflow-x: scroll;
   overflow-y: hidden;
+  margin-bottom: 10px;
+}
+
+.upload-popout .image-preview {
+  margin: 0 auto;
 }
 
 .image-preview img {
   max-height: 200px;
-  float: left;
   margin-right: 10px;
+  float: left;
 }
 
 .album-create {
