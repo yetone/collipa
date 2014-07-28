@@ -67,6 +67,24 @@ $(function() {
     }, 300);
   });
 
+  function imagePreviewHandler() {
+    var $imagePreviewWrap = $('.upload-popout .image-preview-wrap'),
+        $imagePreview = $imagePreviewWrap.find('.image-preview'),
+        $imgs = $imagePreview.find('img'),
+        width;
+    $imgs.load(function() {
+      width = 0;
+      $imgs.each(function(i, e) {
+        var $e = $(e);
+        width += $e.width() + parseInt($e.css('margin-right'));
+        if (i === $imgs.length - 1) {
+          $imagePreview.width(width + 2);
+        }
+      });
+
+    })
+  }
+
   $('#global-pic-select').imageUpload({
     cbk: function(_data) {
       var $imagePreview = $('.upload-popout .image-preview'),
@@ -75,14 +93,7 @@ $(function() {
           width = 0;
       if ($imagePreview.length) {
         $imagePreview.append('<img data-id="' + _data.id + '" src="' + _data.path + '">');
-        var $imgs = $imagePreview.find('img');
-        $imgs.each(function(i, e) {
-          var $e = $(e);
-          width += $e.width() + parseInt($e.css('margin-right'));
-          if (i === $imgs.length - 1) {
-            $imagePreview.width(width);
-          }
-        });
+        imagePreviewHandler();
         return;
       }
       $.ajax({
@@ -96,6 +107,7 @@ $(function() {
           $.Collipa.popout({
             html: html,
             cbk: function() {
+              imagePreviewHandler();
               initChosen();
             },
             ok: function(opt) {
