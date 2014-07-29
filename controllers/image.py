@@ -144,7 +144,7 @@ class UploadHandler(BaseHandler):
                                   6)) + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
-        image_one.save(tmp_name)
+        image_one.save(tmp_name, image_one.format or 'JPEG')
         tmp_file.close()
         path = '/' +\
             '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
