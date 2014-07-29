@@ -12,7 +12,7 @@ from pony import orm
 from ._base import BaseHandler
 import tornado.web
 from models import Image, Album
-from helpers import require_permission, generate_upload_path, get_relative_path
+from helpers import require_permission, generate_upload_path, get_relative_path, force_int
 
 import config
 from .user import EmailMixin
