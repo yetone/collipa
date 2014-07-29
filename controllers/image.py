@@ -12,7 +12,7 @@ from pony import orm
 from ._base import BaseHandler
 import tornado.web
 from models import Image, Album
-from helpers import get_year, get_month, require_permission, force_int
+from helpers import require_permission, generate_upload_path, get_relative_path, force_int
 
 import config
 from .user import EmailMixin
@@ -111,11 +111,12 @@ class UploadHandler(BaseHandler):
             self.write({"status": "error",
                         "message": "对不起，请上传100M以下的图片"})
             return
+
         tmp_file = tempfile.NamedTemporaryFile(delete=True)
         tmp_file.write(send_file['body'])
         tmp_file.seek(0)
         try:
-            image_one = Img.open(tmp_file.name)
+            img = Img.open(tmp_file.name)
         except IOError, error:
             logging.info(error)
             logging.info('+' * 30 + '\n')
@@ -124,30 +125,23 @@ class UploadHandler(BaseHandler):
             self.write({"status": "error",
                         "message": "对不起，此文件不是图片"})
             return
-        width = image_one.size[0]
-        height = image_one.size[1]
+
+        width = img.size[0]
+        height = img.size[1]
         if width < 80 or height < 80 or width > 30000 or height > 30000:
             tmp_file.close()
             self.write({"status": "error",
                         "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
             return
+
         user = self.current_user
-        upload_path = sys.path[0] + "/static/upload/image/" + get_year() + '/' +\
-            get_month() + "/"
-        if not os.path.exists(upload_path):
-            try:
-                os.system('mkdir -p %s' % upload_path)
-            except:
-                pass
-        timestamp = str(int(time.time())) +\
-            ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                                  6)) + '_' + str(user.id)
-        image_format = send_file['filename'].split('.').pop().lower()
-        tmp_name = upload_path + timestamp + '.' + image_format
-        image_one.save(tmp_name, image_one.format or 'JPEG')
+        suffix = img.format.lower()
+        upload_path = generate_upload_path(suffix=suffix)
+
+        img.save(upload_path, img.format or 'JPEG')
         tmp_file.close()
-        path = '/' +\
-            '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+
+        path = '/%s' % get_relative_path(upload_path).lstrip('/')
         album_id = self.get_argument('album_id', '')
         if not album_id:
             album = user.default_album
