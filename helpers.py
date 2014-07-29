@@ -20,7 +20,7 @@ from libs import xss
 
 
 config = config.Config()
-ROOT = os.path.dirname(__file__)
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 class UsernameParser(HTMLParser):
@@ -366,4 +366,4 @@ def generate_upload_path(suffix='jpeg'):
 
 
 def get_relative_path(absolute_path):
-    return os.path.relpath(absolute_path)
+    return os.path.relpath(absolute_path, ROOT)
