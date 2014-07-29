@@ -62,13 +62,16 @@ class TopicForm(BaseForm):
         tf.node_name.data = selected
         return tf
 
+    def __init__(self, *args, **kwargs):
+        node_name = unicode(self.node_name.data)
+        self.node = Node.get(name=node_name)
+        super(TopicForm, self).__init__(*args, **kwargs)
+
     def validate_node_name(self, field):
         node_name = unicode(self.node_name.data)
         node = Node.get(name=node_name)
         if not node:
             raise ValidationError('不存在此节点')
-        self.node = node
-        return node
 
     def save(self, user, topic=None):
         data = self.data
