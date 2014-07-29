@@ -346,7 +346,7 @@ def generate_random_str(n=6):
 
 def generate_upload_dir():
     now = datetime.now()
-    upload_dir = os.path.join(ROOT, 'static/upload/image', now.strftime("%Y/%m/%d/"))
+    upload_dir = os.path.join(ROOT, 'static/upload/image', now.strftime("%Y/%m/"))
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
     return upload_dir
