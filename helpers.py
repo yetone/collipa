@@ -1,18 +1,24 @@
 # coding: utf-8
+"""
+don't move this file!!!
+"""
 
 from HTMLParser import HTMLParser
 from functools import wraps
 import os
 import re
 import time
+from datetime import datetime
+import random
 import logging
 import math
+
 import config
 from libs import xss
 from libs.pil import Image
 
 config = config.Config()
-ROOT = os.path.dirname(__file__)
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 class UsernameParser(HTMLParser):
@@ -81,35 +87,35 @@ def format_date(timestamp):
     FORH = '%H:%M'
     os.environ["TZ"] = config.default_timezone
     time.tzset()
-    rtime = time.strftime(FORM, time.localtime(timestamp))
-    htime = time.strftime(FORH, time.localtime(timestamp))
+    r_time = time.strftime(FORM, time.localtime(timestamp))
+    h_time = time.strftime(FORH, time.localtime(timestamp))
     now = int(time.time())
     t = now - timestamp
     if t < 60:
-        str = '刚刚'
+        format_str = '刚刚'
     elif t < 60 * 60:
         min = t / 60
-        str = '%d 分钟前' % min
+        format_str = '%d 分钟前' % min
     elif t < 60 * 60 * 24:
         h = t / (60 * 60)
-        str = '%d 小时前 %s' % (h, htime)
+        format_str = '%d 小时前 %s' % (h, h_time)
     elif t < 60 * 60 * 24 * 3:
         d = t / (60 * 60 * 24)
         if d == 1:
-            str = '昨天 ' + rtime
+            format_str = '昨天 ' + r_time
         else:
-            str = '前天 ' + rtime
+            format_str = '前天 ' + r_time
     else:
-        str = time.strftime(FORY, time.localtime(timestamp))
-    return str
+        format_str = time.strftime(FORY, time.localtime(timestamp))
+    return format_str
 
 
 def format_date2(timestamp):
     FORY = '%Y-%m-%d @ %H:%M'
     os.environ["TZ"] = config.default_timezone
     time.tzset()
-    str = time.strftime(FORY, time.localtime(timestamp))
-    return str
+    format_str = time.strftime(FORY, time.localtime(timestamp))
+    return format_str
 
 
 def get_year():
@@ -117,8 +123,8 @@ def get_year():
     FORY = '%Y'
     os.environ["TZ"] = config.default_timezone
     time.tzset()
-    str = time.strftime(FORY, time.localtime(timestamp))
-    return str
+    format_str = time.strftime(FORY, time.localtime(timestamp))
+    return format_str
 
 
 def get_month():
@@ -126,8 +132,8 @@ def get_month():
     FORY = '%m'
     os.environ["TZ"] = config.default_timezone
     time.tzset()
-    str = time.strftime(FORY, time.localtime(timestamp))
-    return str
+    format_str = time.strftime(FORY, time.localtime(timestamp))
+    return format_str
 
 
 def format_text(text):
@@ -330,3 +336,32 @@ def crop(url, size, position='c', force=False):
     if coo:
         image = image.crop(coo)
     return save_image(image, path)
+
+
+def generate_random_str(n=6):
+    return ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba', n))
+
+
+def generate_upload_dir():
+    now = datetime.now()
+    upload_dir = os.path.join(ROOT, 'static/upload/image', now.strftime("%Y/%m/"))
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+    return upload_dir
+
+
+def generate_filename(suffix='jpeg'):
+    timestamp = int(time.time())
+    filename = '%d_%s.%s' % (timestamp, generate_random_str(), suffix)
+    return filename
+
+
+def generate_upload_path(suffix='jpeg'):
+    upload_dir = generate_upload_dir()
+    filename = generate_filename(suffix)
+    upload_path = os.path.join(upload_dir, filename)
+    return upload_path
+
+
+def get_relative_path(absolute_path):
+    return os.path.relpath(absolute_path, ROOT)
