@@ -58,6 +58,9 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         return helpers.generate_thumb_url(self.path, (1024, 0))
 
     def __setattr__(self, key, value):
+        old_album_id = None
+        if key == 'album_id':
+            old_album_id = self.album_id
         super(Image, self).__setattr__(key, value)
 
         if key == 'album_id':
@@ -65,6 +68,11 @@ class Image(db.Entity, SessionMixin, ModelMixin):
             if album:
                 album.cover = self
                 self.created_at = int(time.time())
+                try:
+                    old_album = m.Album.get(id=old_album_id)
+                    old_album.update_cover()
+                except (TypeError, orm.ConstraintError, AttributeError):
+                    pass
 
     def save(self, category='create', user=None):
         now = int(time.time())
