@@ -7,7 +7,7 @@ import os
 import sys
 import logging
 import tempfile
-from PIL import Image as Img
+from libs.pil import Image as Img
 from pony import orm
 from ._base import BaseHandler
 import tornado.web
@@ -95,7 +95,7 @@ class UploadHandler(BaseHandler):
     @tornado.web.authenticated
     @require_permission
     def post(self):
-        if self.request.files == {} or 'myimage' not in self.request.files:
+        if not self.request.files or 'myimage' not in self.request.files:
             self.write({"status": "error",
                         "message": "对不起，请选择图片"})
             return

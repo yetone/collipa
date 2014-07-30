@@ -9,7 +9,7 @@ import logging
 import math
 import config
 from libs import xss
-from PIL import Image
+from libs.pil import Image
 
 config = config.Config()
 ROOT = os.path.dirname(__file__)
