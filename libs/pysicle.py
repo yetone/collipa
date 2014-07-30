@@ -6,6 +6,7 @@ import os
 import commands
 import subprocess
 
+
 class GifInfo:  # gifsicle -I
 
     def __init__(self, imgfile=None):
@@ -67,7 +68,15 @@ class GifInfo:  # gifsicle -I
         return True
 
     def __str__(self):
-        return " ".join([self.__crops, self.__rotate, self.__resizes, self.src if self.src else ''])
+        return " ".join([self.__resizes, self.__crops, self.__rotate, self.src if self.src else ''])
+
+    @property
+    def resizes(self):
+        return self.__resizes
+
+    @property
+    def crops(self):
+        return self.__crops
 
 
 class Gifsicle:
