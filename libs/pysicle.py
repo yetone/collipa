@@ -5,46 +5,56 @@ __author__ = 'glcsnz123, laurence@duitang.com'
 import os
 import commands
 import subprocess
+from StringIO import StringIO
 
 
 class GifInfo:  # gifsicle -I
 
-    def __init__(self, imgfile=None):
+    def __init__(self, img_file=None):
         self.__rotate = ""
         self.__crops = ""
         self.__resizes = ""
         self.src = ""
-        if imgfile and os.path.isfile(imgfile): 
-            self.src = imgfile
+        self.__args = []
+        if img_file and os.path.isfile(img_file):
+            self.src = img_file
 
     def resize_gif(self, width=None, height=None):
-        if width is None and height is None: return False
+        if width is None and height is None:
+            return False
+
         if width is None:
             self.__resizes = " --resize-height %d " % height
-            return True
-        if height is None:
+        elif height is None:
             self.__resizes = " --resize-width %d " % width
-            return True
-        self.__resizes = " --resize %dx%d" % (width, height)
+        else:
+            self.__resizes = " --resize %dx%d" % (width, height)
+
+        self.__args.append(self.__resizes)
         return True
 
     def resize_fit_gif(self, width=None, height=None):
-        if width is None and height is None: return False
+        if width is None and height is None:
+            return False
+
         if width is None:
             self.__resizes = " --resize-fit-height %d " % (height)
-            return True
-        if height is None:
+        elif height is None:
             self.__resizes = " --resize-fit-width %d " % (width)
-            return True
-        self.__resizes = " --resize-fit %dx%d " % (width, height)
+        else:
+            self.__resizes = " --resize-fit %dx%d " % (width, height)
+
+        self.__args.append(self.__resizes)
         return True
 
-
-    def fix_scale(self, Xscale, Yscale=None):
-        self.__resizes = " --scale " + str(Xscale / 100.0)
-        if Yscale is not None:
-            self.__resizes += "x" + str(Yscale / 100.0)
+    def fix_scale(self, x_scale, y_scale=None):
+        self.__resizes = " --scale " + str(x_scale / 100.0)
+        if y_scale is not None:
+            self.__resizes += "x" + str(y_scale / 100.0)
         self.__resizes += " "
+
+        self.__args.append(self.__resizes)
+        return True
 
     def rotate_gif(self, degree=0):
         if degree == 90 or degree == "90":
@@ -55,20 +65,30 @@ class GifInfo:  # gifsicle -I
             self.__rotate = " --rotate-270 "
         else:
             return False
+
+        self.__args.append(self.__rotate)
         return True
 
-    def crop_gif_bypos(self, lefttop, rightdown):
-        if rightdown[0] < lefttop[0] or rightdown[1] < lefttop[1]: return False
-        self.__crops = " --crop " + ','.join(map(str, lefttop)) + "-" + ",".join(map(str, rightdown)) + " "
+    def crop_gif_bypos(self, left_top, right_down):
+        if right_down[0] < left_top[0] or right_down[1] < left_top[1]:
+            return False
+        self.__crops = " --crop " + ','.join(map(str, left_top)) + "-" + ",".join(map(str, right_down)) + " "
+
+        self.__args.append(self.__crops)
         return True
 
-    def crop_gif_bywh(self, lefttop, wh):
-        if wh[0] <= 0 or wh[1] <= 0: return False
-        self.__crops = " --crop " + ",".join(map(str, lefttop)) + "+" + "x".join(map(str, wh)) + " "
+    def crop_gif_bywh(self, left_top, width_height):
+        if width_height[0] <= 0 or width_height[1] <= 0:
+            return False
+        self.__crops = " --crop " + ",".join(map(str, left_top)) + "+" + "x".join(map(str, width_height)) + " "
+
+        self.__args.append(self.__crops)
         return True
 
     def __str__(self):
-        return " ".join([self.__resizes, self.__crops, self.__rotate, self.src if self.src else ''])
+        args = self.__args[:]
+        args.append(self.src)
+        return " ".join(args)
 
     @property
     def resizes(self):
@@ -79,11 +99,13 @@ class GifInfo:  # gifsicle -I
         return self.__crops
 
 
-class Gifsicle:
+class GifSicle:
+
     def __init__(self):
         pass
 
-    def convert(self, infile, outfile=None):
+    @staticmethod
+    def convert(infile, outfile=None):
         if outfile is None:
             res = commands.getstatusoutput("gifsicle --batch " + str(infile))
             if res[0] == 0:
@@ -93,33 +115,39 @@ class Gifsicle:
         if res[0] == 0:
             return True
         return False
-    
-    def convert_with_pipe(self, infile, img):
+
+    @staticmethod
+    def convert_with_pipe(infile, img):
         p = subprocess.Popen(["gifsicle " + str(infile)], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         p.stdin.write(img)
         res = p.communicate()
         if p.returncode != 0:
             raise Exception('gifsicle cannot close')
+
         return res[0]
 
-if __name__ == '__main__':
-    import sys
-    import time
-    src = sys.argv[1]
-    dest = sys.argv[2]
-#    gi = GifInfo(src)
-    ts = time.time()
-    gi = GifInfo()
-#    gi.crop_gif_bywh((23, 23), (220, 220))
-#    gi.rotate_gif(90)
-#    gi.fix_scale(50, 50)
-    gi.resize_fit_gif(100, 100)
-    gf = Gifsicle()
-#    gf.convert(gi, "/tmp/" + dest)
-    ret = gf.convertWithPipe(gi, open(src).read())
-    print time.time() - ts, "ms"
-    print type(ret), len(ret)
-    print str(gi)
-    with open(dest, 'w') as fl:
-        fl.write(ret)
+    @staticmethod
+    def _c(infile, img):
+        res = None
+        if infile.resizes:
+            p = subprocess.Popen(["gifsicle " + str(infile.resizes)], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.stdin.write(img)
+            res = p.communicate()
+            if p.returncode != 0:
+                raise Exception('gifsicle cannot close')
+        if infile.crops:
+            if res is not None:
+                img = StringIO(res[0]).getvalue()
+            p = subprocess.Popen(["gifsicle " + str(infile.crops)], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.stdin.write(img)
+            res = p.communicate()
+            if p.returncode != 0:
+                raise Exception('gifsicle cannot close')
+        if res is None:
+            p = subprocess.Popen(["gifsicle " + str(infile)], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+            p.stdin.write(img)
+            res = p.communicate()
+            if p.returncode != 0:
+                raise Exception('gifsicle cannot close')
 
+        return res[0]
