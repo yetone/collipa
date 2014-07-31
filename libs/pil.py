@@ -3,8 +3,9 @@
 __author__ = 'yetone'
 
 from StringIO import StringIO
+from libs.async import async
 from PIL import Image as Img
-from libs.pysicle import GifInfo, Gifsicle
+from libs.pysicle import GifInfo, GifSicle
 import logging
 
 logger = logging.getLogger()
@@ -20,7 +21,7 @@ class Image(object):
         self.format = img.format
         self.is_gif = img.format.lower() == 'gif'
         self.gi = GifInfo()
-        self.gf = Gifsicle()
+        self.gf = GifSicle()
         self.fp = fp
         self.size = img.size
         self.filename = img.filename
@@ -28,7 +29,7 @@ class Image(object):
 
     def get_raw(self):
         raw = self.fp
-        if isinstance(self.fp, str):
+        if type(self.fp) in (str, unicode):
             f = open(self.fp, 'rb')
             raw = f.read()
             f.close()
@@ -39,7 +40,7 @@ class Image(object):
     def resize(self, size, resample=Img.ANTIALIAS):
         if self.is_gif:
             width, height = size
-            self.gi.resize_gif(width, height)
+            self.gi.resize_fit_gif(width, height)
         self.img = self.img.resize(size, resample)
         return self
 
@@ -52,16 +53,18 @@ class Image(object):
 
     def save(self, fp, format=None, **params):
         if self.is_gif:
-            try:
-                raw = self.tmp or self.get_raw()
-                data = self.gf.convert_with_pipe(self.gi, raw)
-                f = open(fp, 'wb')
-                f.write(data)
-                f.close()
-            except Exception:
-                logger.info('gif can not save. fp: %s' % fp)
-                self.img.save(fp, format, **params)
+            self.get_data_and_write(fp, format=format, **params)
         else:
+            self.img.save(fp, format, **params)
+
+    def get_data_and_write(self, fp, format=None, **params):
+        try:
+            raw = self.tmp or self.get_raw()
+            data = self.gf.convert_with_pipe(self.gi, raw)
+            with open(fp, 'wb') as f:
+                f.write(data)
+        except Exception:
+            logger.info('gif can not save. fp: %s' % fp)
             self.img.save(fp, format, **params)
 
     @staticmethod
