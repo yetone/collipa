@@ -210,6 +210,9 @@ class Topic(db.Entity, SessionMixin, ModelMixin):
             dw.delete()
         for rp in m.Report.select(lambda rv: rv.topic_id == self.id):
             rp.delete()
+        for img in m.Image.select(lambda rv: rv.topic_id == self.id):
+            # 不能直接删除 img
+            img.topic_id = 0
         for reply in self.replies:
             reply.remove()
 

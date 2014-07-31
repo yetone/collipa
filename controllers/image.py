@@ -55,6 +55,8 @@ class HomeHandler(BaseHandler, EmailMixin):
         image = Image.get(id=image_id)
         if not image:
             return self.redirect_next_url()
+        if image.topic_id:
+            return self.send_error_result(msg=u'此图片被主题《%s》引用，无法删除' % image.topic.title)
         if self.current_user.is_admin and image.user_id != self.current_user.id:
             subject = "图片删除通知 - " + config.site_name
             template = (
