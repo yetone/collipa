@@ -118,7 +118,7 @@ class GifSicle:
 
     @staticmethod
     def convert_with_pipe(infile, img):
-        p = subprocess.Popen(["gifsicle " + str(infile)], shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p = subprocess.Popen(["gifsicle " + str(infile)], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         p.stdin.write(img)
         res = p.communicate()
         if p.returncode != 0:
