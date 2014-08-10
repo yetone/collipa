@@ -61,7 +61,7 @@ class HomeHandler(BaseHandler, EmailMixin):
             subject = "图片删除通知 - " + config.site_name
             template = (
                 '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-                '您在 %(site) 的图片由于违反社区规定而被删除。</p>'
+                '您在 %(site)s 的图片由于违反社区规定而被删除。</p>'
             ) % {
                 'nickname': image.author.nickname,
                 'site': config.site_name,
