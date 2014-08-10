@@ -67,7 +67,7 @@ class HomeHandler(BaseHandler, EmailMixin):
                 'site': config.site_name,
             }
             self.send_email(self, image.author.email, subject, template)
-        if image.user_id == self.current_user.id:
+        if self.current_user.is_admin or image.user_id == self.current_user.id:
             image.remove()
             result = {'status': 'success', 'message': '已成功删除'}
         else:
