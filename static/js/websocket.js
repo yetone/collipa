@@ -14,16 +14,17 @@ var online = {
     messageBoxArea: $('.organ.message-box'),
 
     start: function() {
-      this.socket = new WebSocket(this.url);
-      this.socket.onopen = function(event) {
+      var self = this;
+      self.socket = new WebSocket(self.url);
+      self.socket.onopen = function(event) {
         console.log("::::::::websocket start::::::::");
       };
-      this.socket.onmessage = function(event) {
-        this.payloadHandler(JSON.parse(event.data));
+      self.socket.onmessage = function(event) {
+        self.payloadHandler(JSON.parse(event.data));
       };
-      this.socket.onclose = function(event) {
+      self.socket.onclose = function(event) {
         console.log("::::::::websocket close::::::::");
-        this.start();
+        self.start();
       };
     },
 
