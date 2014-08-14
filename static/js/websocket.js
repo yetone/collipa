@@ -1,17 +1,3 @@
-// Copyright 2009 FriendFeed
-//
-// Licensed under the Apache License, Version 2.0 (the "License"); you may
-// not use this file except in compliance with the License. You may obtain
-// a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-// License for the specific language governing permissions and limitations
-// under the License.
-
 $(function() {
     if (!window.console) window.console = {};
     if (!window.console.log) window.console.log = function() {};
@@ -20,115 +6,102 @@ $(function() {
 });
 
 var online = {
+    url: "ws://" + window.location.host + "/api/websocket",
     socket: null,
-    t: null,
-    online_count_area: $('#footer #online-count'),
-    message_count_area: $('#head .menu .message'),
-    notification_count_area: $('#head .menu .notification'),
-    message_box_area: $('.organ.message-box'),
+    onlineCountArea: $('#footer #online-count'),
+    messageCountArea: $('#head .menu .message'),
+    notificationCountArea: $('#head .menu .notification'),
+    messageBoxArea: $('.organ.message-box'),
 
     start: function() {
-      var url = "ws://" + location.host + "/api/websocket";
-      online.create_socket(url);
-      online.socket.onclose = function(event) {
-        if (online.socket.readyState !== 1) {
-          console.log("::::::::websocket close::::::::");
-          clearInterval(online.t);
-          online.t = setInterval(function() {online.create_socket(url);}, 1000);
-        }
-      };
-    },
-
-    create_socket: function(url) {
-      online.socket = new WebSocket(url);
-      online.socket.onopen = function(event) {
+      this.socket = new WebSocket(this.url);
+      this.socket.onopen = function(event) {
         console.log("::::::::websocket start::::::::");
       };
-      online.socket.onmessage = function(event) {
-        clearInterval(online.t);
-        online.show_message(JSON.parse(event.data));
+      this.socket.onmessage = function(event) {
+        this.payloadHandler(JSON.parse(event.data));
       };
-      online.socket.onclose = function(event) {
-        if (online.socket.readyState !== 1) {
-          console.log("::::::::websocket close::::::::");
-          clearInterval(online.t);
-          online.t = setInterval(function() {online.create_socket(url);}, 1000);
-        }
+      this.socket.onclose = function(event) {
+        console.log("::::::::websocket close::::::::");
+        this.start();
       };
     },
 
-    show_message: function(data) {
-      if (data.type === "online" && online.online_count_area.length) {
-        online.online_count_area.html(data.count + " 人在线");
-      } else if (data.type === "message") {
-        console.log("okkkkkkkkkkkkk");
-        if ((!online.message_box_area.length || online.message_box_area.attr('data-id') != data.message_box_id) && online.message_count_area.length) {
-          if (online.message_count_area.find('span.count').length) {
-            online.message_count_area.find('span.count').html(data.count);
-          } else {
-            online.message_count_area.append('<span class="count">' + data.count + '</span>');
-          }
-          var title = $('title');
-          if (title.html().indexOf('(新私信)') === -1) {
-            title.html('(新私信) ' + title.html());
-          }
-        } else if (online.message_box_area.length && online.message_box_area.attr('data-id') == data.message_box_id) {
-          var source =
-              '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix you">'
-          +     '<a class="avatar" href="<%= url %>">'
-          +       '<img class="avatar" src="<%= avatar %>">'
-          +     '</a>'
-          +     '<div class="item-content">'
-          +       '<div class="meta">'
-          +         '<span class="time"><%= created %></span>'
-          +       '</div>'
-          +       '<div class="content">'
-          +         '<%= content %>'
-          +         '<div class="caret">'
-          +           '<div class="caret-outer"></div>'
-          +           '<div class="caret-inner"></div>'
-          +         '</div>'
-          +       '</div>'
-          +     '</div>'
-          +   '</li>';
+    payloadHandler: function(data) {
+      switch (data.type) {
+        case 'online':
+          this.onlineHandler(data);
+          break;
+        case 'message':
+          this.messageHandler(data);
+          break;
+        case 'notification':
+          this.notificationHandler(data);
+          break;
+        default:
+          return;
+      }
+    },
 
-          var render = template.compile(source);
-          var html = render(data);
+    onlineHandler: function(data) {
+      if (!this.onlineCountArea.length) return;
+      this.onlineCountArea.html(data.count + " 人在线");
+    },
 
-          online.message_box_area.find('ul.message-list').append(html);
-          $.get(window.location.href + '&action=read');
-        }
-        var last_notify = window.localStorage.getItem("last_notify");
-        if (last_notify != data.id) {
-          window.localStorage.setItem("last_notify", data.id);
-          var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar, url: "/messages?user_id=" + data.sender_id});
-          /*
-          var notification = window.webkitNotifications.createNotification(data.avatar, '新私信', data.content);
-          notification.onclick = function() {
-            window.focus();
-            this.cancel();
-          };
-          notification.show();
-          */
-          /*
-          $('body').off('mousemove');
-          $('body').on('mousemove', function(e) {
-            if ($(document).scrollTop() + $(window).height() - e.pageY < 200 && $(window).width() - e.pageX < 350) {
-              notification.close();
-            }
-          });
-          */
-        }
-      } else if (data.type === "notification") {
-        if (online.notification_count_area.find('span.count').length) {
-          online.notification_count_area.find('span.count').html(data.count);
+    notificationHandler: function(data) {
+      if (this.notificationCountArea.find('span.count').length) {
+        this.notificationCountArea.find('span.count').html(data.count);
+      } else {
+        this.notificationCountArea.append('<span class="count">' + data.count + '</span>');
+      }
+      var title = $('title');
+      if (title.html().indexOf('(新提醒)') === -1) {
+        title.html('(新提醒) ' + title.html());
+      }
+    },
+
+    messageHandler: function(data) {
+      console.log("message");
+      var $title = $('title');
+      if (this.messageBoxArea.attr('data-id') != data.message_box_id) {
+        if (this.messageCountArea.find('span.count').length) {
+          this.messageCountArea.find('span.count').html(data.count);
         } else {
-          online.notification_count_area.append('<span class="count">' + data.count + '</span>');
+          this.messageCountArea.append('<span class="count">' + data.count + '</span>');
         }
-        var title = $('title');
-        if (title.html().indexOf('(新提醒)') === -1) {
-          title.html('(新提醒) ' + title.html());
+        if ($title.html().indexOf('(新私信)') === -1) {
+          $title.html('(新私信) ' + $title.html());
         }
+      } else {
+        var source =
+            '<li id="show-<%= id %>" data-id="<%= id %>" class="item message clearfix you">'
+        +     '<a class="avatar" href="<%= url %>">'
+        +       '<img class="avatar" src="<%= avatar %>">'
+        +     '</a>'
+        +     '<div class="item-content">'
+        +       '<div class="meta">'
+        +         '<span class="time"><%= created %></span>'
+        +       '</div>'
+        +       '<div class="content">'
+        +         '<%= content %>'
+        +         '<div class="caret">'
+        +           '<div class="caret-outer"></div>'
+        +           '<div class="caret-inner"></div>'
+        +         '</div>'
+        +       '</div>'
+        +     '</div>'
+        +   '</li>';
+
+        var render = template.compile(source);
+        var html = render(data);
+
+        this.messageBoxArea.find('ul.message-list').append(html);
+        $.get(window.location.href + '&action=read');
+      }
+      var last_notify = window.localStorage.getItem("last_notify");
+      if (last_notify != data.id) {
+        window.localStorage.setItem("last_notify", data.id);
+        var notification = notify.createNotification("新私信 from " + data.nickname + " - Collipa", {body: data.content, icon: data.avatar, url: "/messages?user_id=" + data.sender_id});
       }
     }
 };
