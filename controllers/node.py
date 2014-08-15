@@ -8,7 +8,7 @@ import os
 import sys
 import logging
 import tempfile
-from PIL import Image
+from libs.pil import Image
 
 import config
 from ._base import BaseHandler
@@ -172,7 +172,7 @@ class ImgUploadHandler(BaseHandler):
         node = Node.get(id=node_id)
         if not node:
             return self.redirect_next_url()
-        if self.request.files == {} or 'myimage' not in self.request.files:
+        if not self.request.files or 'myimage' not in self.request.files:
             self.write({"status": "error",
                         "message": "对不起，请选择图片"})
             return

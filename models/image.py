@@ -96,7 +96,8 @@ class Image(db.Entity, SessionMixin, ModelMixin):
         self.author.active = now
 
         try:
-            os.system('rm -f %s%s' % (sys.path[0], self.path))
+            if not self.topic_id:
+                os.system('rm -f %s%s' % (sys.path[0], self.path))
             album = self.album
             image_id = self.id
             image_path = self.path

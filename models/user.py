@@ -318,12 +318,11 @@ class User(db.Entity, SessionMixin, ModelMixin):
                 return {'status': 'success', 'message': '感谢成功', 'type': 1}
             else:
                 return {'status': 'error', 'message': '感谢失败', 'type': -1}
-        else:
-            delta = int(time.time()) - thank.created_at
-            if delta < config.thank_delta_time:
-                thank.remove()
-                return {'status': 'success', 'message': '取消感谢成功', 'type': 0}
-            return {'status': 'info', 'message': '已超过取消感谢时间', 'type': -1}
+        delta = int(time.time()) - thank.created_at
+        if delta < config.thank_delta_time:
+            thank.remove()
+            return {'status': 'success', 'message': '取消感谢成功', 'type': 0}
+        return {'status': 'info', 'message': '已超过取消感谢时间', 'type': -1}
 
     def up(self, topic_id=None, reply_id=None):
         now = int(time.time())
@@ -352,10 +351,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
                         'category': 'up'}
             else:
                 return {'status': 'error', 'message': '赞同失败', 'type': -1}
-        else:
-            up.remove()
-            return {'status': 'success', 'message': '取消赞同成功', 'type': 0,
-                    'category': 'up'}
+        up.remove()
+        return {'status': 'success', 'message': '取消赞同成功', 'type': 0,
+                'category': 'up'}
 
     def down(self, topic_id=None, reply_id=None):
         self.active = int(time.time())
@@ -374,10 +372,9 @@ class User(db.Entity, SessionMixin, ModelMixin):
                         'category': 'down'}
             else:
                 return {'status': 'error', 'message': '反对失败', 'type': -1}
-        else:
-            down.remove()
-            return {'status': 'success', 'message': '取消反对成功', 'type': 0,
-                    'category': 'down'}
+        down.remove()
+        return {'status': 'success', 'message': '取消反对成功', 'type': 0,
+                'category': 'down'}
 
     def report(self, topic_id=None, reply_id=None):
         self.active = int(time.time())
@@ -388,9 +385,8 @@ class User(db.Entity, SessionMixin, ModelMixin):
                               reply_id=reply_id)
             report.save()
             return {'status': 'success', 'message': '举报成功', 'type': 1}
-        else:
-            report.remove()
-            return {'status': 'success', 'message': '取消举报成功', 'type': 0}
+        report.remove()
+        return {'status': 'success', 'message': '取消举报成功', 'type': 0}
 
     def get_topics(self, page=1, category='all', order_by='created_at',
                    limit=None):

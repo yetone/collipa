@@ -7,7 +7,7 @@ import os
 import sys
 import logging
 import tempfile
-from PIL import Image as Img
+from libs.pil import Image as Img
 from pony import orm
 from ._base import BaseHandler
 import tornado.web
@@ -55,17 +55,19 @@ class HomeHandler(BaseHandler, EmailMixin):
         image = Image.get(id=image_id)
         if not image:
             return self.redirect_next_url()
+        if image.topic_id:
+            return self.send_error_result(msg=u'此图片被主题《%s》引用，无法删除' % image.topic.title)
         if self.current_user.is_admin and image.user_id != self.current_user.id:
             subject = "图片删除通知 - " + config.site_name
             template = (
                 '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-                '您在 %(site) 的图片由于违反社区规定而被删除。</p>'
+                '您在 %(site)s 的图片由于违反社区规定而被删除。</p>'
             ) % {
                 'nickname': image.author.nickname,
                 'site': config.site_name,
             }
             self.send_email(self, image.author.email, subject, template)
-        if image.user_id == self.current_user.id:
+        if self.current_user.is_admin or image.user_id == self.current_user.id:
             image.remove()
             result = {'status': 'success', 'message': '已成功删除'}
         else:
@@ -95,7 +97,7 @@ class UploadHandler(BaseHandler):
     @tornado.web.authenticated
     @require_permission
     def post(self):
-        if self.request.files == {} or 'myimage' not in self.request.files:
+        if not self.request.files or 'myimage' not in self.request.files:
             self.write({"status": "error",
                         "message": "对不起，请选择图片"})
             return

@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import logging
 import time
 from pony import orm
 from ._base import db, SessionMixin, ModelMixin
@@ -70,5 +71,6 @@ class Notification(db.Entity, SessionMixin, ModelMixin):
         notification = super(Notification, self).save()
 
         ctl.WebSocketHandler.send_notification(notification.receiver_id)
+        logging.info('I am send websocket to %d', notification.receiver_id)
 
         return notification

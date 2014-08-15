@@ -13,11 +13,9 @@ import random
 import logging
 import math
 
-from PIL import Image
-
 import config
 from libs import xss
-
+from libs.pil import Image
 
 config = config.Config()
 ROOT = os.path.dirname(os.path.abspath(__file__))

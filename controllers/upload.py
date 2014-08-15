@@ -17,7 +17,7 @@ class UploadHandler(BaseHandler):
     def post(self, category):
         if not self.has_permission:
             return
-        if self.request.files == {} or 'myfile' not in self.request.files:
+        if not self.request.files or 'myfile' not in self.request.files:
             self.write({"status": "error",
                         "message": "对不起，请选择文件"})
             return
