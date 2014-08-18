@@ -1,5 +1,6 @@
 # coding: utf-8
 
+import logging
 from libs.tforms import validators
 from libs.tforms.fields import TextField, TextAreaField, SelectField
 from libs.tforms.validators import ValidationError
@@ -76,10 +77,14 @@ class TopicForm(BaseForm):
     def save(self, user, topic=None):
         data = self.data
         try:
-            data.pop('node_name')
+            node_name = data.pop('node_name')
+            if not self.node:
+                self.node = Node.get(name=node_name)
         except KeyError:
-            print(data)
+            logging.info('no node_name in form data, data: %s', data)
 
+        if not self.node:
+            logging.info('node is None in form instance, self: %s', self)
         content = unicode(data.get('content'))
         data.update({'user_id': user.id, 'node_id': self.node.id,
                      'content': strip_xss_tags(content)})
