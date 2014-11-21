@@ -2314,9 +2314,6 @@ ul.users li a div.username span {
   #head .menu li {
     margin-left: 13px;
   }
-  #head .menu.fixed {
-    top: 8px !important;
-  }
   .message-fm {
     padding-left: 0;
     padding-right: 0;
