@@ -7,13 +7,13 @@ $(function() {
   $('.body-nav').fix();
   $('.nav-wrap .nav li').navBottomPosition();
 
-  $.Collipa.shape_resize();
+  $.Collipa.shapeResize();
 
   $W.resize(function() {
     if ($('#head > .menu.fixed').length) {
-      $.Collipa.shape_resize(true);
+      $.Collipa.shapeResize(true);
     } else {
-      $.Collipa.shape_resize();
+      $.Collipa.shapeResize();
     }
   });
 

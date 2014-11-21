@@ -611,52 +611,48 @@ $(function() {
       });
     },
     fix: function() {
-      var navSelector = this.selector,
-          make_fix = function($nav) {
+      var $nav = this,
+          _fix = function() {
             if (!$nav.length) {
               return;
             }
             var top = $(document).scrollTop(),
-                menu_top,
+                menuTop,
                 $shape = $('#shape'),
                 $menu = $('#head .menu'),
                 $head = $('#head'),
                 $fixFill = $('<div class="fix-fill"></div>'),
-                nav_top = $('.fix-fill').length ? $('.fix-fill').offset().top : $nav.offset().top,
-                nav_width = $nav.width(),
-                nav_height = $nav.height(),
-                menu_left = $menu.offset().left,
-                menu_height = $menu.height(),
-                head_left = $head.offset().left;
-            if (top >= nav_top) {
-              menu_top = (parseInt(nav_height) - parseInt(menu_height)) / 2;
-              $nav.addClass('fixed').css({'width': nav_width});
+                navTop = $('.fix-fill').length ? $('.fix-fill').offset().top : $nav.offset().top,
+                navWidth = $nav.width(),
+                navHeight = $nav.height(),
+                menuLeft = $menu.offset().left,
+                menuHeight = $menu.height(),
+                headLeft = $head.offset().left;
+            if (top >= navTop) {
+              $nav.addClass('fixed').css({'width': navWidth});
               if (!$('.fix-fill').length) {
-                $nav.before($fixFill.css({'height': nav_height + 2, 'width': nav_width}));
+                $nav.before($fixFill.css({'height': navHeight + 2, 'width': navWidth}));
               } else {
-                $('.fix-fill').css({'height': nav_height + 2, 'width': nav_width});
+                $('.fix-fill').css({'height': navHeight + 2, 'width': navWidth});
               }
               if (!$menu.hasClass('fixed')) {
-                $menu.addClass('fixed').css({'right': +head_left + 20, 'top': menu_top}).hide().fadeIn(600);
+                menuTop = ($nav.height() - menuHeight) / 2;
+                $menu.addClass('fixed').css({'right': +headLeft + 20, 'top': menuTop}).hide().fadeIn(600);
               }
             } else {
               $nav.removeClass('fixed');
               $menu.removeClass('fixed').css({'right': 20, 'bottom': 10, 'top': 'auto'});
               if ($('.fix-fill').length) {
-                $('.fix-fill').css({'height': 0, 'width': nav_width});
+                $('.fix-fill').css({'height': 0, 'width': navWidth});
               } else {
-                $nav.before($fixFill.css({'height': 0, 'width': nav_width}));
+                $nav.before($fixFill.css({'height': 0, 'width': navWidth}));
               }
             }
           };
-      if (!$(navSelector) || $(navSelector).length === 0) {
-        return;
-      } else {
-        make_fix($(navSelector));
-        $(document).on('scroll', function() {
-          make_fix($(navSelector));
-        });
-      }
+      _fix();
+      $(document).on('scroll', function() {
+        _fix();
+      });
     },
     tooltip: function() {
       this.each(function(i, v) {
@@ -853,18 +849,18 @@ $(function() {
       return self;
     }
   });
-  $.Collipa.shape_resize = function(data) {
-    var window_height = $(window).height(),
-        window_width = $(window).width(),
-        shape_width = $('#shape').width(),
-        min_width = window_width <= shape_width ? window_width : shape_width;
+  $.Collipa.shapeResize = function(data) {
+    var windowHeight = $(window).height(),
+        windowWidth = $(window).width(),
+        shapWidth = $('#shape').width(),
+        minWidth = windowWidth <= shapWidth ? windowWidth : shapWidth;
 
-    if (window_width === min_width) {
-      $('#shape').addClass('mobile').css({'width': window_width});
+    if (windowWidth === minWidth) {
+      $('#shape').addClass('mobile').css({'width': windowWidth});
       var $imgs = $('.content img');
       $imgs.each(function() {
-        if ($(this).width() > min_width) {
-          $(this).css({"max-width": min_width - 20 + 'px'});
+        if ($(this).width() > minWidth) {
+          $(this).css({"max-width": minWidth - 20 + 'px'});
         }
       });
     } else {
@@ -872,11 +868,11 @@ $(function() {
     }
     if (data) {
       var $head = $('#head'),
-          $menu_fixed = $('#head > .menu.fixed'),
+          $menuFixed = $('#head > .menu.fixed'),
           $nav = $('.nav'),
-          head_left = $head.offset().left;
-      $nav.css({'width': min_width - 20 + 'px'});
-      $menu_fixed.css({'right': +head_left + 20 + 'px'});
+          headLeft = $head.offset().left;
+      $nav.css({'width': minWidth - 20 + 'px'});
+      $menuFixed.css({'right': +headLeft + 20 + 'px'});
     }
   };
 
