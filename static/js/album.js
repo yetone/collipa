@@ -51,7 +51,7 @@ function waterfall(opt, undefined) {
         min = hl.min(),
         minIndex = hl.minIndex();
     $img.css({
-      left: minIndex * (opt.marginLeft + opt.width),
+      left: minIndex * (opt.marginLeft + opt.width) + opt.marginLeft,
       top: min + opt.marginTop,
       display: 'block'
     });
@@ -67,7 +67,7 @@ function initWaterfall() {
       count = 3,
       width = void 0,
       wWidth = $('#shape').width();
-  if (wWidth < 720) {
+  if (wWidth < 600) {
     marginTop = marginLeft = 10;
     count = 2;
   }
