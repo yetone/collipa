@@ -1,5 +1,6 @@
 $(function() {
-  var $editor = $('.tweet-editor'),
+  var $box = $('.tweet-box'),
+      $editor = $('.tweet-editor'),
       $toolbar = $('.tweet-box .toolbar'),
       $btn = $('.tweet-submit'),
       editorEmpty = function(_$editor) {
@@ -8,13 +9,7 @@ $(function() {
         var $placeholder = $('<div class="tweet-placeholder">输入内容吧...</div>');
         $editor.stop(true, true);
         $editor.html($placeholder)
-                          .animate({
-                            'min-height': 19
-                          }, 160);
-        if ($toolbar.length) {
-          $toolbar.stop(true, true);
-          $toolbar.fadeOut(160);
-        }
+        $box.removeClass('focus');
       },
       checkBtn = function(_$editor, _$btn) {
         $editor = _$editor || $editor;
@@ -72,23 +67,17 @@ $(function() {
       },
       blurTimer;
   $.Collipa.mention($D, document, $editor, null, checkBtn);
-  $D.on('keyup', '.tweet-editor', function() {
+  $D.on('input', '.tweet-editor', function() {
     var $this = $(this),
         $btn = $this.parents('.tweet-box').find('.tweet-submit');
     checkBtn($this, $btn);
   });
   $D.on('focus', '.tweet-editor', function() {
     var $this = $(this),
-        $parent = $this.parents('.tweet-box'),
-        $toolbar = $parent.find('.toolbar');
+        $box = $this.parents('.tweet-box');
     $this.find('.tweet-placeholder').remove();
     $this.stop(true, true);
-    $this.animate({
-      'min-height': 60
-    }, 160, function() {
-      $toolbar.stop(true, true);
-      $toolbar.fadeIn(160);
-    });
+    $box.addClass('focus');
   });
   $D.on('blur', '.tweet-editor', function() {
     var $this = $(this),
@@ -96,7 +85,7 @@ $(function() {
     if (!text.length) {
       blurTimer = setTimeout(function() {
         editorEmpty($this);
-      }, 400);
+      }, 200);
     }
   });
   $D.on('keypress', '.tweet-editor', function(e) {
@@ -220,4 +209,5 @@ $(function() {
   $W.on('scroll', function() {
     ($(document).scrollTop() + $(window).height() > $(document).height() - 300) && loadNextPage();
   });
+  $editor.focus();
 });

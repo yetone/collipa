@@ -1796,16 +1796,31 @@ ul.users li a div.username span {
 .tweet-box {
   background-color: #fff;
   border-bottom: 1px solid #e2e2e2;
+  -webkit-transition: all 0.5s ease;
 }
 
 .tweet-box .toolbar {
-  padding: 10px 0;
+  height: 0;
+  opacity: 0;
+  -webkit-transition: height 0.6s linear;
+  -webkit-transition: opacity 0.3s linear;
 }
 
 .tweet-editor {
   position: relative;
   padding: 10px;
   background-color: #f9f9f9;
+  -webkit-transition: all 0.5s ease;
+}
+
+.focus .tweet-editor {
+  min-height: 60px;
+}
+
+.focus .toolbar {
+  height: auto;
+  padding: 10px 0;
+  opacity: 1;
 }
 
 .tweet-editor:focus {
@@ -2239,6 +2254,10 @@ ul.users li a div.username span {
 
 
 @media screen and (max-width: 720px) {
+  .item {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
   .nav li {
     margin-right: 13px;
   }
@@ -2324,7 +2343,13 @@ ul.users li a div.username span {
   .message-fm textarea {
     width: 260px;
   }
-  .open .tweet-img-content img {
-    max-width: 220px
+  .open .tweet-img-cover,
+  .open .tweet-img-cover img {
+    max-width: 220px;
+  }
+}
+@media screen and (max-width: 500px) {
+  #head .menu .menu-bar {
+    margin-left: 10px;
   }
 }

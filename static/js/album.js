@@ -55,16 +55,28 @@ function waterfall(opt, undefined) {
       top: min + opt.marginTop,
       display: 'block'
     });
+    $img.width(opt.width);
+    $img.find('img').width(opt.width);
     hl[minIndex] = min + height + opt.marginTop;
     $wrapper.height(hl.max() + 20);
   });
 }
 
 function initWaterfall() {
+  var marginTop = marginLeft = 20,
+      count = 3,
+      width = void 0,
+      wWidth = $(window).width();
+  if (wWidth < 720) {
+    marginTop = marginLeft = 10;
+    count = 2;
+  }
+  width = (wWidth - (count + 1) * marginLeft) / count;
   waterfall({
-    marginTop: 20,
-    marginLeft: 20,
-    count: 3
+    marginTop: marginTop,
+    marginLeft: marginLeft,
+    width: width,
+    count: count
   });
 }
 $(function() {
