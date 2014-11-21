@@ -65,8 +65,8 @@ function waterfall(opt, undefined) {
 function initWaterfall() {
   var marginTop = marginLeft = 20,
       count = 3,
-      width = 220,
-      wWidth = $(window).width();
+      width = void 0,
+      wWidth = $('#shape').width();
   if (wWidth < 720) {
     marginTop = marginLeft = 10;
     count = 2;
