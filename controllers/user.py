@@ -527,24 +527,23 @@ class AvatarCropHandler(BaseHandler):
         y = int(self.get_argument('y', 0))
         w = int(self.get_argument('w', 128))
         h = int(self.get_argument('h', 128))
-        avatar = sys.path[0] + user.avatar_tmp
-        image_one = Image.open(avatar)
+
         box = (x, y, x + w, y + h)
-        image_crop = image_one.crop(box)
-        image_two = image_crop.resize((48, 48), Image.ANTIALIAS)
-        image_three = image_crop.resize((60, 60), Image.ANTIALIAS)
-        image_four = image_crop.resize((128, 128), Image.ANTIALIAS)
+        avatar = sys.path[0] + user.avatar_tmp
 
         image_format = avatar[avatar.rfind('.'):]
         save_path = avatar[: avatar.rfind('.')]
-        tmp_name_crop = save_path + '_crop' + image_format
-        tmp_name2 = save_path + 'x48' + image_format
-        tmp_name3 = save_path + 'x60' + image_format
-        tmp_name4 = save_path + 'x128' + image_format
-        image_crop.save(tmp_name_crop)
-        image_two.save(tmp_name2)
-        image_three.save(tmp_name3)
-        image_four.save(tmp_name4)
+
+        image = Image.open(avatar).crop(box)
+        tmp_name = save_path + '_crop' + image_format
+        image.save(tmp_name)
+
+        size_set = ((48, 48), (60, 60), (128, 128))
+        for size in size_set:
+            image = Image.open(avatar).crop(box).resize(size, Image.ANTIALIAS)
+            tmp_name = '%sx%d%s' % (save_path, size[0], image_format)
+            image.save(tmp_name)
+
         if user.avatar:
             try:
                 os.system('rm -f %s%s*' %
