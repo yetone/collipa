@@ -52,6 +52,8 @@ class Image(object):
         return self
 
     def save(self, fp, format=None, **params):
+        if 'quality' not in params:
+            params['quality'] = 95
         if self.is_gif:
             self.get_data_and_write(fp, format=format, **params)
         else:
