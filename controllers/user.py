@@ -658,7 +658,7 @@ class ImgUploadHandler(BaseHandler):
                                           del_path))
             except:
                 pass
-        return self.send_success_result(data)
+        return self.send_success_result(data=data)
 
 
 class ShowHandler(BaseHandler):
