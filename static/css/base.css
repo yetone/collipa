@@ -1843,6 +1843,36 @@ ul.users li a div.username span {
   border: 4px solid transparent;
 }
 
+.tweet-cate-nav {
+  background-color: #fff;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.tweet-cate-nav li {
+  display: inline-block;
+  line-height: 40px;
+  margin-left: 30px;
+}
+
+.tweet-cate-nav a {
+  padding: 6px 12px;
+  border-radius: 2px;
+}
+
+.tweet-cate-nav .on a {
+  background-color: #777;
+  color: #fff;
+}
+
+.n-nav {
+  background-color: #fff;
+}
+
+.n-nav li {
+  display: inline-block;
+  position: relative;
+}
+
 .s-nav {
   background-color: #fff;
   border-bottom: 1px solid #e2e2e2;
@@ -1870,6 +1900,7 @@ ul.users li a div.username span {
   text-align: center;
 }
 
+.n-nav li.on:after,
 .s-nav li.on:after {
   position: absolute;
   bottom: -1px;
@@ -1889,6 +1920,7 @@ ul.users li a div.username span {
 .s-nav li.on {
 }
 
+.n-nav li.on a:after,
 .s-nav li.on a:after {
   position: absolute;
   bottom: 0px;
