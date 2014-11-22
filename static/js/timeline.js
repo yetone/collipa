@@ -10,12 +10,23 @@ $(function() {
         $editor.stop(true, true);
         $editor.html($placeholder)
         $box.removeClass('focus');
+        $toolbar.animate({
+          height: 0,
+          padding: 0
+        }, {
+          duration: 500,
+          complete: function() {
+            $(this).css({
+              display: 'none'
+            });
+          }
+        });
       },
       checkBtn = function(_$editor, _$btn) {
         $editor = _$editor || $editor;
         $btn = _$btn || $btn;
         var text = $editor.text();
-        if (text.length >= 3) {
+        if (text.trim().length >= 3) {
           $btn.removeAttr('disabled');
         } else {
           $btn.attr('disabled', 'disabled');
@@ -78,6 +89,18 @@ $(function() {
     $this.find('.tweet-placeholder').remove();
     $this.stop(true, true);
     $box.addClass('focus');
+    $toolbar.css({
+      display: 'block',
+      overflow: 'hidden',
+      height: 0,
+      padding: 0
+    }).animate({
+      height: 34,
+      paddingTop: 10,
+      paddingBottom: 10
+    }, {
+      duration: 500
+    });
   });
   $D.on('blur', '.tweet-editor', function() {
     var $this = $(this),
