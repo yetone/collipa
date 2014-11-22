@@ -571,7 +571,7 @@ class User(db.Entity, SessionMixin, ModelMixin):
     def followed_user_ids(self):
         return orm.select(rv.whom_id for rv in m.Follow if rv.who_id == self.id and rv.whom_id is not None)
 
-    def get_timeline(self, page=1, from_id=None, count=None):
+    def get_timeline(self, page=1, from_id=None, count=config.paged):
         user_ids = self.followed_user_ids[:] or [0]
         user_ids.append(self.id)
         if not from_id:
@@ -579,8 +579,6 @@ class User(db.Entity, SessionMixin, ModelMixin):
                                 rv.user_id in user_ids).order_by(lambda rv:
                                                                  orm.desc(rv.created_at))[(page - 1) * config.paged: page * config.paged]
             return tweets
-        if not count:
-            count = config.paged
         all_ids = orm.select(rv.id for rv in m.Tweet if
                              rv.user_id in user_ids).order_by(lambda rv: orm.desc(rv.created_at))
         i = -1

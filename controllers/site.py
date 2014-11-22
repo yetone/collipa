@@ -59,23 +59,26 @@ class CommunityHandler(BaseHandler):
 class TimelineHandler(BaseHandler):
     @orm.db_session
     def get(self):
-        page = force_int(self.get_argument('page', 1), 1)
-        from_id = force_int(self.get_argument('from_id', 0), 0)
+        page = self.get_int('page', 1)
+        from_id = self.get_int('from_id', 0)
         user = self.current_user
         if not user:
             return self.redirect('/timeline/public')
         tweets = user.get_timeline(page=page, from_id=from_id)
         return self.render("site/timeline.html",
                            tweets=tweets,
+                           cate='private',
                            page=page)
 
 class PublicTimelineHandler(BaseHandler):
     @orm.db_session
     def get(self):
-        page = force_int(self.get_argument('page', 1), 1)
-        tweets = Tweet.get_timeline(page=page)
+        page = self.get_int('page', 1)
+        from_id = self.get_int('from_id', 0)
+        tweets = Tweet.get_timeline(page=page, from_id=from_id)
         return self.render("site/timeline.html",
                            tweets=tweets,
+                           cate='public',
                            page=page)
 
 

@@ -109,6 +109,16 @@
     </div>
   </div>
 {% end %}
+<ul class="tweet-cate-nav">
+  <li{% if cate == 'public' %} class="on"{% end %}>
+    <a href="/timeline/public">公共</a>
+  </li>
+  {% if current_user %}
+  <li{% if cate == 'private' %} class="on"{% end %}>
+    <a href="/timeline">关注</a>
+  </li>
+  {% end %}
+</ul>
 <div class="organ tweet-list">
   {% module Template("modules/tweet_list.html", tweets=tweets) %}
 </div>

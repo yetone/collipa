@@ -50,7 +50,7 @@ $(function() {
         var $ul = $('.tweet-list .item-list'),
             $lis = $ul.find('li.item'),
             id = $lis.last().data('id'),
-            url = '/timeline?from_id=' + id,
+            url = window.location.pathname + '?from_id=' + id,
             $ploading = $('<span class="ploading style-2"></span>');
         if (loadedId.indexOf(id) !== -1) {
           return;
