@@ -1800,10 +1800,8 @@ ul.users li a div.username span {
 }
 
 .tweet-box .toolbar {
-  height: 0;
-  opacity: 0;
-  -webkit-transition: height 0.6s linear;
-  -webkit-transition: opacity 0.3s linear;
+  padding: 10px 0;
+  display: none;
 }
 
 .tweet-editor {
@@ -1815,12 +1813,6 @@ ul.users li a div.username span {
 
 .focus .tweet-editor {
   min-height: 60px;
-}
-
-.focus .toolbar {
-  height: auto;
-  padding: 10px 0;
-  opacity: 1;
 }
 
 .tweet-editor:focus {
