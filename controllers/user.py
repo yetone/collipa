@@ -463,7 +463,7 @@ class AvatarUploadHandler(BaseHandler):
         tmp_file.seek(0)
         try:
             image_one = Image.open(tmp_file.name)
-        except IOError, error:
+        except IOError as error:
             logging.info(error)
             logging.info('+' * 30 + '\n')
             logging.info(self.request.headers)
@@ -610,7 +610,7 @@ class ImgUploadHandler(BaseHandler):
         tmp_file.seek(0)
         try:
             image_one = Image.open(tmp_file.name)
-        except IOError, error:
+        except IOError as error:
             logging.info(error)
             logging.info('+' * 30 + '\n')
             logging.info(self.request.headers)
@@ -645,23 +645,20 @@ class ImgUploadHandler(BaseHandler):
         if category == 'head':
             del_path = user.head_img
             user.head_img = path
-            result = {'path': path, 'status': "success", 'message':
-                      '头部背景设置成功', 'category': 'head'}
+            data = {'path': path, 'category': 'head'}
         elif category == 'background':
             del_path = user.background_img
             user.background_img = path
-            result = {'path': path, 'status': "success", 'message':
-                      '背景设置成功', 'category': 'background'}
+            data = {'path': path, 'category': 'background'}
         else:
-            result = {'path': path, 'status': "success", 'message':
-                      '图片上传成功'}
+            data = {'path': path, 'category': 'other'}
         if del_path:
             try:
                 os.system('rm -f %s%s' % (sys.path[0],
                                           del_path))
             except:
                 pass
-        return self.write(result)
+        return self.send_success_result(data=data)
 
 
 class ShowHandler(BaseHandler):
