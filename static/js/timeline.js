@@ -75,8 +75,7 @@ $(function() {
             );
           }
         });
-      },
-      blurTimer;
+      };
   $.Collipa.mention($D, document, $editor, null, checkBtn);
   $D.on('input', '.tweet-editor', function() {
     var $this = $(this),
@@ -86,6 +85,7 @@ $(function() {
   $D.on('focus', '.tweet-editor', function() {
     var $this = $(this),
         $box = $this.parents('.tweet-box');
+    if ($box.hasClass('focus')) return;
     $this.find('.tweet-placeholder').remove();
     $this.stop(true, true);
     $box.addClass('focus');
@@ -102,14 +102,16 @@ $(function() {
       duration: 500
     });
   });
-  $D.on('blur', '.tweet-editor', function() {
+  $D.on('click', '.tweet-box', function(e) {
+    e.stopPropagation();
+  });
+  $D.on('click', function() {
     var $this = $(this),
-        text = $.trim($this.text());
-    if (!text.length) {
-      blurTimer = setTimeout(function() {
-        editorEmpty($this);
-      }, 200);
+        text = $.trim($editor.text());
+    if (text.length > 0) {
+      return;
     }
+    editorEmpty($editor);
   });
   $D.on('keypress', '.tweet-editor', function(e) {
     if (e.ctrlKey && e.which == 13 || e.which == 10) {
@@ -197,7 +199,9 @@ $(function() {
       }
     });
   });
-  $('#pic-select').imageUpload({
+  $('#pic-select').on('click', function(e) {
+    e.stopPropagation();
+  }).imageUpload({
     cbk: function(data) {
       var img = '<span class="img-cover"><img data-id="' + data.id + '" src="' + data.path + '"><i class="icon-remove-circle"></i></span>',
           $area = $('.tweet-preview');
@@ -207,8 +211,6 @@ $(function() {
   });
   $D.on('click', '.add-img', function(e) {
     e.preventDefault();
-    clearTimeout(blurTimer);
-    $editor.focus();
     $('#pic-select').click();
   });
   $D.on('click', '.tweet-preview .img-cover i', function() {
@@ -216,7 +218,6 @@ $(function() {
         $imgCover = $this.parent('.img-cover'),
         id = $imgCover.find('img').data('id'),
         url = '/image/' + id;
-    clearTimeout(blurTimer);
     $editor.focus();
     $.ajax({
       url: url + '?_xsrf=' + get_cookie('_xsrf'),
