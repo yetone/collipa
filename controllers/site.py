@@ -70,6 +70,7 @@ class TimelineHandler(BaseHandler):
                            cate='private',
                            page=page)
 
+
 class PublicTimelineHandler(BaseHandler):
     @orm.db_session
     def get(self):
@@ -79,6 +80,19 @@ class PublicTimelineHandler(BaseHandler):
         return self.render("site/timeline.html",
                            tweets=tweets,
                            cate='public',
+                           page=page)
+
+
+class MeTimelineHandler(BaseHandler):
+    @orm.db_session
+    @tornado.web.authenticated
+    def get(self):
+        page = self.get_int('page', 1)
+        from_id = self.get_int('from_id', 0)
+        tweets = Tweet.get_timeline(page=page, from_id=from_id, user_id=self.current_user.id)
+        return self.render("site/timeline.html",
+                           tweets=tweets,
+                           cate='me',
                            page=page)
 
 

@@ -16,6 +16,7 @@ routers = [
     (r"/", site.CommunityHandler),
     (r"/timeline", site.TimelineHandler),
     (r"/timeline/public", site.PublicTimelineHandler),
+    (r"/timeline/me", site.MeTimelineHandler),
     (r"/account/setting", user.SettingHandler),
 
     (r"/signup[/]*", user.SignupHandler),
