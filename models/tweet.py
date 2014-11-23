@@ -111,13 +111,21 @@ class Tweet(db.Entity, SessionMixin, ModelMixin):
         return self
 
     @staticmethod
-    def get_timeline(page=1, from_id=None, count=config.paged):
+    def get_timeline(page=1, from_id=None, user_id=None, count=config.paged):
         if not from_id:
-            tweets = orm.select(rv for rv in Tweet).order_by(lambda rv:
-                                                             orm.desc(rv.created_at))[(page - 1) * count: page * count]
+            if not user_id:
+                tweets = orm.select(rv for rv in Tweet).order_by(lambda rv:
+                                                                 orm.desc(rv.created_at))[(page - 1) * count: page * count]
+            else:
+                tweets = orm.select(rv for rv in Tweet if rv.user_id == user_id).order_by(lambda rv:
+                                                                                          orm.desc(rv.created_at))[(page - 1) * count: page * count]
         else:
-            tweets = orm.select(rv for rv in m.Tweet if rv.id < from_id).order_by(lambda rv:
-                                                                                 orm.desc(rv.created_at))[:count]
+            if not user_id:
+                tweets = orm.select(rv for rv in m.Tweet if rv.id < from_id).order_by(lambda rv:
+                                                                                      orm.desc(rv.created_at))[:count]
+            else:
+                tweets = orm.select(rv for rv in m.Tweet if rv.id < from_id and rv.user_id == user_id).order_by(lambda rv:
+                                                                                                                orm.desc(rv.created_at))[:count]
         return tweets
 
     @property
