@@ -84,7 +84,8 @@ $(function() {
   });
   $D.on('focus', '.tweet-editor', function() {
     var $this = $(this),
-        $box = $this.parents('.tweet-box');
+        $box = $this.parents('.tweet-box'),
+        $toolbar = $box.find('.toolbar');
     if ($box.hasClass('focus')) return;
     $this.find('.tweet-placeholder').remove();
     $this.stop(true, true);
