@@ -92,7 +92,6 @@ $(function() {
     $box.addClass('focus');
     $toolbar.css({
       display: 'block',
-      overflow: 'hidden',
       height: 0,
       padding: 0
     }).animate({
