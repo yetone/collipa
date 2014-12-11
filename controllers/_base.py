@@ -69,8 +69,7 @@ class BaseHandler(tornado.web.RequestHandler):
                 self.request.headers['X-Requested-With'].lower() ==\
                 'xmlhttprequest':
             return True
-        else:
-            return False
+        return False
 
     @property
     def next_url(self):
