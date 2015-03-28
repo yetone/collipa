@@ -267,7 +267,7 @@ def pattern_image_url(url):
     return ret
 
 
-def generate_thumb_url(url, size, position='c'):
+def gen_thumb_url(url, size, position='c'):
     width, height = size
     img_param = pattern_image_url(url)
     if img_param:
@@ -289,7 +289,7 @@ def rcd(x):
 
 def crop(url, size, position='c', force=False):
     url = "%s/%s" % (ROOT, url.lstrip('/'))
-    path = generate_thumb_url(url, size, position=position)
+    path = gen_thumb_url(url, size, position=position)
     width, height = size
     try:
         image = Image.open(url)
@@ -337,11 +337,11 @@ def crop(url, size, position='c', force=False):
     return save_image(image, path)
 
 
-def generate_random_str(n=6):
+def gen_random_str(n=6):
     return ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba', n))
 
 
-def generate_upload_dir():
+def gen_upload_dir():
     now = datetime.now()
     upload_dir = os.path.join(ROOT, 'static/upload/image', now.strftime("%Y/%m/"))
     if not os.path.exists(upload_dir):
@@ -349,15 +349,15 @@ def generate_upload_dir():
     return upload_dir
 
 
-def generate_filename(suffix='jpeg'):
+def gen_filename(suffix='jpeg'):
     timestamp = int(time.time())
-    filename = '%d_%s.%s' % (timestamp, generate_random_str(), suffix)
+    filename = '%d_%s.%s' % (timestamp, gen_random_str(), suffix)
     return filename
 
 
-def generate_upload_path(suffix='jpeg'):
-    upload_dir = generate_upload_dir()
-    filename = generate_filename(suffix)
+def gen_upload_path(suffix='jpeg'):
+    upload_dir = gen_upload_dir()
+    filename = gen_filename(suffix)
     upload_path = os.path.join(upload_dir, filename)
     return upload_path
 

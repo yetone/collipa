@@ -8,7 +8,7 @@ from ._base import BaseHandler
 from .user import EmailMixin
 from collipa.libs.pil import Image as Img
 from collipa.models import Image, Album
-from collipa.helpers import require_permission, generate_upload_path, get_relative_path, force_int
+from collipa.helpers import require_permission, gen_upload_path, get_relative_path, force_int
 
 from collipa import config
 
@@ -131,7 +131,7 @@ class UploadHandler(BaseHandler):
 
         user = self.current_user
         suffix = img.format.lower()
-        upload_path = generate_upload_path(suffix=suffix)
+        upload_path = gen_upload_path(suffix=suffix)
 
         img.save(upload_path, img.format or 'JPEG')
         tmp_file.close()

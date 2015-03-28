@@ -1,14 +1,13 @@
 # coding: utf-8
 
 import time
-import random
 
 import os
 import sys
 import tornado.web
 from pony import orm
 from ._base import BaseHandler
-from collipa.helpers import get_year, get_month
+from collipa.helpers import get_year, get_month, gen_random_str
 
 
 class UploadHandler(BaseHandler):
@@ -25,7 +24,7 @@ class UploadHandler(BaseHandler):
         file_type_list = []
         if category == 'music':
             file_type_list = ['audio/mpeg', 'audio/x-wav', 'audio/mp3']
-        if file_type_list == []:
+        if not file_type_list:
             return
         send_file = self.request.files['myfile'][0]
         if send_file['content_type'] not in file_type_list:
@@ -50,16 +49,13 @@ class UploadHandler(BaseHandler):
             except:
                 pass
 
-        timestamp = str(int(time.time())) +\
-            ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                                    6)) + '_' + str(user.id)
+        timestamp = str(int(time.time())) + gen_random_str() + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         file_path = upload_path + timestamp + '.' + image_format
         with open(file_path, 'wb') as f:
             f.write(send_file['body'])
 
-        path = '/' +\
-            '/'.join(file_path.split('/')[file_path.split('/').index("static"):])
+        path = '/' + '/'.join(file_path.split('/')[file_path.split('/').index("static"):])
         if category == 'music':
             if self.is_ajax:
                 return self.write({

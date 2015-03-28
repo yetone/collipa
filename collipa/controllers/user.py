@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import time
-import random
 import hashlib
 import base64
 import tornado.web
@@ -17,7 +16,7 @@ from ._base import BaseHandler
 from collipa.models import User
 from collipa.forms import SignupForm, SigninForm, MessageForm, SettingForm
 from collipa.extensions import rd
-from collipa.helpers import force_int, get_year, get_month
+from collipa.helpers import force_int, get_year, get_month, gen_random_str
 from collipa.libs.pil import Image
 from collipa import config
 
@@ -482,7 +481,7 @@ class AvatarUploadHandler(BaseHandler):
         if user:
             timestamp += '_' + str(user.id)
         else:
-            timestamp += '_' + ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba', 6))
+            timestamp += '_' + gen_random_str()
         if not os.path.exists(upload_path):
             try:
                 os.system('mkdir -p %s' % upload_path)
@@ -493,7 +492,7 @@ class AvatarUploadHandler(BaseHandler):
         if os.path.exists(tmp_name):
             while True:
                 if os.path.exists(tmp_name):
-                    timestamp += '_' + ('').join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba', 6))
+                    timestamp += '_' + gen_random_str()
                     tmp_name = upload_path + timestamp + '.' + image_format
                 else:
                     break
@@ -630,8 +629,7 @@ class ImgUploadHandler(BaseHandler):
                 os.system('mkdir -p %s' % upload_path)
             except:
                 pass
-        timestamp = str(int(time.time())) + ''.join(random.sample('ZYXWVUTSRQPONMLKJIHGFEDCBAzyxwvutsrqponmlkjihgfedcba',
-                                                                  6)) + '_' + str(user.id)
+        timestamp = str(int(time.time())) + gen_random_str() + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
         tmp_name = upload_path + timestamp + '.' + image_format
         image_one.save(tmp_name)

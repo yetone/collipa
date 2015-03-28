@@ -45,15 +45,15 @@ class Image(db.Entity, BaseModel):
 
     @property
     def small_path(self):
-        return helpers.generate_thumb_url(self.path, (256, 0))
+        return helpers.gen_thumb_url(self.path, (256, 0))
 
     @property
     def middle_path(self):
-        return helpers.generate_thumb_url(self.path, (512, 0))
+        return helpers.gen_thumb_url(self.path, (512, 0))
 
     @property
     def large_path(self):
-        return helpers.generate_thumb_url(self.path, (1024, 0))
+        return helpers.gen_thumb_url(self.path, (1024, 0))
 
     def __setattr__(self, key, value):
         old_album_id = None

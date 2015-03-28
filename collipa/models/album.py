@@ -91,7 +91,7 @@ class Album(db.Entity, BaseModel):
             else:
                 cover = config.default_album_cover
         size = (128, 128)
-        return helpers.generate_thumb_url(cover, size)
+        return helpers.gen_thumb_url(cover, size)
 
     @cover.setter
     def cover(self, value):
