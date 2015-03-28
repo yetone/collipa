@@ -22,7 +22,7 @@ develop-eggs
 lib
 lib64
 log
-static/upload
+collipa/static/upload
 
 # Installer logs
 pip-log.txt
@@ -31,8 +31,7 @@ pip-log.txt
 .coverage
 .tox
 nosetests.xml
-config.py
-supervisord.conf
+collipa/local_config.py
 
 # Translations
 *.mo

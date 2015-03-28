@@ -4,9 +4,7 @@ import sys
 import getopt
 import MySQLdb
 from pony.orm import db_session
-import config
-
-config = config.Config()
+from collipa import config
 
 m = MySQLdb.Connect(host=config.db_host, user=config.db_user,
                     passwd=config.db_pass)
@@ -15,7 +13,7 @@ c = m.cursor()
 
 @db_session
 def init_node():
-    from models import Node
+    from collipa.models import Node
     if not Node.get(id=1):
         Node(name=u'根节点', urlname='root',
              description=u'一切的根源').save()
@@ -82,7 +80,7 @@ def main(argv):
                 merge()
             except Exception:
                 pass
-            from models import db
+            from collipa.models import db
             db.generate_mapping(create_tables=True)
             init_node()
             print("数据库表初始化成功")

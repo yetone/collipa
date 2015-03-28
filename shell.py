@@ -5,8 +5,8 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from pony import orm
-from models import *
 from IPython import embed
+from collipa.models import db
 
 
 @orm.db_session

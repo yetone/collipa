@@ -1,9 +1,7 @@
-import models as m
+import collipa.models as m
 from pony.orm import db_session, select
-import config
 
 m.db.generate_mapping()
-config = config.Config()
 
 
 @db_session
