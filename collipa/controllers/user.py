@@ -411,7 +411,7 @@ class SettingHandler(BaseHandler):
         user = self.current_user
         form = SettingForm.init(user=user, **self.request.arguments)
         if form.validate():
-            user = form.save(user)
+            form.save(user)
             return self.redirect_next_url()
         return self.render("user/setting.html", form=form)
 
@@ -477,7 +477,8 @@ class AvatarUploadHandler(BaseHandler):
             return
         timestamp = str(int(time.time()))
         user = self.current_user
-        upload_path = sys.path[0] + "/static/upload/avatar/"
+        # FIXME
+        upload_path = sys.path[0] + "/collipa/static/upload/avatar/"
         if user:
             timestamp += '_' + str(user.id)
         else:
