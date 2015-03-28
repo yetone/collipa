@@ -15,6 +15,7 @@ build
 eggs
 parts
 var
+bin
 sdist
 develop-eggs
 .installed.cfg
@@ -40,3 +41,4 @@ collipa/local_config.py
 .project
 .pydevproject
 .idea
+.venv
