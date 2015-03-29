@@ -215,7 +215,6 @@ class MessageHandler(BaseHandler):
     def get(self):
         page = force_int(self.get_argument('page', 1), 1)
         user_id = force_int(self.get_argument('user_id', 0), 0)
-        action = self.get_argument('action', None)
         current_user = self.current_user
         user = User.get(id=user_id)
         if not user:
@@ -223,9 +222,6 @@ class MessageHandler(BaseHandler):
             return self.render("user/message_box.html",
                                category=category, page=page)
         message_box = current_user.get_message_box(user=user)
-        if action == "read":
-            message_box.status = 1
-            return self.write({"status": "success", "message": "已读"})
         if not message_box:
             result = {"status": "error", "message": "无此私信"}
             return self.send_result(result)
@@ -238,6 +234,23 @@ class MessageHandler(BaseHandler):
                 orm.commit()
             except:
                 pass
+
+    @orm.db_session
+    @tornado.web.authenticated
+    def post(self):
+        action = self.get_argument('action', None)
+        if action != "read":
+            return
+        user_id = force_int(self.get_argument('user_id', 0), 0)
+        current_user = self.current_user
+        user = User.get(id=user_id)
+        if not user:
+            return self.send_error(404)
+        message_box = current_user.get_message_box(user=user)
+        if not message_box:
+            return self.send_error(404)
+        message_box.status = 1
+        return self.send_success_result(msg="已读")
 
 
 class MessageCreateHandler(BaseHandler):
@@ -655,7 +668,6 @@ class ImgUploadHandler(BaseHandler):
 class ShowHandler(BaseHandler):
     @orm.db_session
     def get(self):
-        import ipdb; ipdb.set_trace()
         page = force_int(self.get_argument('page', 1), 1)
         category = self.get_argument('category', None)
         limit = 12
@@ -670,10 +682,11 @@ class ShowHandler(BaseHandler):
             users = User.get_users(page=page)
             url = '/users?category=all'
         elif category == 'online':
-            online = rd.smembers("online") or [0]
-            online = [int(i) for i in online]
-            users = User.select(lambda rv: rv.id in online)
-            user_count = len(users)
+            online_members = User.get_online_members()
+            online_members = [int(i) for i in online_members]
+            user_count = len(online_members)
+            online_members = online_members[(page - 1) * config.user_paged: page * config.user_paged]
+            users = User.select(lambda rv: rv.id in online_members)
             page_count = (user_count + config.user_paged - 1) // config.user_paged
             url = '/users?category=online'
         return self.render("user/show.html", users=users, hot_users=hot_users,

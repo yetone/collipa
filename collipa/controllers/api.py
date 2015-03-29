@@ -13,95 +13,107 @@ from collipa.extensions import rd
 
 
 class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
-    users = set()
-    online = set()
+    users = {}
+    onlines = set()
 
     def allow_draft76(self):
         # for iOS 5.0 Safari
         return True
 
+    def __init__(self, application, request, **kwargs):
+        super(WebSocketHandler, self).__init__(application, request, **kwargs)
+        self.user_id = None
+        if self.current_user:
+            self.user_id = self.current_user.id
+
     @orm.db_session
     def open(self):
-        if self not in WebSocketHandler.users:
-            self.user_id = 0
-            if self.current_user:
-                self.user_id = self.current_user.id
-                WebSocketHandler.online.add(self.current_user.id)
-                rd.sadd("online", self.current_user.id)
-            WebSocketHandler.users.add(self)
-            logging.info("%s online" % self.user_id)
-            logging.info("ip is %s" % self.request.remote_ip)
-            WebSocketHandler.send_online()
+        if self.user_id:
+            if self.user_id not in self.users:
+                self.users[self.user_id] = set()
+            self.users[self.user_id].add(self)
+            User.online(self.user_id)
+        self.onlines.add(self)
+        self.send_online()
 
     def on_close(self):
-        if self in WebSocketHandler.users:
-            if self.current_user:
+        if self.user_id:
+            if self.user_id in self.users:
                 try:
-                    WebSocketHandler.online.remove(self.user_id)
-                except:
+                    self.users[self.user_id].remove(self)
+                except KeyError:
                     pass
-                rd.srem("online", self.user_id)
-            WebSocketHandler.users.remove(self)
-            logging.info("%s offline" % self.user_id)
-            WebSocketHandler.send_online()
+            User.offline(self.user_id)
+        self.onlines.remove(self)
+        self.send_online()
+
+    def send(self, event, extra=None, **kwargs):
+        extra = extra or {}
+        body = {
+            'event': event,
+            'extra': extra,
+            'data': kwargs,
+        }
+        self.write_message(body)
 
     @classmethod
     def send_online(cls):
-        online = rd.smembers("online")
-        logging.info("Online user count is " + unicode(len(online)))
-        for user in cls.users:
+        for ws in cls.onlines:
             try:
-                user.write_message({
-                    "type": "online",
-                    "count": unicode(len(online))
-                })
+                ws.send('online', count=User.get_online_count())
             except Exception as e:
                 logging.error("Error sending online user count", exc_info=True)
                 if type(e).__name__ == "AttributeError":
-                    try:
-                        WebSocketHandler.users.remove(user)
-                        rd.srem("online", user.user_id)
-                        WebSocketHandler.online.remove(user.user_id)
-                    except:
-                        pass
+                    ws.on_close()
 
     @classmethod
     @orm.db_session
     def send_message(cls, user_id, message):
         logging.info("Message send")
-        for this in cls.users:
-            if this.user_id == user_id:
-                try:
-                    user = User[user_id]
-                    this.write_message({
-                        "type": "message",
-                        "count": user.unread_message_box_count,
-                        "content": message.content,
-                        "created": message.created,
-                        "id": message.id,
-                        "avatar": message.sender.get_avatar(size=48),
-                        "sender_id": message.sender.id,
-                        "url": message.sender.url,
-                        "nickname": message.sender.nickname,
-                        "message_box_id": message.message_box2_id
-                    })
-                except Exception, e:
-                    print e
-                    logging.error("Error sending message", exc_info=True)
+        if user_id not in cls.users:
+            return
+        user = User[user_id]
+        if not user:
+            return
+        data = {
+            "count": user.unread_message_box_count,
+            "content": message.content,
+            "created": message.created,
+            "id": message.id,
+            "avatar": message.sender.get_avatar(size=48),
+            "sender_id": message.sender.id,
+            "url": message.sender.url,
+            "nickname": message.sender.nickname,
+            "message_box_id": message.message_box2_id,
+        }
+
+        wss = cls.users[user_id]
+        for ws in wss:
+            try:
+                ws.send('message', **data)
+            except Exception, e:
+                logging.error(e)
+                logging.error("Error sending message", exc_info=True)
 
     @classmethod
     @orm.db_session
     def send_notification(cls, user_id):
         logging.info("Notification send")
-        for this in cls.users:
-            if this.user_id == user_id:
-                try:
-                    user = User[user_id]
-                    this.write_message({"type": "notification",
-                                        "count": user.unread_notification_count})
-                except Exception, e:
-                    print e
-                    logging.error("Error sending notification", exc_info=True)
+        if user_id not in cls.users:
+            return
+        user = User[user_id]
+        if not user:
+            return
+        data = {
+            "count": user.unread_notification_count,
+        }
+        wss = cls.users[user_id]
+        for ws in wss:
+            try:
+                ws.send('notification', **data)
+            except Exception, e:
+                logging.error(e)
+                logging.error("Error sending notification", exc_info=True)
 
     def on_message(self, message):
         logging.info(message)

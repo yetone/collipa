@@ -66,6 +66,9 @@ class User(db.Entity, BaseModel):
     head_img = orm.Optional(unicode, 400)
     background_img = orm.Optional(unicode, 400)
 
+    KEY_ONLINE = 'online:{id}'
+    KEY_G_ONLINE = 'online'
+
     @classmethod
     def init(cls, **kwargs):
         token = cls.create_token(16)
@@ -822,6 +825,25 @@ class User(db.Entity, BaseModel):
 
     @property
     def is_online(self):
-        online = rd.smembers("online") or [0]
-        online = [int(i) for i in online]
-        return self.id in online
+        key = self.KEY_ONLINE.format(**self._vals_)
+        return not not rd.get(key)
+
+    @classmethod
+    def online(cls, user_id):
+        key = cls.KEY_ONLINE.format(id=user_id)
+        rd.set(key, True)
+        rd.sadd(cls.KEY_G_ONLINE, user_id)
+
+    @classmethod
+    def offline(cls, user_id):
+        key = cls.KEY_ONLINE.format(id=user_id)
+        rd.delete(key)
+        rd.srem(cls.KEY_G_ONLINE, user_id)
+
+    @classmethod
+    def get_online_members(cls):
+        return rd.smembers(cls.KEY_G_ONLINE) or []
+
+    @classmethod
+    def get_online_count(cls):
+        return len(cls.get_online_members())
