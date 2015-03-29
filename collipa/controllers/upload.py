@@ -3,11 +3,11 @@
 import time
 
 import os
-import sys
 import tornado.web
 from pony import orm
 from ._base import BaseHandler
-from collipa.helpers import get_year, get_month, gen_random_str
+from collipa.helpers import get_year, get_month, gen_random_str, mkdir_p, get_relative_path
+from collipa import config
 
 
 class UploadHandler(BaseHandler):
@@ -41,28 +41,27 @@ class UploadHandler(BaseHandler):
 
         user = self.current_user
         if category == 'music':
-            upload_path = sys.path[0] + "/static/upload/music/" + get_year() + '/' +\
-                get_month() + "/"
-        if not os.path.exists(upload_path):
-            try:
-                os.system('mkdir -p %s' % upload_path)
-            except:
-                pass
+            upload_path = os.path.join(config.upload_path, 'music', get_year(), get_month())
+        else:
+            return
+        mkdir_p(upload_path)
 
         timestamp = str(int(time.time())) + gen_random_str() + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
-        file_path = upload_path + timestamp + '.' + image_format
+        filename = timestamp + '.' + image_format
+        file_path = os.path.join(upload_path, filename)
         with open(file_path, 'wb') as f:
             f.write(send_file['body'])
 
-        path = '/' + '/'.join(file_path.split('/')[file_path.split('/').index("static"):])
-        if category == 'music':
-            if self.is_ajax:
-                return self.write({
-                    'path': path,
-                    'status': "success",
-                    'message': '上传成功',
-                    'category': 'music',
-                    'content_type': send_file['content_type'],
-                })
-        return
+        path = '/' + get_relative_path(file_path)
+
+        if not self.is_ajax:
+            return
+
+        return self.write({
+            'path': path,
+            'status': "success",
+            'message': '上传成功',
+            'category': category,
+            'content_type': send_file['content_type'],
+        })

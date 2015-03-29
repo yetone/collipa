@@ -1,7 +1,5 @@
 # coding: utf-8
 
-import os
-import sys
 import hashlib
 from random import choice
 import time
@@ -10,7 +8,7 @@ from pony import orm
 from ._base import db, BaseModel
 from collipa import config
 import collipa.models
-from collipa.helpers import format_date2, strip_tags
+from collipa.helpers import format_date2, strip_tags, remove_file, get_asset_path
 from collipa.extensions import mc, rd, memcached
 
 
@@ -136,8 +134,10 @@ class User(db.Entity, BaseModel):
         elif category == 'head':
             path = self.head_img
             self.head_img = ''
+        else:
+            return False
         try:
-            os.system('rm -f %s%s' % (sys.path[0], path))
+            remove_file(get_asset_path(path))
             return True
         except:
             return False

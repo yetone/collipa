@@ -59,4 +59,19 @@ $(function() {
       }
     }
   });
+  $D.on('click', 'a[data-method]', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var url = $this.data('url');
+    var method = $this.data('method');
+    var reload = $this.data('reload');
+    $.ajax({
+      url: url,
+      type: method
+    }).done(function() {
+      if (reload) {
+        location.reload();
+      }
+    });
+  });
 });

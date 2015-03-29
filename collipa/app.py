@@ -22,8 +22,8 @@ from collipa.routers import routers
 class Application(tornado.web.Application):
     def __init__(self):
         settings = dict(
-            template_path=os.path.join(os.path.dirname(__file__), "views"),
-            static_path=os.path.join(os.path.dirname(__file__), "static"),
+            template_path=config.template_path,
+            static_path=config.static_path,
             ui_modules=uimodules,
             xsrf_cookies=True,
             cookie_secret=config.cookie_secret,

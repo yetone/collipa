@@ -5,7 +5,6 @@ import hashlib
 import base64
 import tornado.web
 import os
-import sys
 import logging
 import tempfile
 from pony import orm
@@ -16,7 +15,16 @@ from ._base import BaseHandler
 from collipa.models import User
 from collipa.forms import SignupForm, SigninForm, MessageForm, SettingForm
 from collipa.extensions import rd
-from collipa.helpers import force_int, get_year, get_month, gen_random_str
+from collipa.helpers import (
+    force_int,
+    get_year,
+    get_month,
+    gen_random_str,
+    get_asset_path,
+    mkdir_p,
+    get_relative_path,
+    remove_file,
+)
 from collipa.libs.pil import Image
 from collipa import config
 
@@ -392,15 +400,6 @@ class SettingHandler(BaseHandler):
     @orm.db_session
     @tornado.web.authenticated
     def get(self):
-        action = self.get_argument("action", None)
-        if action:
-            if action == 'reset_head':
-                self.current_user.reset_img('head')
-                result = {"status": "success", "message": "头部背景已重置"}
-            elif action == 'reset_bg':
-                self.current_user.reset_img('background')
-                result = {"status": "success", "message": "背景已重置"}
-            return self.send_result(result, '/account/setting')
         user = self.current_user
         form = SettingForm.init(user)
         return self.render("user/setting.html", form=form)
@@ -415,6 +414,21 @@ class SettingHandler(BaseHandler):
             return self.redirect_next_url()
         return self.render("user/setting.html", form=form)
 
+    @orm.db_session
+    @tornado.web.authenticated
+    def delete(self):
+        action = self.get_argument("action", None)
+        if not action:
+            return
+        result = {}
+        if action == 'reset_head':
+            self.current_user.reset_img('head')
+            result = {"status": "success", "message": "头部背景已重置"}
+        elif action == 'reset_bg':
+            self.current_user.reset_img('background')
+            result = {"status": "success", "message": "背景已重置"}
+        return self.send_result(result, '/account/setting')
+
 
 class AvatarDelHandler(BaseHandler):
     @orm.db_session
@@ -423,8 +437,7 @@ class AvatarDelHandler(BaseHandler):
         user = self.current_user
         if user.avatar:
             try:
-                os.system('rm -f %s%s*' % (sys.path[0],
-                                           user.avatar[:user.avatar.rfind('x')]))
+                os.system('rm -f %s*' % get_asset_path(user.avatar[:user.avatar.rfind('x')]))
             except:
                 pass
             user.avatar = None
@@ -477,33 +490,28 @@ class AvatarUploadHandler(BaseHandler):
             return
         timestamp = str(int(time.time()))
         user = self.current_user
-        # FIXME
-        upload_path = sys.path[0] + "/collipa/static/upload/avatar/"
+        upload_path = os.path.join(config.upload_path, 'avatar')
+        mkdir_p(upload_path)
         if user:
             timestamp += '_' + str(user.id)
         else:
             timestamp += '_' + gen_random_str()
-        if not os.path.exists(upload_path):
-            try:
-                os.system('mkdir -p %s' % upload_path)
-            except:
-                pass
         image_format = send_file['filename'].split('.').pop().lower()
-        tmp_name = upload_path + timestamp + '.' + image_format
-        if os.path.exists(tmp_name):
+        filename = timestamp + '.' + image_format
+        tmp_path = os.path.join(upload_path, filename)
+        if os.path.exists(tmp_path):
             while True:
-                if os.path.exists(tmp_name):
+                if os.path.exists(tmp_path):
                     timestamp += '_' + gen_random_str()
-                    tmp_name = upload_path + timestamp + '.' + image_format
+                    filename = timestamp + '.' + image_format
+                    tmp_path = os.path.join(upload_path, filename)
                 else:
                     break
-        image_one.save(tmp_name)
+        image_one.save(tmp_path)
         tmp_file.close()
+        src = '/' + get_relative_path(tmp_path)
         if user:
-            user.avatar_tmp = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
-            src = user.avatar_tmp
-        else:
-            src = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+            user.avatar_tmp = src
         data = {"src": src, "height": height, "width": width}
         return self.send_success_result(msg=u'成功上传头像', data=data)
 
@@ -527,10 +535,10 @@ class AvatarCropHandler(BaseHandler):
         h = int(self.get_argument('h', 128))
 
         box = (x, y, x + w, y + h)
-        avatar = sys.path[0] + user.avatar_tmp
+        avatar = get_asset_path(user.avatar_tmp)
 
         image_format = avatar[avatar.rfind('.'):]
-        save_path = avatar[: avatar.rfind('.')]
+        save_path = avatar[:avatar.rfind('.')]
 
         image = Image.open(avatar).crop(box)
         tmp_name = save_path + '_crop' + image_format
@@ -544,8 +552,7 @@ class AvatarCropHandler(BaseHandler):
 
         if user.avatar:
             try:
-                os.system('rm -f %s%s*' %
-                          (sys.path[0], user.avatar[:user.avatar.rfind('.')]))
+                os.system('rm -f %s*' % get_asset_path(user.avatar[:user.avatar.rfind('.')]))
             except:
                 pass
         user.avatar = user.avatar_tmp
@@ -562,12 +569,8 @@ class AvatarCropHandler(BaseHandler):
 class BackgroundDelHandler(BaseHandler):
     @orm.db_session
     @tornado.web.authenticated
-    def get(self):
-        try:
-            os.system('rm -f %s%s' % (sys.path[0],
-                                      self.current_user.background_img))
-        except:
-            pass
+    def post(self):
+        remove_file(get_asset_path(self.current_user.background_img))
         self.current_user.background_img = ''
         try:
             orm.commit()
@@ -623,19 +626,15 @@ class ImgUploadHandler(BaseHandler):
                         "message": "对不起，请上传长宽在80px~30000px之间的图片！"})
             return
         user = self.current_user
-        upload_path = sys.path[0] + "/static/upload/" + get_year() + '/' +\
-            get_month() + "/"
-        if not os.path.exists(upload_path):
-            try:
-                os.system('mkdir -p %s' % upload_path)
-            except:
-                pass
+        upload_path = os.path.join(config.upload_path, get_year(), get_month())
+        mkdir_p(upload_path)
         timestamp = str(int(time.time())) + gen_random_str() + '_' + str(user.id)
         image_format = send_file['filename'].split('.').pop().lower()
-        tmp_name = upload_path + timestamp + '.' + image_format
-        image_one.save(tmp_name)
+        filename = timestamp + '.' + image_format
+        tmp_path = os.path.join(upload_path, filename)
+        image_one.save(tmp_path)
         tmp_file.close()
-        path = '/' + '/'.join(tmp_name.split('/')[tmp_name.split('/').index("static"):])
+        path = '/' + get_relative_path(tmp_path)
         category = self.get_argument('category', None)
         del_path = None
         if category == 'head':
@@ -649,17 +648,14 @@ class ImgUploadHandler(BaseHandler):
         else:
             data = {'path': path, 'category': 'other'}
         if del_path:
-            try:
-                os.system('rm -f %s%s' % (sys.path[0],
-                                          del_path))
-            except:
-                pass
+            remove_file(get_asset_path(del_path))
         return self.send_success_result(data=data)
 
 
 class ShowHandler(BaseHandler):
     @orm.db_session
     def get(self):
+        import ipdb; ipdb.set_trace()
         page = force_int(self.get_argument('page', 1), 1)
         category = self.get_argument('category', None)
         limit = 12

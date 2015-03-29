@@ -1,23 +1,19 @@
 # coding: utf-8
-"""
-don't move this file!!!
-"""
 
-from HTMLParser import HTMLParser
-from functools import wraps
 import os
+import errno
 import re
 import time
-from datetime import datetime
 import random
 import logging
 import math
+from functools import wraps
+from datetime import datetime
+from HTMLParser import HTMLParser
 
 from collipa import config
 from collipa.libs import xss
 from collipa.libs.pil import Image
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 class UsernameParser(HTMLParser):
@@ -288,7 +284,7 @@ def rcd(x):
 
 
 def crop(url, size, position='c', force=False):
-    url = "%s/%s" % (ROOT, url.lstrip('/'))
+    url = "%s/%s" % (config.root_path, url.lstrip('/'))
     path = gen_thumb_url(url, size, position=position)
     width, height = size
     try:
@@ -343,7 +339,7 @@ def gen_random_str(n=6):
 
 def gen_upload_dir():
     now = datetime.now()
-    upload_dir = os.path.join(ROOT, 'static/upload/image', now.strftime("%Y/%m/"))
+    upload_dir = os.path.join(config.root_path, 'static/upload/image', now.strftime("%Y/%m/"))
     if not os.path.exists(upload_dir):
         os.makedirs(upload_dir)
     return upload_dir
@@ -363,4 +359,27 @@ def gen_upload_path(suffix='jpeg'):
 
 
 def get_relative_path(absolute_path):
-    return os.path.relpath(absolute_path, ROOT)
+    return os.path.relpath(absolute_path, config.root_path)
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as e:
+        if e.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+
+def get_asset_path(relative_path):
+    relative_path = relative_path.lstrip('/')
+    if relative_path.startswith('static/'):
+        return os.path.join(config.root_path, relative_path)
+    return os.path.join(config.static_path, relative_path)
+
+
+def remove_file(file_path):
+    if not os.path.isfile(file_path):
+        return
+    os.remove(file_path)

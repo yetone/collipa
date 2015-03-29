@@ -1,5 +1,7 @@
 # coding: utf-8
 
+import os
+
 debug = True
 
 db_user = "username"  # database username
@@ -28,6 +30,10 @@ user_paged = 30
 node_paged = 32
 default_timezone = 'Asia/Shanghai'
 
+root_path = os.path.dirname(os.path.abspath(__file__))
+template_path = os.path.join(root_path, 'views')
+static_path = os.path.join(root_path, 'static')
+upload_path = os.path.join(static_path, 'upload')
 user_avatar_url = '/static/public/img/avatar.png'
 user_head_url = '/static/public/img/user_head.jpg'
 user_background_url = '/static/public/img/user_background.jpg'
