@@ -8,13 +8,13 @@ import os
 import logging
 import tempfile
 from pony import orm
+from concurrent import futures
 
 from .api import WebSocketHandler
 from ._base import BaseHandler
 
 from collipa.models import User
 from collipa.forms import SignupForm, SigninForm, MessageForm, SettingForm
-from collipa.extensions import rd
 from collipa.helpers import (
     force_int,
     get_year,
@@ -558,10 +558,14 @@ class AvatarCropHandler(BaseHandler):
         image.save(tmp_name)
 
         size_set = ((48, 48), (60, 60), (128, 128))
-        for size in size_set:
-            image = Image.open(avatar).crop(box).resize(size, Image.ANTIALIAS)
-            tmp_name = '%sx%d%s' % (save_path, size[0], image_format)
-            image.save(tmp_name)
+
+        def resize(size):
+            image_ = Image.open(avatar).crop(box).resize(size, Image.ANTIALIAS)
+            tmp_name_ = '%sx%d%s' % (save_path, size[0], image_format)
+            image_.save(tmp_name_)
+
+        with futures.ThreadPoolExecutor(max_workers=len(size_set)) as exe:
+            list(exe.map(resize, size_set))
 
         if user.avatar:
             try:

@@ -4,6 +4,9 @@ import os
 import sys
 import time
 from pony import orm
+from functools import partial
+from concurrent import futures
+
 from ._base import db, BaseModel
 import collipa.models
 from collipa import config
@@ -137,8 +140,9 @@ class Image(db.Entity, BaseModel):
 
     def crop(self):
         size_list = [(128, 128), (256, 256), (512, 512), (1024, 1024), (128, 0), (256, 0), (512, 0), (1024, 0)]
-        for size in size_list:
-            helpers.crop(self.path, size)
+        crop = partial(helpers.crop, self.path)
+        with futures.ThreadPoolExecutor(max_workers=len(size_list)) as exe:
+            list(exe.map(crop, size_list))
 
     def to_simple_dict(self):
         data = {

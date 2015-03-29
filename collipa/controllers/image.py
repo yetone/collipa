@@ -121,8 +121,7 @@ class UploadHandler(BaseHandler):
                         "message": "对不起，此文件不是图片"})
             return
 
-        width = img.size[0]
-        height = img.size[1]
+        width, height = img.size
         if width < 80 or height < 80 or width > 30000 or height > 30000:
             tmp_file.close()
             self.write({"status": "error",
