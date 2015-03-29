@@ -82,7 +82,7 @@ class ListHandler(BaseHandler):
         object_list = []
         for image in images:
             object_list.append(image.to_dict())
-        return self.write({'status': 'success', 'object_list': object_list, 'has_more': has_more})
+        return self.send_success_result(object_list=object_list, has_more=has_more)
 
 
 class UploadHandler(BaseHandler):
@@ -150,4 +150,4 @@ class UploadHandler(BaseHandler):
                       width=width,
                       height=height).save()
         image.crop()
-        return self.send_success_result(msg=u'上传成功', data=image.to_dict())
+        return self.send_success_result(msg=u'上传成功', **image.to_dict())

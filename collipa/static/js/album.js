@@ -1,86 +1,31 @@
 /**
  * Created by yetone on 14-7-13.
  */
-Array.prototype.min = function() {
-  return Math.min.apply(Math, this);
-};
 
-Array.prototype.max = function() {
-  return Math.max.apply(Math, this);
-};
-
-Array.prototype.minIndex = function() {
-  var min = this.min();
-  return this.indexOf(min);
-};
-
-Array.prototype.maxIndex = function() {
-  var min = this.max();
-  return this.indexOf(max);
-};
-
-function waterfall(opt, undefined) {
-  opt = $.extend({
-    selector: '.image-item',
-    wrapper: '.image-list',
-    src: '.image-src'
-  }, opt);
-  var $imgs = $(opt.selector),
-      $wrapper = $(opt.wrapper),
-      hl = [];
-  if (!opt.width) {
-    opt.width = $imgs.width();
-  }
-  if (opt.marginLeft === undefined) {
-    opt.marginLeft = $imgs.css('margin-left');
-  }
-  if (opt.marginTop === undefined) {
-    opt.marginTop = $imgs.css('margin-top');
-  }
-  if (!opt.count) {
-    opt.count = Math.floor($wrapper.width() / (opt.width + opt.marginLeft));
-  }
-  for (var i = 0; i < opt.count; i++) {
-    hl.push(0);
-  }
-
-  $imgs.each(function(i, e) {
-    var $img = $(e),
-        $src = $img.find(opt.src),
-        height = opt.width / $src.data('width') * $src.data('height'),
-        min = hl.min(),
-        minIndex = hl.minIndex();
-    $img.css({
-      left: minIndex * (opt.marginLeft + opt.width) + opt.marginLeft,
-      top: min + opt.marginTop,
-      display: 'block'
-    });
-    $img.width(opt.width);
-    $img.find('img').width(opt.width);
-    hl[minIndex] = min + height + opt.marginTop;
-    $wrapper.height(hl.max() + 20);
-  });
-}
-
-function initWaterfall() {
-  var marginTop = marginLeft = 20,
-      count = 3,
-      width = void 0,
-      wWidth = $('#shape').width();
-  if (wWidth < 600) {
-    marginTop = marginLeft = 10;
-    count = 2;
-  }
-  width = (wWidth - (count + 1) * marginLeft) / count;
-  waterfall({
-    marginTop: marginTop,
-    marginLeft: marginLeft,
-    width: width,
-    count: count
-  });
-}
 $(function() {
-  initWaterfall();
+  function initWaterfall($items, done) {
+    var spacingWidth,
+        spacingHeight = spacingWidth = 10,
+        count = 3,
+        wWidth = $('.image-list').outerWidth();
+    if (wWidth < 600) {
+      spacingHeight = spacingWidth = 10;
+      count = 2;
+    }
+    var width = (wWidth - (count + 1) * spacingWidth) / count;
+    ($items || $('.image-item')).waterfall({
+      wrapperSelector: '.image-list',
+      imageSelector: '.image-src',
+      spacingHeight: spacingHeight,
+      spacingWidth: spacingWidth,
+      marginTop: 10,
+      width: width,
+      count: count,
+      isFadeIn: true,
+      done: done
+    });
+  }
+
   $('.image-list').hammer({
     hold_timeout: 1000,
     stop_browser_behavior: {userSelect: ''}
@@ -116,54 +61,65 @@ $(function() {
       ok: function(obj) {
         $.ajax({
           url: $image.find('.image-p').data('href'),
-          type: 'DELETE',
-          success: function(jsn) {
-            noty(jsn);
-            obj.cbk();
-            if (jsn.status === 'success') {
-              console.log(jsn);
-              $image.animate({opacity: 0}, 800, function() {
-                $(this).remove();
-                initWaterfall();
-              });
-            }
+          type: 'DELETE'
+        }).done(function(jsn) {
+          noty(jsn);
+          obj.cbk();
+          if (jsn.status !== 'success') {
+            return;
           }
+          $image.animate({opacity: 0}, 800, function() {
+            $(this).remove();
+          });
         });
       }
     });
   });
 
-  G.imageLoadedId = [];
   function loadNextPage() {
-    var $images = $('.image-item'),
+    var $wrapper = $('.image-list'),
+        $images = $wrapper.find('.image-item'),
         fromId = $images.last().data('id'),
         albumId = $('.image-list-wrap').data('album-id'),
-        url = '/image/list/?album_id=' + albumId + '&from_id=' + fromId,
+        url = '/image/list/',
+        data = {
+          album_id: albumId,
+          from_id: fromId
+        },
         pageLoading = new G.PageLoading();
 
-    if (pageLoading.isLoading() || typeof fromId !== 'number' || G.imageLoadedId.indexOf(fromId) >= 0) {
+    if ($wrapper.prop('over') || pageLoading.isLoading()) {
       return;
     }
-    G.imageLoadedId.push(fromId);
+
     pageLoading.start();
 
-
     $.ajax({
-      url: url,
       type: 'GET',
-      dataType: 'JSON',
-      success: function(data) {
+      url: url,
+      data: data
+    }).done(function(jsn) {
+      $wrapper.prop('over', !jsn.data.has_more);
+      if ($wrapper.prop('over')) {
         pageLoading.stop();
-        var source = $('#image-list-template').html(),
-            render = template.compile(source),
-            html = render(data);
-        $('.image-list').append(html);
-        initWaterfall();
       }
-    })
+      var source = $('#image-list-template').html(),
+          render = template.compile(source),
+          html = render(jsn.data),
+          $items = $(html);
+      $('.image-list').append($items);
+      $items = $items.filter(function() {
+        return this.nodeType === 1;
+      });
+      initWaterfall($items, function() {
+        pageLoading.stop();
+      });
+    });
   }
 
-  $W.on('scroll', function() {
-    ($(document).scrollTop() + $(window).height() > $(document).height() - G.autoLoadHeight) && loadNextPage();
+  initWaterfall(null, function() {
+    $W.on('scroll', function() {
+      ($(document).scrollTop() + $(window).height() > $(document).height() - G.autoLoadHeight) && loadNextPage();
+    });
   });
 });

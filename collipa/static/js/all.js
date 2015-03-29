@@ -89,8 +89,7 @@ $(function() {
     cbk: function(_data) {
       var $imagePreview = $('.upload-popout .image-preview'),
           source = $('#upload-tpl').html(),
-          render = template.compile(source),
-          width = 0;
+          render = template.compile(source);
       if ($imagePreview.length) {
         $imagePreview.append('<img data-id="' + _data.id + '" src="' + _data.path + '">');
         imagePreviewHandler();
@@ -98,46 +97,43 @@ $(function() {
       }
       $.ajax({
         url: '/album/list',
-        type: 'GET',
-        dataType: 'json',
-        success: function(jsn) {
-          var html;
-          jsn.image = _data;
-          html = render(jsn);
-          $.Collipa.popout({
-            html: html,
-            cbk: function() {
-              imagePreviewHandler();
-              initChosen();
-            },
-            ok: function(opt) {
-              var $select = $('.album-select select'),
-                  $images = $('.upload-popout .image-preview img'),
-                  album_id = $select.val(),
-                  image_id;
-              $images.each(function(i, e) {
-                var $e = $(e),
-                    image_id = $e.data('id');
-                $.ajax({
-                  url: '/image/' + image_id,
-                  type: 'PUT',
-                  data: {
-                    album_id: album_id
-                  },
-                  dataType: 'json',
-                  success: function(jsn) {
-                    if (jsn.status !== 'success') {
-                      return noty(jsn);
-                    }
-                    if (i === $images.length - 1) {
-                      opt.cbk();
-                    }
-                  }
-                })
+        type: 'GET'
+      }).done(function(jsn) {
+        var html;
+        var data = {};
+        data.image = _data;
+        data.data = jsn.data;
+        html = render(data);
+        $.Collipa.popout({
+          html: html,
+          cbk: function() {
+            imagePreviewHandler();
+            initChosen();
+          },
+          ok: function(opt) {
+            var $select = $('.album-select select'),
+                $images = $('.upload-popout .image-preview img'),
+                album_id = $select.val();
+            $images.each(function(i) {
+              var $e = $(this),
+                  image_id = $e.data('id');
+              $.ajax({
+                url: '/image/' + image_id,
+                type: 'PUT',
+                data: {
+                  album_id: album_id
+                }
+              }).done(function(jsn) {
+                if (jsn.status !== 'success') {
+                  return noty(jsn);
+                }
+                if (i === $images.length - 1) {
+                  opt.cbk();
+                }
               });
-            },
-          })
-        }
+            });
+          }
+        })
       })
     }
   });

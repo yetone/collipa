@@ -80,7 +80,7 @@ class CreateHandler(BaseHandler):
             return self.send_error_result(msg=u'专辑名不能超过 10 个字符')
 
         album = Album(name=name, user_id=user.id).save()
-        return self.send_success_result(data=album.to_dict())
+        return self.send_success_result(**album.to_dict())
 
 
 class ListHandler(BaseHandler):
@@ -97,4 +97,4 @@ class ListHandler(BaseHandler):
         data = {
             'object_list': object_list,
         }
-        return self.send_success_result(data=data)
+        return self.send_success_result(**data)

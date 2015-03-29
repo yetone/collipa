@@ -2094,6 +2094,7 @@ ul.users li a div.username span {
 
 .image-list {
   position: relative;
+  padding: 10px;
 }
 
 .image-item {

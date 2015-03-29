@@ -858,6 +858,79 @@ $(function() {
           break;
       }
       return self;
+    },
+
+    waterfall: function(opt) {
+      function getMin(arr) {
+        return Math.min.apply(Math, arr);
+      }
+
+      function getMax(arr) {
+        return Math.max.apply(Math, arr);
+      }
+
+      var undefined,
+          $items = this,
+          $wrapper = $(opt.wrapperSelector),
+          wrapperWidth = $wrapper.outerWidth(),
+          hl = $wrapper.data('hl') || [];
+
+      opt = $.extend({
+        isFadeIn: false,
+        width: $items.css('width'),
+        spacingWidth: $items.css('margin-left'),
+        spacingHeight: $items.css('margin-top'),
+        align: 'center',
+        marginTop: 0
+      }, opt);
+
+      if (!opt.count) {
+        opt.count = Math.floor((wrapperWidth + opt.spacingWidth) / (opt.width + opt.spacingWidth));
+      }
+
+      if (opt.marginLeft === undefined) {
+        if (opt.align === 'center') {
+          opt.marginLeft = (wrapperWidth - opt.width * opt.count - opt.spacingWidth * (opt.count - 1)) / 2;
+        } else {
+          opt.marginLeft = 0;
+        }
+      }
+
+      if (!hl.length) {
+        for (var i = 0; i < opt.count; i++) {
+          hl.push(0);
+        }
+      }
+
+      $items.each(function(i) {
+        var $item = $(this),
+            $img = $item.find(opt.imageSelector),
+            src = $img.data('src'),
+            min = getMin(hl),
+            minIndex = $.inArray(min, hl),
+            width = $img.data('width'),
+            height = $img.data('height');
+
+        $item.css({
+          left: minIndex * (opt.spacingWidth + opt.width) + opt.marginLeft,
+          top: min + opt.marginTop,
+          display: 'block'
+        });
+
+        if (opt.isFadeIn) {
+          $item.animate({opacity: 1}, 300);
+        }
+
+        $item.width(opt.width);
+        $img.width(opt.width).height(opt.width / width * height);
+        hl[minIndex] = min + $item.outerHeight() + opt.spacingHeight;
+        $wrapper.height(getMax(hl));
+
+        if (i >= $items.length - 1) {
+          $wrapper.data('hl', hl);
+          opt.done && opt.done();
+        }
+      });
     }
   });
   $.Collipa.shapeResize = function(data) {

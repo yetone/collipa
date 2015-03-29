@@ -150,10 +150,12 @@ class BaseHandler(tornado.web.RequestHandler):
         result = {'status': 'error', 'message': msg}
         return self.send_result(result, redirect_url)
 
-    def send_success_result(self, msg=u'操作成功', data=None, redirect_url=None):
-        result = {'status': 'success', 'message': msg}
-        if data:
-            result.update({'data': data})
+    def send_success_result(self, msg=u'操作成功', redirect_url=None, **kwargs):
+        result = {
+            'status': 'success',
+            'message': msg,
+            'data': kwargs,
+        }
         return self.send_result(result, redirect_url)
 
     def get_int(self, name, default=None):

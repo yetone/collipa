@@ -526,7 +526,7 @@ class AvatarUploadHandler(BaseHandler):
         if user:
             user.avatar_tmp = src
         data = {"src": src, "height": height, "width": width}
-        return self.send_success_result(msg=u'成功上传头像', data=data)
+        return self.send_success_result(msg=u'成功上传头像', **data)
 
 
 class AvatarCropHandler(BaseHandler):
@@ -576,7 +576,7 @@ class AvatarCropHandler(BaseHandler):
         src = self.current_user.avatar_tmp
         avatar = self.current_user.get_avatar(size=128)
         data = {"src": src, "avatar": avatar}
-        return self.send_success_result(msg=u'头像设置成功', data=data)
+        return self.send_success_result(msg=u'头像设置成功', **data)
 
 
 class BackgroundDelHandler(BaseHandler):
@@ -662,7 +662,7 @@ class ImgUploadHandler(BaseHandler):
             data = {'path': path, 'category': 'other'}
         if del_path:
             remove_file(get_asset_path(del_path))
-        return self.send_success_result(data=data)
+        return self.send_success_result(**data)
 
 
 class ShowHandler(BaseHandler):
