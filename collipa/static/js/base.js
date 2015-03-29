@@ -23,6 +23,16 @@ var G = {
   })()
 };
 
+function uuid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
+
 var superLove = function() {
   console.log("\n%c  \n", "font-size:100px; background:url(http://collipa.com/static/upload/avatar/1388055929_175x128.jpg) no-repeat 0px 0px;");
 
@@ -613,19 +623,17 @@ $(function() {
     fix: function() {
       var $nav = this,
           _fix = function() {
-            if (!$nav.length) {
-              return;
+            if (!document.contains($nav[0])) {
+              return false;
             }
             var top = $(document).scrollTop(),
                 menuTop,
-                $shape = $('#shape'),
                 $menu = $('#head .menu'),
                 $head = $('#head'),
                 $fixFill = $('<div class="fix-fill"></div>'),
                 navTop = $('.fix-fill').length ? $('.fix-fill').offset().top : $nav.offset().top,
                 navWidth = $nav.width(),
                 navHeight = $nav.height(),
-                menuLeft = $menu.offset().left,
                 menuHeight = $menu.height(),
                 headLeft = $head.offset().left;
             if (top >= navTop) {
@@ -650,8 +658,11 @@ $(function() {
             }
           };
       _fix();
-      $(document).on('scroll', function() {
-        _fix();
+      var event_name = 'scroll.' + uuid();
+      $D.on(event_name, function() {
+        if (_fix() === false) {
+          $D.off(event_name);
+        }
       });
     },
     tooltip: function() {
