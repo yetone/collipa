@@ -10,7 +10,7 @@ import tempfile
 from pony import orm
 from concurrent import futures
 
-from .api import WebSocketHandler
+from .web_api import WebSocketHandler
 from ._base import BaseHandler
 
 from collipa.models import User

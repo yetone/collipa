@@ -7,9 +7,11 @@ from collipa.controllers import (site,
                                  node,
                                  album,
                                  image,
-                                 api,
+                                 web_api,
                                  upload,
                                  tweet)
+
+from collipa.controllers.api import v1
 
 
 routers = [
@@ -63,10 +65,12 @@ routers = [
     (r"/account/password[/]*", user.PasswordHandler),
     (r"/findpassword[/]*", user.FindPasswordHandler),
 
-    (r"/api/getusername[/]*", api.GetUserNameHandler),
-    (r"/api/websocket[/]*", api.WebSocketHandler),
+    (r"/api/getusername[/]*", web_api.GetUserNameHandler),
+    (r"/api/websocket[/]*", web_api.WebSocketHandler),
     (r"/api/messagewebsocket[/]*", user.MessageCreateHandler),
-    (r"/api/mention[/]*", api.MentionHandler),
+    (r"/api/mention[/]*", web_api.MentionHandler),
+
+    (r'/api/v1/tweet/list[/]*', v1.tweet.ListHandler),
 
     (r"/502[/]*", site.PageErrorHandler),
     (r"/302[/]*", site.OtherPageErrorHandler),

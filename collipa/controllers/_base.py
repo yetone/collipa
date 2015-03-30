@@ -158,5 +158,17 @@ class BaseHandler(tornado.web.RequestHandler):
         }
         return self.send_result(result, redirect_url)
 
+    def send_error_json(self, msg):
+        result = {'status': 'error', 'message': msg}
+        return self.write(result)
+
+    def send_success_json(self, msg=u'操作成功', **kwargs):
+        result = {
+            'status': 'success',
+            'message': msg,
+            'data': kwargs,
+        }
+        return self.write(result)
+
     def get_int(self, name, default=None):
         return force_int(self.get_argument(name, default), default)

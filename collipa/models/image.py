@@ -152,7 +152,7 @@ class Image(db.Entity, BaseModel):
             'small_path': self.small_path,
             'width': self.width,
             'height': self.height,
-            }
+        }
         return data
 
     def to_dict(self):
@@ -161,7 +161,6 @@ class Image(db.Entity, BaseModel):
             'author': self.author.to_simple_dict(),
             'album': self.album.to_simple_dict(),
         }
-
         data.update(self.to_simple_dict())
         return data
 

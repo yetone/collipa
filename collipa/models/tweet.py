@@ -19,6 +19,7 @@ class Tweet(db.Entity, BaseModel):
     up_count = orm.Required(int, default=0)
     down_count = orm.Required(int, default=0)
     report_count = orm.Required(int, default=0)
+    reply_count = orm.Required(int, default=0)
     collect_count = orm.Required(int, default=0)
 
     created_at = orm.Required(int, default=int(time.time()))
@@ -35,6 +36,24 @@ class Tweet(db.Entity, BaseModel):
     @property
     def url(self):
         return '/tweet/%s' % self.id
+
+    def to_simple_dict(self):
+        return dict(
+            id=self.id,
+            content=self.content,
+            reply_count=self.reply_count,
+            has_image=self.has_img == 'true',
+        )
+
+    def to_dict(self):
+        user = collipa.models.User[self.user_id]
+        data = self.to_simple_dict()
+        data.update(dict(
+            author=user.to_simple_dict(),
+            images=[img.to_simple_dict() for img in self.images],
+        ))
+
+        return data
 
     def save(self, category='create', user=None):
         now = int(time.time())
