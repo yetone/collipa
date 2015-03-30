@@ -31,8 +31,9 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
         if self.user_id:
             if self.user_id not in self.users:
                 self.users[self.user_id] = set()
+            if not self.users[self.user_id]:
+                User.online(self.user_id)
             self.users[self.user_id].add(self)
-            User.online(self.user_id)
         self.onlines.add(self)
         self.send_online()
 
@@ -43,9 +44,15 @@ class WebSocketHandler(BaseHandler, tornado.websocket.WebSocketHandler):
                     self.users[self.user_id].remove(self)
                 except KeyError:
                     pass
-            User.offline(self.user_id)
-        self.onlines.remove(self)
-        self.send_online()
+                if not self.users[self.user_id]:
+                    User.offline(self.user_id)
+            else:
+                User.offline(self.user_id)
+        try:
+            self.onlines.remove(self)
+            self.send_online()
+        except KeyError:
+            pass
 
     def send(self, event, extra=None, **kwargs):
         extra = extra or {}
