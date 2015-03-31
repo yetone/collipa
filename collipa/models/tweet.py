@@ -43,6 +43,8 @@ class Tweet(db.Entity, BaseModel):
             content=self.content,
             reply_count=self.reply_count,
             has_image=self.has_img == 'true',
+            created_at=self.created_at,
+            created=self.created,
         )
 
     def to_dict(self):

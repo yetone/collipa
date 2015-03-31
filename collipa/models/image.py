@@ -152,12 +152,13 @@ class Image(db.Entity, BaseModel):
             'small_path': self.small_path,
             'width': self.width,
             'height': self.height,
+            'created_at': self.created_at,
+            'created': self.created,
         }
         return data
 
     def to_dict(self):
         data = {
-            'created': self.created,
             'author': self.author.to_simple_dict(),
             'album': self.album.to_simple_dict(),
         }
