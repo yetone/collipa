@@ -10,6 +10,7 @@ from collipa import config
 import collipa.models
 from collipa.helpers import format_date2, strip_tags, remove_file, get_asset_path
 from collipa.extensions import mc, rd, memcached
+from collipa.supports import Struct
 
 
 class User(db.Entity, BaseModel):
@@ -66,7 +67,7 @@ class User(db.Entity, BaseModel):
     head_img = orm.Optional(unicode, 400)
     background_img = orm.Optional(unicode, 400)
 
-    KEY_ONLINE = 'online:{id}'
+    KEY_ONLINE = 'online:{.id}'
     KEY_G_ONLINE = 'online'
 
     @classmethod
@@ -567,7 +568,7 @@ class User(db.Entity, BaseModel):
                       [(page - 1) * config.paged: page * config.paged])
             return tweets
         all_ids = orm.select(rv.id for rv in collipa.models.Tweet if
-                             rv.user_id in user_ids).order_by(lambda rv: orm.desc(rv.created_at))
+                             rv.user_id in user_ids).order_by(lambda: orm.desc(rv.created_at))
         i = -1
         for i, _id in enumerate(all_ids):
             if i == 1000:
@@ -825,18 +826,18 @@ class User(db.Entity, BaseModel):
 
     @property
     def is_online(self):
-        key = self.KEY_ONLINE.format(**self._vals_)
+        key = self.KEY_ONLINE.format(self)
         return not not rd.get(key)
 
     @classmethod
     def online(cls, user_id):
-        key = cls.KEY_ONLINE.format(id=user_id)
+        key = cls.KEY_ONLINE.format(Struct(id=user_id))
         rd.set(key, True)
         rd.sadd(cls.KEY_G_ONLINE, user_id)
 
     @classmethod
     def offline(cls, user_id):
-        key = cls.KEY_ONLINE.format(id=user_id)
+        key = cls.KEY_ONLINE.format(Struct(id=user_id))
         rd.delete(key)
         rd.srem(cls.KEY_G_ONLINE, user_id)
 
