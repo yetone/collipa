@@ -120,7 +120,7 @@ class Album(db.Entity, BaseModel):
             user_ids = orm.select(rv.user_id for rv in collipa.models.Up if rv.album_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -134,7 +134,7 @@ class Album(db.Entity, BaseModel):
             user_ids = orm.select(rv.user_id for rv in collipa.models.Thank if rv.album_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -154,15 +154,15 @@ class Album(db.Entity, BaseModel):
                 images = orm.select(rv for rv in collipa.models.Image if rv.album_id == self.id and rv.role == category)
 
         if order_by == 'smart':
-            images = images.order_by(lambda rv: orm.desc((rv.collect_count +
+            images = images.order_by(lambda: orm.desc((rv.collect_count +
                                                           rv.thank_count) * 10 +
                                                          (rv.up_count -
                                                           rv.down_count) * 5))
         else:
             if desc:
-                images = images.order_by(lambda rv: orm.desc(rv.created_at))
+                images = images.order_by(lambda: orm.desc(rv.created_at))
             else:
-                images = images.order_by(lambda rv: rv.created_at)
+                images = images.order_by(lambda: rv.created_at)
 
         if limit:
             return images[:limit]

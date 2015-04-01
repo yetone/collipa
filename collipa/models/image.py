@@ -119,7 +119,7 @@ class Image(db.Entity, BaseModel):
             user_ids = orm.select(rv.user_id for rv in collipa.models.Up if rv.image_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -133,7 +133,7 @@ class Image(db.Entity, BaseModel):
             user_ids = orm.select(rv.user_id for rv in collipa.models.Thank if rv.image_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -170,9 +170,9 @@ class Image(db.Entity, BaseModel):
         limit = limit or config.paged
         images = orm.select(rv for rv in Image if rv.album_id == album_id)
         if desc:
-            images = images.order_by(lambda rv: orm.desc(rv.created_at))
+            images = images.order_by(lambda: orm.desc(rv.created_at))
         else:
-            images = images.order_by(lambda rv: rv.created_at)
+            images = images.order_by(lambda: rv.created_at)
         if from_id:
             i = -1
             for i, image in enumerate(images):

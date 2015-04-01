@@ -380,7 +380,7 @@ class User(db.Entity, BaseModel):
                    limit=None):
         if limit:
             topics = orm.select(rv for rv in collipa.models.Topic if
-                                rv.user_id == self.id).order_by(lambda rv:
+                                rv.user_id == self.id).order_by(lambda:
                                                                 orm.desc((rv.collect_count +
                                                                           rv.thank_count) * 10 +
                                                                          (rv.up_count -
@@ -393,13 +393,13 @@ class User(db.Entity, BaseModel):
             topics = orm.select(rv for rv in collipa.models.Topic if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            topics = topics.order_by(lambda rv: orm.desc(rv.created_at))
+            topics = topics.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            topics = topics.order_by(lambda rv: orm.desc(rv.up_count))
+            topics = topics.order_by(lambda: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            topics = topics.order_by(lambda rv: orm.desc(rv.thank_count))
+            topics = topics.order_by(lambda: orm.desc(rv.thank_count))
         elif order_by == 'smart':
-            topics = topics.order_by(lambda rv:
+            topics = topics.order_by(lambda:
                                      orm.desc((rv.collect_count +
                                                rv.thank_count) * 10 +
                                               (rv.up_count - rv.down_count) * 5))
@@ -413,7 +413,7 @@ class User(db.Entity, BaseModel):
                     limit=None):
         if limit:
             replies = orm.select(rv for rv in collipa.models.Reply if
-                                 rv.user_id == self.id).order_by(lambda rv:
+                                 rv.user_id == self.id).order_by(lambda:
                                                                  orm.desc((rv.collect_count +
                                                                            rv.thank_count) * 10 +
                                                                           (rv.up_count -
@@ -426,13 +426,13 @@ class User(db.Entity, BaseModel):
             replies = orm.select(rv for rv in collipa.models.Reply if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            replies = replies.order_by(lambda rv: orm.desc(rv.created_at))
+            replies = replies.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            replies = replies.order_by(lambda rv: orm.desc(rv.up_count))
+            replies = replies.order_by(lambda: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            replies = replies.order_by(lambda rv: orm.desc(rv.thank_count))
+            replies = replies.order_by(lambda: orm.desc(rv.thank_count))
         elif order_by == 'smart':
-            replies = replies.order_by(lambda rv:
+            replies = replies.order_by(lambda:
                                        orm.desc((rv.collect_count +
                                                  rv.thank_count) * 10 +
                                                 (rv.up_count - rv.down_count) * 5 +
@@ -447,7 +447,7 @@ class User(db.Entity, BaseModel):
                    limit=None):
         if limit:
             tweets = orm.select(rv for rv in collipa.models.Tweet if
-                                rv.user_id == self.id).order_by(lambda rv:
+                                rv.user_id == self.id).order_by(lambda:
                                                                 orm.desc((rv.collect_count +
                                                                           rv.thank_count) * 10 +
                                                                          (rv.up_count -
@@ -460,13 +460,13 @@ class User(db.Entity, BaseModel):
             tweets = orm.select(rv for rv in collipa.models.Tweet if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            tweets = tweets.order_by(lambda rv: orm.desc(rv.created_at))
+            tweets = tweets.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            tweets = tweets.order_by(lambda rv: orm.desc(rv.up_count))
+            tweets = tweets.order_by(lambda: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            tweets = tweets.order_by(lambda rv: orm.desc(rv.thank_count))
+            tweets = tweets.order_by(lambda: orm.desc(rv.thank_count))
         elif order_by == 'smart':
-            tweets = tweets.order_by(lambda rv:
+            tweets = tweets.order_by(lambda:
                                      orm.desc((rv.collect_count +
                                                rv.thank_count) * 10 +
                                               (rv.up_count - rv.down_count) * 5 +
@@ -480,7 +480,7 @@ class User(db.Entity, BaseModel):
     def get_albums(self, page=1, category='all', order_by='created_at', limit=None):
         if limit:
             albums = orm.select(rv for rv in collipa.models.Album if
-                                rv.user_id == self.id).order_by(lambda rv:
+                                rv.user_id == self.id).order_by(lambda:
                                                                 orm.desc((rv.collect_count +
                                                                           rv.thank_count) * 10 +
                                                                          (rv.up_count -
@@ -493,13 +493,13 @@ class User(db.Entity, BaseModel):
             albums = orm.select(rv for rv in collipa.models.Album if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            albums = albums.order_by(lambda rv: orm.desc(rv.created_at))
+            albums = albums.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            albums = albums.order_by(lambda rv: orm.desc(rv.up_count))
+            albums = albums.order_by(lambda: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            albums = albums.order_by(lambda rv: orm.desc(rv.thank_count))
+            albums = albums.order_by(lambda: orm.desc(rv.thank_count))
         elif order_by == 'smart':
-            albums = albums.order_by(lambda rv:
+            albums = albums.order_by(lambda:
                                      orm.desc((rv.collect_count +
                                                rv.thank_count) * 10 +
                                               (rv.up_count - rv.down_count) * 5))
@@ -512,7 +512,7 @@ class User(db.Entity, BaseModel):
     def get_images(self, page=1, category='all', order_by='created_at', limit=None):
         if limit:
             images = orm.select(rv for rv in collipa.models.Image if
-                                rv.user_id == self.id).order_by(lambda rv:
+                                rv.user_id == self.id).order_by(lambda:
                                                                 orm.desc((rv.collect_count +
                                                                           rv.thank_count) * 10 +
                                                                          (rv.up_count -
@@ -525,13 +525,13 @@ class User(db.Entity, BaseModel):
             images = orm.select(rv for rv in collipa.models.Image if rv.user_id == self.id and rv.role == category)
 
         if order_by == 'created_at':
-            images = images.order_by(lambda rv: orm.desc(rv.created_at))
+            images = images.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'up_count':
-            images = images.order_by(lambda rv: orm.desc(rv.up_count))
+            images = images.order_by(lambda: orm.desc(rv.up_count))
         elif order_by == 'thank_count':
-            images = images.order_by(lambda rv: orm.desc(rv.thank_count))
+            images = images.order_by(lambda: orm.desc(rv.thank_count))
         elif order_by == 'smart':
-            images = images.order_by(lambda rv:
+            images = images.order_by(lambda:
                                      orm.desc((rv.collect_count +
                                                rv.thank_count) * 10 +
                                               (rv.up_count - rv.down_count) * 5 +
@@ -564,7 +564,7 @@ class User(db.Entity, BaseModel):
         user_ids.append(self.id)
         if not from_id:
             tweets = (orm.select(rv for rv in collipa.models.Tweet if rv.user_id in user_ids)
-                      .order_by(lambda rv: orm.desc(rv.created_at))
+                      .order_by(lambda: orm.desc(rv.created_at))
                       [(page - 1) * config.paged: page * config.paged])
             return tweets
         all_ids = orm.select(rv.id for rv in collipa.models.Tweet if
@@ -595,7 +595,7 @@ class User(db.Entity, BaseModel):
             try:
                 return orm.select(rv for rv in collipa.models.Topic if
                                   (rv.node_id in node_ids or rv.user_id in user_ids) and
-                                  rv.created_at > ago).order_by(lambda rv:
+                                  rv.created_at > ago).order_by(lambda:
                                                                 orm.desc((rv.collect_count +
                                                                           rv.thank_count) * 10 +
                                                                          (rv.up_count -
@@ -612,14 +612,14 @@ class User(db.Entity, BaseModel):
             return []
 
         if order_by == 'smart':
-            topics = topics.order_by(lambda rv:
+            topics = topics.order_by(lambda:
                                      orm.desc((rv.collect_count +
                                                rv.thank_count) * 10 +
                                               (rv.up_count -
                                                rv.down_count) * 5 +
                                               rv.active / 4))
         else:
-            topics = topics.order_by(lambda rv: orm.desc(rv.last_reply_date))
+            topics = topics.order_by(lambda: orm.desc(rv.last_reply_date))
 
         if page:
             return topics[(page - 1) * config.paged: page * config.paged]
@@ -694,7 +694,7 @@ class User(db.Entity, BaseModel):
                                                   rv.receiver_id == self.id and rv.status == 0)
         else:
             return []
-        notifications = notifications.order_by(lambda rv: orm.desc(rv.updated_at))
+        notifications = notifications.order_by(lambda: orm.desc(rv.updated_at))
         return notifications[(page - 1) * config.paged: page * config.paged]
 
     @property
@@ -728,11 +728,11 @@ class User(db.Entity, BaseModel):
         if category == 'all':
             message_boxes = (collipa.models.MessageBox
                              .select(lambda rv: rv.sender_id == self.id)
-                             .order_by(lambda rv: orm.desc(rv.updated_at)))
+                             .order_by(lambda: orm.desc(rv.updated_at)))
         elif category == 'unread':
             message_boxes = (collipa.models.MessageBox
                              .select(lambda rv: rv.sender_id == self.id and rv.status == 0)
-                             .order_by(lambda rv: orm.desc(rv.updated_at)))
+                             .order_by(lambda: orm.desc(rv.updated_at)))
         else:
             return []
         return message_boxes[(page - 1) * config.paged: page *
@@ -769,21 +769,21 @@ class User(db.Entity, BaseModel):
     @staticmethod
     def get_users(page=1, category='all', limit=None):
         if category == 'all':
-            users = orm.select(rv for rv in User).order_by(lambda rv:
+            users = orm.select(rv for rv in User).order_by(lambda:
                                                            orm.desc(rv.created_at))
         elif category == 'hot':
             users = mc.get('hot_users')
             if not users:
                 if not limit:
                     limit = 8
-                users = orm.select(rv for rv in User).order_by(lambda rv:
+                users = orm.select(rv for rv in User).order_by(lambda:
                                                                orm.desc(rv.thank_count * 4 +
                                                                         rv.up_count * 3 +
                                                                         rv.topic_count * 2 +
                                                                         rv.reply_count))[:limit]
                 mc.set('hot_users', list(users), 60 * 60 * 12)
         elif category == 'new':
-            users = orm.select(rv for rv in User).order_by(lambda rv: orm.desc(rv.created_at))
+            users = orm.select(rv for rv in User).order_by(lambda: orm.desc(rv.created_at))
         else:
             return []
 
@@ -806,8 +806,9 @@ class User(db.Entity, BaseModel):
         return _func()
 
     def get_followers(self, page=1):
-        follower_ids = orm.select(rv.who_id for rv in collipa.models.Follow if
-                                  rv.whom_id == self.id).order_by(lambda rv: orm.desc(rv)) or [0]
+        follower_ids = (orm.select(rv.who_id for rv in collipa.models.Follow
+                                   if rv.whom_id == self.id)
+                        .order_by(lambda: orm.desc(rv.created_at)) or [0])
         followers = orm.select(rv for rv in User if rv.id in follower_ids)
         if page:
             return followers[(page - 1) * config.user_paged: page * config.user_paged]
@@ -815,9 +816,9 @@ class User(db.Entity, BaseModel):
             return followers
 
     def get_followings(self, page=1):
-        following_ids = orm.select(rv.whom_id for rv in collipa.models.Follow if
-                                   rv.who_id == self.id and rv.whom_id).order_by(lambda rv:
-                                                                                 orm.desc(rv)) or [0]
+        following_ids = (orm.select(rv.whom_id for rv in collipa.models.Follow
+                                    if rv.who_id == self.id and rv.whom_id)
+                         .order_by(lambda: orm.desc(rv.created_at)) or [0])
         followings = orm.select(rv for rv in User if rv.id in following_ids)
         if page:
             return followings[(page - 1) * config.user_paged: page * config.user_paged]

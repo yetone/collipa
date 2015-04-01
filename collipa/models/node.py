@@ -118,7 +118,7 @@ class Node(db.Entity, BaseModel):
                     topics = orm.select(rv for rv in collipa.models.Topic if
                                     rv.node_id == self.id and
                                     rv.created_at > ago)
-                    topics = topics.order_by(lambda rv: orm.desc((rv.collect_count +
+                    topics = topics.order_by(lambda: orm.desc((rv.collect_count +
                                                                   rv.thank_count - rv.report_count) * 10 +
                                                                  (rv.up_count - rv.down_count) * 5 +
                                                                  rv.reply_count * 3))
@@ -136,13 +136,13 @@ class Node(db.Entity, BaseModel):
                 order_by = 'last_reply_date'
 
         if order_by == 'last_reply_date':
-            topics = topics.order_by(lambda rv: orm.desc(rv.last_reply_date))
+            topics = topics.order_by(lambda: orm.desc(rv.last_reply_date))
         elif order_by == 'created_at':
-            topics = topics.order_by(lambda rv: orm.desc(rv.created_at))
+            topics = topics.order_by(lambda: orm.desc(rv.created_at))
         elif order_by == 'active':
-            topics = topics.order_by(lambda rv: orm.desc(rv.active))
+            topics = topics.order_by(lambda: orm.desc(rv.active))
         elif order_by == 'smart':
-            topics = topics.order_by(lambda rv: orm.desc((rv.collect_count +
+            topics = topics.order_by(lambda: orm.desc((rv.collect_count +
                                                           rv.thank_count -
                                                           rv.report_count) * 10 +
                                                          (rv.up_count -
@@ -181,11 +181,11 @@ class Node(db.Entity, BaseModel):
     @staticmethod
     def get_nodes(page=1, category='all', limit=None):
         if category == 'all':
-            nodes = orm.select(rv for rv in Node).order_by(lambda rv: orm.desc(rv.created_at))
+            nodes = orm.select(rv for rv in Node).order_by(lambda: orm.desc(rv.created_at))
         elif category == 'hot':
-            nodes = orm.select(rv for rv in Node).order_by(lambda rv: orm.desc(rv.topic_count))
+            nodes = orm.select(rv for rv in Node).order_by(lambda: orm.desc(rv.topic_count))
         elif category == 'new':
-            nodes = orm.select(rv for rv in Node).order_by(lambda rv: orm.desc(rv.created_at))
+            nodes = orm.select(rv for rv in Node).order_by(lambda: orm.desc(rv.created_at))
         if limit:
             return nodes[:limit]
         if page:

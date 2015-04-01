@@ -31,7 +31,7 @@ class CommunityHandler(BaseHandler):
                 now = int(time.time())
                 ago = now - 60 * 60 * 24
                 topics = orm.select(rv for rv in Topic if
-                                    rv.created_at > ago).order_by(lambda rv:
+                                    rv.created_at > ago).order_by(lambda:
                                                                   orm.desc((rv.collect_count + rv.thank_count
                                                                             - rv.report_count) * 10 +
                                                                            (rv.up_count - rv.down_count) * 5 +
@@ -40,13 +40,13 @@ class CommunityHandler(BaseHandler):
         elif category == 'timeline':
             topics = user.get_followed_topics(page=None, category=view)
         elif category == 'latest':
-            topics = orm.select(rv for rv in Topic).order_by(lambda rv:
+            topics = orm.select(rv for rv in Topic).order_by(lambda:
                                                              orm.desc(rv.created_at))
         elif category == 'desert':
-            topics = orm.select(rv for rv in Topic if rv.reply_count == 0).order_by(lambda rv:
+            topics = orm.select(rv for rv in Topic if rv.reply_count == 0).order_by(lambda:
                                                                                     orm.desc(rv.created_at))
         else:
-            topics = orm.select(rv for rv in Topic).order_by(lambda rv: orm.desc(rv.last_reply_date))
+            topics = orm.select(rv for rv in Topic).order_by(lambda: orm.desc(rv.last_reply_date))
         topic_count = orm.count(topics)
         topics = topics[(page - 1) * config.paged: page * config.paged]
         page_count = (topic_count + config.paged - 1) // config.paged

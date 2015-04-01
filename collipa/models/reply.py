@@ -161,7 +161,7 @@ class Reply(db.Entity, BaseModel):
                                   if rv.reply_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -178,7 +178,7 @@ class Reply(db.Entity, BaseModel):
                                   if rv.reply_id == self.id)
         users = []
         if user_ids:
-            user_ids = user_ids.order_by(lambda rv: orm.desc(rv.created_at))
+            user_ids = user_ids.order_by(lambda: orm.desc(rv.created_at))
 
             users = orm.select(rv for rv in collipa.models.User if rv.id in user_ids)
         return users
@@ -187,13 +187,13 @@ class Reply(db.Entity, BaseModel):
     def histories(self):
         histories = (collipa.models.History
                      .select(lambda rv: rv.reply_id == self.id)
-                     .order_by(lambda rv: orm.desc(rv.created_at)))
+                     .order_by(lambda: orm.desc(rv.created_at)))
         return histories
 
     def get_histories(self, page=1):
         histories = (collipa.models.History
                      .select(lambda rv: rv.reply_id == self.id)
-                     .order_by(lambda rv: orm.desc(rv.created_at)))
+                     .order_by(lambda: orm.desc(rv.created_at)))
         return histories[(page - 1) * config.paged: page * config.paged]
 
     @property

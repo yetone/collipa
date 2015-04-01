@@ -43,13 +43,13 @@ class MessageBox(db.Entity, BaseModel):
     def message(self):
         message = (collipa.models.Message
                    .select(lambda rv: rv.message_box1_id == self.id or rv.message_box2_id == self.id)
-                   .order_by(lambda rv: orm.desc(rv.created_at)).first())
+                   .order_by(lambda: orm.desc(rv.created_at)).first())
         return message
 
     def get_messages(self, page=1):
         messages = (collipa.models.Message
                     .select(lambda rv: rv.message_box1_id == self.id or rv.message_box2_id == self.id)
-                    .order_by(lambda rv: orm.desc(rv.created_at)))
+                    .order_by(lambda: orm.desc(rv.created_at)))
         messages = messages[(page - 1) * config.paged: page * config.paged]
         return messages
 
