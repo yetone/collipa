@@ -569,18 +569,26 @@ class User(db.Entity, BaseModel):
             return tweets
         all_ids = orm.select(rv.id for rv in collipa.models.Tweet if
                              rv.user_id in user_ids).order_by(lambda: orm.desc(rv.created_at))
-        i = -1
-        for i, _id in enumerate(all_ids):
-            if i == 1000:
-                return []
-            if _id == from_id:
+        can_append = False
+        tweet_ids = []
+        i = 0
+
+        for id_ in all_ids:
+            i += 1
+            if i > 1000:
                 break
-        tweet_ids = all_ids[i + 1: i + 1 + count]
-        if tweet_ids:
-            tweets = orm.select(rv for rv in collipa.models.Tweet if rv.id in tweet_ids)[:][::-1]
-        else:
-            tweets = []
-        return tweets
+
+            if len(tweet_ids) >= count:
+                break
+
+            if can_append:
+                tweet_ids.append(id_)
+                continue
+
+            if id_ == from_id:
+                can_append = True
+
+        return orm.select(rv for rv in collipa.models.Tweet if rv.id in tweet_ids)[:][::-1]
 
     def get_followed_topics(self, role=None, category='all', order_by='created_at', page=1):
         node_ids = self.followed_node_ids
