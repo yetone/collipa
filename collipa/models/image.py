@@ -166,20 +166,16 @@ class Image(db.Entity, BaseModel):
         return data
 
     @staticmethod
-    def query_by_album_id(album_id, from_id=None, limit=None, desc=True):
-        limit = limit or config.paged
-        images = orm.select(rv for rv in Image if rv.album_id == album_id)
+    def query_by_album_id(album_id, from_id=None, limit=config.paged, desc=True):
+        q = orm.select(rv for rv in Image if rv.album_id == album_id)
         if desc:
-            images = images.order_by(lambda: orm.desc(rv.created_at))
+            q = q.order_by(lambda: orm.desc(rv.created_at))
         else:
-            images = images.order_by(lambda: rv.created_at)
+            q = q.order_by(lambda: rv.created_at)
+
         if from_id:
-            i = -1
-            for i, image in enumerate(images):
-                if i == 1000:
-                    return []
-                if image.id == from_id:
-                    break
-            images = images[i + 1: i + 1 + limit]
-            return images
-        return images
+            return helpers.collect_items_from_query(q, from_id, limit, 'id')
+
+        if limit:
+            return q[:limit]
+        return q[:]

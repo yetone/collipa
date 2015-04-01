@@ -383,3 +383,26 @@ def remove_file(file_path):
     if not os.path.isfile(file_path):
         return
     os.remove(file_path)
+
+
+def collect_items_from_query(query, from_id, limit, attr_name=None):
+    can_append = False
+    items = []
+    i = 0
+
+    for item in query:
+        i += 1
+        if i > 1000:
+            break
+
+        if len(items) >= limit:
+            break
+
+        if can_append:
+            items.append(item)
+            continue
+
+        if (attr_name and getattr(item, attr_name) or item) == from_id:
+            can_append = True
+
+    return items

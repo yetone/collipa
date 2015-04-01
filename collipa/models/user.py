@@ -8,7 +8,7 @@ from pony import orm
 from ._base import db, BaseModel
 from collipa import config
 import collipa.models
-from collipa.helpers import format_date2, strip_tags, remove_file, get_asset_path
+from collipa.helpers import format_date2, strip_tags, remove_file, get_asset_path, collect_items_from_query
 from collipa.extensions import mc, rd, memcached
 from collipa.supports import Struct
 
@@ -567,26 +567,10 @@ class User(db.Entity, BaseModel):
                       .order_by(lambda: orm.desc(rv.created_at))
                       [(page - 1) * config.paged: page * config.paged])
             return tweets
-        all_ids = orm.select(rv.id for rv in collipa.models.Tweet if
-                             rv.user_id in user_ids).order_by(lambda: orm.desc(rv.created_at))
-        can_append = False
-        tweet_ids = []
-        i = 0
+        all_ids_q = orm.select(rv.id for rv in collipa.models.Tweet if
+                               rv.user_id in user_ids).order_by(lambda: orm.desc(rv.created_at))
 
-        for id_ in all_ids:
-            i += 1
-            if i > 1000:
-                break
-
-            if len(tweet_ids) >= count:
-                break
-
-            if can_append:
-                tweet_ids.append(id_)
-                continue
-
-            if id_ == from_id:
-                can_append = True
+        tweet_ids = collect_items_from_query(all_ids_q, from_id, count)
 
         return orm.select(rv for rv in collipa.models.Tweet if rv.id in tweet_ids)[:][::-1]
 
