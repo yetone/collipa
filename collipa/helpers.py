@@ -171,7 +171,7 @@ def username(data):
 
 
 def get_mentions(content):
-    username_re = re.compile(r'@(?P<username>[A-Za-z0-9]+)(&nbsp;|\n|\s|$)')
+    username_re = re.compile(r'@(?P<username>[A-Za-z0-9]+)(</p>|&nbsp;|\n|\s|$)')
     match = username_re.finditer(content)
     return [(m.start(), m.group('username')) for m in match] if match else []
 
