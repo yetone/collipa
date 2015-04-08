@@ -170,10 +170,10 @@ def username(data):
     return regex(pattern, data)
 
 
-def get_mention_names(content):
+def get_mentions(content):
     username_re = re.compile(r'@(?P<username>[A-Za-z0-9]+)(&nbsp;|\n|\s|$)')
-    match = username_re.findall(content)
-    return dict(match).keys() if match else []
+    match = username_re.finditer(content)
+    return [(m.start(), m.group('username')) for m in match] if match else []
 
 
 def strip_tags(html):

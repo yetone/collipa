@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import collipa.models
-from collipa.helpers import format_date, cached_property
+from collipa.helpers import format_date, cached_property, get_mentions
 from collipa import config
 from pony import orm
 
@@ -111,4 +111,22 @@ class ModelMixin(object):
 
 
 class BaseModel(SessionMixin, ModelMixin):
-    pass
+    @staticmethod
+    def get_compiled_content_mention_users(content):
+        mentions = get_mentions(content)
+        user_map = {}
+        dp = 0
+        for m in mentions:
+            pos, username = m
+            user = user_map.get(username) or collipa.models.User.get(name=username)
+            if not user:
+                continue
+            user_map[username] = user
+            replacement = '''<a class="mention" data-username="{username}" href="{url}">@{nickname}</a>'''.format(
+                url=user.url,
+                username=user.name,
+                nickname=user.nickname,
+                )
+            content = content[:pos + dp] + replacement + content[pos + dp + len(username) + 1:]
+            dp += len(replacement) - len(username) - 1
+        return content, user_map.values()

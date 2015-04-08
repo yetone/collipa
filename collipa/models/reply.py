@@ -5,7 +5,6 @@ from pony import orm
 from ._base import db, BaseModel
 import collipa.models
 from collipa import config
-from collipa.helpers import get_mention_names
 
 
 class Reply(db.Entity, BaseModel):
@@ -201,10 +200,10 @@ class Reply(db.Entity, BaseModel):
         return orm.count(self.histories)
 
     def put_notifier(self):
-        names = get_mention_names(self.content)
-        for name in names:
-            user = collipa.models.User.get(name=name)
-            if user and user.id != self.topic.user_id:
+        content, users = self.get_compiled_content_mention_users(self.content)
+        self.content = content
+        for user in users:
+            if user.id != self.topic.user_id:
                 collipa.models.Notification(reply_id=self.id,
                                             receiver_id=user.id,
                                             role='mention').save()
