@@ -5,7 +5,7 @@ from pony import orm
 from ._base import db, BaseModel
 import collipa.models
 from collipa import config
-from collipa.helpers import get_mention_names
+from collipa.helpers import get_mention_names, strip_tags
 
 
 class Tweet(db.Entity, BaseModel):
@@ -41,6 +41,7 @@ class Tweet(db.Entity, BaseModel):
         return dict(
             id=self.id,
             content=self.content,
+            clean_content=strip_tags(self.content),
             reply_count=self.reply_count,
             has_image=self.has_img == 'true',
             created_at=self.created_at,
