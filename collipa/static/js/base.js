@@ -286,8 +286,7 @@ var mousePosition = function(e) {
       }
     });
 
-    $.Collipa.mention($ifa, ifa, $editor, event);
-
+    //$.Collipa.mention($ifa, ifa, $editor, event);
   };
 
 $(function() {

@@ -107,7 +107,7 @@ $(function() {
         $textarea = $('#ueditor_0').contents().find('body');
 
     $textarea.focus();
-    ue.execCommand('inserthtml', '&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
+    ue.execCommand('inserthtml', '@' + nickname + '&nbsp;');
   });
 
   $D.on('click', '.topic .action .reply a', function(e) {

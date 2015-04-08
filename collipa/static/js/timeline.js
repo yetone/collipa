@@ -182,7 +182,6 @@ $(function() {
         $name_area = $this.parents('.item').find('a.name'),
         name = $name_area.attr('data-name'),
         nickname = $name_area.html(),
-        user_url = $name_area.attr('href'),
         $layout = $('#layout');
 
     $layout.remove();
@@ -190,7 +189,7 @@ $(function() {
     $('#layout').popslide({
       cbk: function() {
         var $textarea = $('#layout .tweet-editor');
-        $textarea.append('&nbsp;<a class="mention" data-username="' + name + '" href="'+ user_url +'">@' + nickname + '</a>&nbsp;');
+        $textarea.append('@' + nickname + '&nbsp;');
         placeCaretAtEnd($textarea[0]);
         checkBtn($textarea, $('#layout .tweet-submit'));
         $.Collipa.mention($D, document, $textarea, null, function() {
