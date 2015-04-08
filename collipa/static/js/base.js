@@ -307,9 +307,13 @@ $(function() {
             $area,
             _init = function() {
               $body = $ifa.find('body');
-              $mark = $body.find('fuck');
+              $mark = $body.find('i#mention-mark');
               $area = $('#mention-area');
             };
+
+        function getOffset() {
+          return ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
+        }
 
         $ifa.on('keydown', function(e) {
           _init();
@@ -352,32 +356,34 @@ $(function() {
                 $area.find('li').eq(0).children('a').addClass('cur');
               }
               e.preventDefault();
-              return;
             }
           }
         });
 
         $ifa.on('keypress', function(e) {
-          _init();
-          var $this = $(this),
-              of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset,
+          var of = getOffset(),
               cp = ifa.getSelection().getRangeAt(0),
-              ctt = cp.createContextualFragment('<fuck></fuck>'),
+              ctt = cp.createContextualFragment('<i id="mention-mark"></i>'),
               top,
-              left;
+              left,
+              text;
 
           // if input @
           if (e.charCode === 64) {
             $mark.length && $mark.remove();
             cp.insertNode(ctt);
-            $mark = $body.find('fuck');
-            top = $mark.position().top;
-            left = $mark.position().left;
+            $mark = $body.find('i#mention-mark');
+            top = $mark.offset().top;
+            left = $mark.offset().left;
+            text = $editor.text();
+            if (!text || text == '\n\n') {
+              top += parseInt($editor.css('font-size'));
+            }
             $area.length && $area.remove();
             $area = $('<div id="mention-area" class="mention-area"></div>');
             $area.css({
-              top: top + $editor.offset().top,
-              left: left + $editor.offset().left
+              top: top,
+              left: left
             });
             $('body').append($area);
             $body.data('offset', of);
@@ -385,9 +391,7 @@ $(function() {
         });
 
         $ifa.on(event, function(e) {
-          _init();
-          var $this = $(this),
-              of = ifa.getSelection().extentOffset || ifa.getSelection().anchorOffset;
+          var of = getOffset();
 
           if ($area.length) {
             // if backspace
@@ -410,13 +414,6 @@ $(function() {
             url = '/api/mention/?word=';
             word = $.trim($mark.parent().text().substr(sof));
             if (word.indexOf('@') !== -1) {
-              /*
-              if ($body.data('from') && (sof + $body.data('from') < $mark.parent().text().length)) {
-                word = $.trim($mark.parent().text().substr(sof + $body.data('from')));
-              } else {
-                word = $.trim($mark.parent().text().substr(sof + 1));
-              }
-              */
               word = word.substr(word.lastIndexOf('@') + 1);
             }
 
@@ -451,19 +448,21 @@ $(function() {
         });
 
         $D.on('click', '.mention-area .user-list a', function(e) {
-          _init();
           e.preventDefault();
           var $this = $(this),
               url = $this.attr('data-url'),
-              username = $this.find('.username').attr('data-username'),
-              nickname = $this.find('.nickname').html(),
-              content = '&nbsp;<a class="mention" data-username="' + username + '" href="' + url + '">' + '@' + nickname + '</a>&nbsp;',
-              html = $mark.parent().html().replace('@' + word, content);
+              username = $this.data('username'),
+              nickname = $this.data('nickname'),
+              _content = '@' + nickname + '&nbsp;',
+              text = $editor.text(),
+              of = getOffset(),
+              l = ('@' + word).length,
+              content = text.substring(0, of - l) + _content + text.substring(of - l + _content.length, text.length);
 
-          $mark.parent().html(html);
+          $editor.html(content);
           placeCaretAtEnd($editor[0]);
           cbk && cbk();
-          $body.data('from', $body.find('fuck').parent().text().length);
+          $body.data('from', $body.find('i#mention-mark').parent().text().length);
           $area.length && $area.remove();
           $mark.length && $mark.remove();
         });

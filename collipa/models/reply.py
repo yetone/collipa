@@ -201,8 +201,6 @@ class Reply(db.Entity, BaseModel):
         return orm.count(self.histories)
 
     def put_notifier(self):
-        if 'class="mention"' not in self.content:
-            return self
         names = get_mention_names(self.content)
         for name in names:
             user = collipa.models.User.get(name=name)

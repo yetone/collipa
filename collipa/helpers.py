@@ -171,12 +171,9 @@ def username(data):
 
 
 def get_mention_names(content):
-    up = UsernameParser()
-    up.feed(content)
-    up.close()
-    names1 = up.names
-    names = {}.fromkeys(names1).keys()
-    return names
+    username_re = re.compile(r'@(?P<username>[A-Za-z0-9]+)(&nbsp;|\n|\s|$)')
+    match = username_re.findall(content)
+    return dict(match).keys() if match else []
 
 
 def strip_tags(html):
