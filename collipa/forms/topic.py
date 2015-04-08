@@ -72,15 +72,17 @@ class TopicForm(BaseForm):
 
     def save(self, user, topic=None):
         data = self.data
-        try:
-            node_name = data.pop('node_name')
-            if not self.node:
-                self.node = Node.get(name=node_name)
-        except KeyError:
+
+        node_name = data.pop('node_name', None)
+        if not node_name:
             logging.info('no node_name in form data, data: %s', data)
 
         if not self.node:
+            self.node = Node.get(name=node_name)
+
+        if not self.node:
             logging.info('node is None in form instance, self: %s', self)
+
         content = unicode(data.get('content'))
         data.update({'user_id': user.id, 'node_id': self.node.id,
                      'content': strip_xss_tags(content)})
