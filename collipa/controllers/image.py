@@ -53,13 +53,14 @@ class HomeHandler(BaseHandler, EmailMixin):
         if self.current_user.is_admin and image.user_id != self.current_user.id:
             subject = "图片删除通知 - " + config.site_name
             template = (
-                '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-                '您在 %(site)s 的图片由于违反社区规定而被删除。</p>'
-            ) % {
-                'nickname': image.author.nickname,
-                'site': config.site_name,
-            }
-            self.send_email(self, image.author.email, subject, template)
+                '<p>尊敬的 <strong>{nickname}</strong> 您好！</p>'
+                '您在 {site} 的图片由于违反社区规定而被删除。</p>'
+            )
+            content = template.format(
+                nickname=image.author.nickname,
+                site=config.site_name
+            )
+            self.send_email(self, image.author.email, subject, content)
         if self.current_user.is_admin or image.user_id == self.current_user.id:
             image.remove()
             result = {'status': 'success', 'message': '已成功删除'}

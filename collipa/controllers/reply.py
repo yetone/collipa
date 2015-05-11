@@ -66,15 +66,18 @@ class HomeHandler(BaseHandler, EmailMixin):
             return self.redirect_next_url()
         subject = "评论删除通知 - " + config.site_name
         template = (
-            '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-            '<p>您在主题 <strong><a href="%(topic_url)s">「%(topic_title)s」</a></strong>'
+            '<p>尊敬的 <strong>{nickname}</strong> 您好！</p>'
+            '<p>您在主题 <strong><a href="{topic_url}">「{topic_title}」</a></strong>'
             '下的评论由于违反社区规定而被删除，我们以邮件的形式给您进行了备份，备份数据如下：</p>'
-            '<div class="content">%(content)s</div>'
-        ) % {'nickname': reply.author.nickname,
-             'topic_url': config.site_url + reply.topic.url,
-             'topic_title': reply.topic.title,
-             'content': reply.content}
-        self.send_email(self, reply.author.email, subject, template)
+            '<div class="content">{content}</div>'
+        )
+        content = template.format(
+            nickname=reply.author.nickname,
+            topic_url=config.site_url + reply.topic.url,
+            topic_title=reply.topic.title,
+            content=reply.content
+        )
+        self.send_email(self, reply.author.email, subject, content)
         reply.remove()
         result = {'status': 'success', 'message': '已成功删除'}
         return self.send_result(result)

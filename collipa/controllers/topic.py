@@ -84,14 +84,17 @@ class HomeHandler(BaseHandler, EmailMixin):
             return self.redirect_next_url()
         subject = "主题删除通知 - " + config.site_name
         template = (
-            '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-            '<p>您的主题 <strong>「%(topic_title)s」</strong>'
+            '<p>尊敬的 <strong>{nickname}</strong> 您好！</p>'
+            '<p>您的主题 <strong>「{topic_title}」</strong>'
             '由于违反社区规定而被删除，我们以邮件的形式给您进行了备份，备份数据如下：</p>'
-            '<div class="content">%(content)s</div>'
-        ) % {'nickname': topic.author.nickname,
-             'topic_title': topic.title,
-             'content': topic.content}
-        self.send_email(self, topic.author.email, subject, template)
+            '<div class="content">{content}</div>'
+        )
+        content = template.format(
+            nickname=topic.author.nickname,
+            topic_title=topic.title,
+            content=topic.content
+        )
+        self.send_email(self, topic.author.email, subject, content)
         replies = topic.replies
         users = []
         content_dict = {}
@@ -107,13 +110,17 @@ class HomeHandler(BaseHandler, EmailMixin):
             user = User.get(name=name)
             subject = "评论删除通知 - " + config.site_name
             template = (
-                '<p>尊敬的 <strong>%(nickname)s</strong> 您好！</p>'
-                '<p>主题 <strong>「%(topic_title)s」</strong>'
+                '<p>尊敬的 <strong>{nickname}</strong> 您好！</p>'
+                '<p>主题 <strong>「{topic_title}」</strong>'
                 '由于某些原因被删除，您在此主题下的评论收到了牵连，遂给您以邮件的形式进行了备份，备份数据如下：</p>'
-                '<ul class="content">%(content)s</ul>'
-            ) % {'nickname': user.nickname, 'topic_title': topic.title,
-                 'content': content}
-            self.send_email(self, user.email, subject, template)
+                '<ul class="content">{content}</ul>'
+            )
+            content = template.format(
+                nickname=user.nickname,
+                topic_title=topic.title,
+                content=content
+            )
+            self.send_email(self, user.email, subject, content)
         topic.remove()
         result = {'status': 'success', 'message': '已成功删除'}
         return self.write(result)

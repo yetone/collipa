@@ -165,14 +165,15 @@ class SignupHandler(BaseHandler, EmailMixin):
 
         subject = "帐号激活 - " + config.site_name
         template = (
-            '<p>尊敬的 <strong>%(email)s</strong> 您好！</p>'
+            '<p>尊敬的 <strong>{username}</strong> 您好！</p>'
             '<p>您的账户尚未激活，请点击此链接：'
-            '<a href="%(url)s">点我激活</a>.</p>'
+            '<a href="{url}">点我激活</a>.</p>'
             '<p>如果您的浏览器不能点击此链接，'
             '请复制下面的链接然后粘贴在浏览器的地址栏里进行激活：</p>'
-            '<p>%(url)s</p>'
-        ) % {'email': user.name, 'url': url}
-        self.send_email(self, user.email, subject, template)
+            '<p>{url}</p>'
+        )
+        content = template.format(username=user.name, url=url)
+        self.send_email(self, user.email, subject, content)
         result = {'status': 'info', 'message':
                   '激活邮件已经发到您的邮箱，请去邮箱进行激活'}
         self.flash_message(**result)
@@ -342,16 +343,17 @@ class PasswordHandler(BaseHandler, EmailMixin):
         url = '%s/account/password?verify=%s' % (config.site_url, token)
 
         template = (
-            '<div>你好 <strong>%(nickname)s</strong></div>'
+            '<div>你好 <strong>{nickname}</strong></div>'
             '<br /><div>请点击下面的链接来找回你的密码： '
-            '<a href="%(url)s">this link</a>.<div><br />'
+            '<a href="{url}">this link</a>.<div><br />'
             "<div>如果你的浏览器不能点击上面的链接 "
             '把下面的链接地址粘贴复制到你的浏览器地址栏: <br />'
-            '%(url)s </div>'
-        ) % {'nickname': user.nickname, 'url': url}
+            '{url} </div>'
+        )
+        content = template.format(nickname=user.nickname, url=url)
         result = {"status": "success", "message": "邮件已经发送，请检查您的邮箱"}
         self.flash_message(**result)
-        self.send_email(self, user.email, '找回密码', template)
+        self.send_email(self, user.email, '找回密码', content)
 
     @orm.db_session
     @tornado.web.authenticated
