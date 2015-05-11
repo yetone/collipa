@@ -1,9 +1,6 @@
 # coding: utf-8
 
-import os.path
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+from __future__ import unicode_literals
 
 from script_manager import Manager
 
