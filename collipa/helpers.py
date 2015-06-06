@@ -405,13 +405,42 @@ def collect_items_from_query(query, from_id, limit, attr_name=None):
     return items
 
 
+def extract_urls(content):
+    iter_m = re.finditer('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+    return (m.string for m in iter_m)
+
+
+def process_content(content):
+    content = process_music(content)
+    content = process_video(content)
+    return content
+
+
 def process_music(content):
     content = process_163music(content)
     return content
 
 
+def process_video(content):
+    content = process_youtube(content)
+    return content
+
+
 def process_163music(content):
+    embed_tpl = '<div class="music-wrapper"><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="http://music.163.com/outchain/player?type=2&id={music_id}&auto=0&height=66"></iframe></div>'
     music_ids = re.findall(r'http://music\.163\.com/#/m/song\?id=(?P<music_id>\d+)', content)
     for music_id in music_ids:
-        content = content.replace('http://music.163.com/#/m/song?id={}'.format(music_id), '<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="http://music.163.com/outchain/player?type=2&id={}&auto=0&height=66"></iframe>'.format(music_id))
+        content = content.replace('http://music.163.com/#/m/song?id={}'.format(music_id), embed_tpl.format(music_id=music_id))
+    return content
+
+
+def process_youtube(content):
+    embed_tpl = '<div class="video-wrapper youtube"><iframe width="560" height="315" src="https://www.youtube.com/embed/{video_id}" frameborder="0" allowfullscreen></iframe></div>'
+    for url in extract_urls(content):
+        match = re.search(r'http[s]?://youtu.be/(?P<video_id>[^/]+)', url)
+        if match:
+            content = content.replace(url, embed_tpl.format(**match.groupdict()))
+        match = re.search(r'http[s]?://www\.youtube\.com/watch\?(|.*&)v=(?P<video_id>[^&]+)', url)
+        if match:
+            content = content.replace(url, embed_tpl.format(**match.groupdict()))
     return content

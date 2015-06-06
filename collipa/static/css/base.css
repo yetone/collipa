@@ -2163,6 +2163,10 @@ ul.users li a div.username span {
   -moz-animation-iteration-count:1;
 }
 
+.youtube {
+  margin: 20px 0;
+}
+
 /* keyframes scaleBox for .chat-box animate */
 @-webkit-keyframes scaleBox{
   0%{
