@@ -190,7 +190,7 @@ def strip_tags(html):
 
 
 def strip_xss_tags(html):
-    return xss.parsehtml(html)
+    return xss.parse_html(html)
 
 
 def filter_img_tags(htmlstr):

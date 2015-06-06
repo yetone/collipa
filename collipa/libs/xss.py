@@ -7,11 +7,11 @@ regex_cache = {}
 
 
 def search(text, regex):
-    regexcmp = regex_cache.get(regex)
-    if not regexcmp:
-        regexcmp = re.compile(regex)
-        regex_cache[regex] = regexcmp
-    return regexcmp.search(text)
+    regex_cmp = regex_cache.get(regex)
+    if not regex_cmp:
+        regex_cmp = re.compile(regex)
+        regex_cache[regex] = regex_cmp
+    return regex_cmp.search(text)
 
 VALID_TAGS = {
     'blockquote': {},
@@ -45,7 +45,7 @@ VALID_TAGS = {
 }
 
 
-def parsehtml(html):
+def parse_html(html):
     soup = BeautifulSoup(html)
     for tag in soup.findAll(True):
         if tag.name not in VALID_TAGS:
@@ -60,4 +60,4 @@ def parsehtml(html):
                 if not search(attr_value, attr_rules[attr_name]):
                     del tag[attr_name]
 
-    return unicode(soup.renderContents())
+    return unicode(soup.renderContents(), 'utf8')
