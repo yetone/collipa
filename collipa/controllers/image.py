@@ -62,7 +62,7 @@ class HomeHandler(BaseHandler, EmailMixin):
             )
             self.send_email(self, image.author.email, subject, content)
         if self.current_user.is_admin or image.user_id == self.current_user.id:
-            image.remove()
+            image.delete()
             result = {'status': 'success', 'message': '已成功删除'}
         else:
             result = {'status': 'error', 'message': '你没有权限啊, baby'}

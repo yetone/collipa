@@ -196,7 +196,7 @@ class Topic(db.Entity, BaseModel):
         except:
             pass
 
-    def remove(self, user=None):
+    def delete(self, user=None):
         self.node.topic_count -= 1
         self.author.topic_count -= 1
         for th in collipa.models.Thank.select(lambda rv: rv.topic_id == self.id):
@@ -211,13 +211,13 @@ class Topic(db.Entity, BaseModel):
             # 不能直接删除 img
             img.topic_id = 0
         for reply in self.replies:
-            reply.remove()
+            reply.delete()
 
         if not user:
             user = self.author
         user.active = int(time.time())
 
-        super(Topic, self).remove()
+        super(Topic, self).delete()
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:

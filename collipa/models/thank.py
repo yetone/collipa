@@ -67,7 +67,7 @@ class Thank(db.Entity, BaseModel):
 
         return super(Thank, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.topic_id:
             self.topic.thank_count -= 1
             self.topic.author.thank_count -= 1
@@ -90,4 +90,4 @@ class Thank(db.Entity, BaseModel):
                                     role="thank-remove",
                                     reply_id=self.reply_id)
 
-        super(Thank, self).remove()
+        super(Thank, self).delete()

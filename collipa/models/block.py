@@ -38,5 +38,5 @@ class Block(db.Entity, BaseModel):
     def save(self):
         super(m.Up, self).save()
 
-    def remove(self):
-        super(m.Up, self).remove()
+    def delete(self):
+        super(m.Up, self).delete()

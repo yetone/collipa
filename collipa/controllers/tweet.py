@@ -59,7 +59,7 @@ class HomeHandler(BaseHandler):
         tweet = Tweet.get(id=tweet_id)
         if not tweet:
             return self.redirect_next_url()
-        tweet.remove()
+        tweet.delete()
         result = {'status': 'success', 'message': '已成功删除'}
         return self.send_result(result)
 

@@ -270,7 +270,7 @@ class User(db.Entity, BaseModel):
             collect.save()
             return {'status': 'success', 'message': '收藏成功', 'type': 1}
         else:
-            collect.remove()
+            collect.delete()
             return {'status': 'success', 'message': '取消收藏成功', 'type': 0}
 
     def follow(self, follow_class_name=None, whom_id=None, topic_id=None,
@@ -295,7 +295,7 @@ class User(db.Entity, BaseModel):
             follow.save()
             return {'status': 'success', 'message': '关注成功', 'type': 1}
         else:
-            follow.remove()
+            follow.delete()
             return {'status': 'success', 'message': '取消关注成功', 'type': 0}
 
     def thank(self, topic_id=None, reply_id=None):
@@ -318,7 +318,7 @@ class User(db.Entity, BaseModel):
                 return {'status': 'error', 'message': '感谢失败', 'type': -1}
         delta = int(time.time()) - thank.created_at
         if delta < config.thank_delta_time:
-            thank.remove()
+            thank.delete()
             return {'status': 'success', 'message': '取消感谢成功', 'type': 0}
         return {'status': 'info', 'message': '已超过取消感谢时间', 'type': -1}
 
@@ -329,7 +329,7 @@ class User(db.Entity, BaseModel):
         if not up:
             down = collipa.models.Down.get(user_id=self.id, topic_id=topic_id, reply_id=reply_id)
             if down:
-                down.remove()
+                down.delete()
             up = collipa.models.Up(user_id=self.id, topic_id=topic_id, reply_id=reply_id)
             notification = collipa.models.Notification.get(topic_id=topic_id, reply_id=reply_id, role='up')
             if notification:
@@ -344,7 +344,7 @@ class User(db.Entity, BaseModel):
                         'category': 'up'}
             else:
                 return {'status': 'error', 'message': '赞同失败', 'type': -1}
-        up.remove()
+        up.delete()
         return {'status': 'success', 'message': '取消赞同成功', 'type': 0,
                 'category': 'up'}
 
@@ -354,7 +354,7 @@ class User(db.Entity, BaseModel):
         if not down:
             up = collipa.models.Up.get(user_id=self.id, topic_id=topic_id, reply_id=reply_id)
             if up:
-                up.remove()
+                up.delete()
             down = collipa.models.Down(user_id=self.id, topic_id=topic_id, reply_id=reply_id)
             result = down.save()
             if result:
@@ -362,7 +362,7 @@ class User(db.Entity, BaseModel):
                         'category': 'down'}
             else:
                 return {'status': 'error', 'message': '反对失败', 'type': -1}
-        down.remove()
+        down.delete()
         return {'status': 'success', 'message': '取消反对成功', 'type': 0,
                 'category': 'down'}
 
@@ -373,7 +373,7 @@ class User(db.Entity, BaseModel):
             report = collipa.models.Report(user_id=self.id, topic_id=topic_id, reply_id=reply_id)
             report.save()
             return {'status': 'success', 'message': '举报成功', 'type': 1}
-        report.remove()
+        report.delete()
         return {'status': 'success', 'message': '取消举报成功', 'type': 0}
 
     def get_topics(self, page=1, category='all', order_by='created_at',

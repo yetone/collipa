@@ -61,7 +61,7 @@ class Up(db.Entity, BaseModel):
 
         return super(Up, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.topic_id:
             self.topic.up_count -= 1
             self.topic.author.up_count -= 1
@@ -70,4 +70,4 @@ class Up(db.Entity, BaseModel):
             self.reply.up_count -= 1
             self.reply.author.up_count -= 1
 
-        super(Up, self).remove()
+        super(Up, self).delete()

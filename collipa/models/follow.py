@@ -53,7 +53,7 @@ class Follow(db.Entity, BaseModel):
 
         return super(Follow, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.whom_id:
             self.who.following_count -= 1
             self.whom.follower_count -= 1
@@ -64,4 +64,4 @@ class Follow(db.Entity, BaseModel):
         if self.node_id:
             self.node.follow_count -= 1
 
-        super(Follow, self).remove()
+        super(Follow, self).delete()

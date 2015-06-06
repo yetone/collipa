@@ -74,7 +74,7 @@ class Tweet(db.Entity, BaseModel):
 
         return super(Tweet, self).save()
 
-    def remove(self, user=None):
+    def delete(self, user=None):
         self.author.tweet_count -= 1
         for th in collipa.models.Thank.select(lambda rv: rv.tweet_id == self.id):
             th.delete()
@@ -89,7 +89,7 @@ class Tweet(db.Entity, BaseModel):
             user = self.author
         user.active = int(time.time())
 
-        super(Tweet, self).remove()
+        super(Tweet, self).delete()
 
     def get_uppers(self, after_date=None, before_date=None):
         if after_date:

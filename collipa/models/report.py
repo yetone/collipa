@@ -44,7 +44,7 @@ class Report(db.Entity, BaseModel):
 
         return super(Report, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.topic_id:
             self.topic.report_count -= 1
             self.topic.author.report_count -= 1
@@ -52,4 +52,4 @@ class Report(db.Entity, BaseModel):
             self.reply.report_count -= 1
             self.reply.author.report_count -= 1
 
-        super(Report, self).remove()
+        super(Report, self).delete()

@@ -59,7 +59,7 @@ class Down(db.Entity, BaseModel):
 
         return super(Down, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.topic_id:
             self.topic.down_count -= 1
             self.topic.author.down_count -= 1
@@ -67,4 +67,4 @@ class Down(db.Entity, BaseModel):
             self.reply.down_count -= 1
             self.reply.author.down_count -= 1
 
-        super(Down, self).remove()
+        super(Down, self).delete()

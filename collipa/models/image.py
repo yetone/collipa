@@ -89,7 +89,7 @@ class Image(db.Entity, BaseModel):
 
         return super(Image, self).save()
 
-    def remove(self):
+    def delete(self):
         now = int(time.time())
 
         self.author.image_count -= 1
@@ -102,7 +102,7 @@ class Image(db.Entity, BaseModel):
             album = self.album
             image_id = self.id
             image_path = self.path
-            super(Image, self).remove()
+            super(Image, self).delete()
             # 某一夜，脑残用了 image.id 作为 album 的 cover
             if album.cover_id in (image_id, image_path):
                 album.update_cover()

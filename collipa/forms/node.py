@@ -136,7 +136,7 @@ class NodeEditForm(BaseForm):
         data.update({'user_id': user.id})
         nns = NodeNode.select(lambda rv: rv.child_id == node.id)
         for nn in nns:
-            nn.remove()
+            nn.delete()
         if not parent_name:
             if not NodeNode.get(parent_id=1, child_id=node.id):
                 NodeNode(parent_id=1, child_id=node.id).save()

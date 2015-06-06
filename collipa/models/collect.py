@@ -52,7 +52,7 @@ class Collect(db.Entity, BaseModel):
 
         return super(Collect, self).save()
 
-    def remove(self):
+    def delete(self):
         if self.topic_id:
             self.topic.collect_count -= 1
             self.topic.author.collect_count -= 1
@@ -62,4 +62,4 @@ class Collect(db.Entity, BaseModel):
 
         self.author.collection_count -= 1
 
-        super(Collect, self).remove()
+        super(Collect, self).delete()

@@ -121,7 +121,7 @@ class HomeHandler(BaseHandler, EmailMixin):
                 content=content
             )
             self.send_email(self, user.email, subject, content)
-        topic.remove()
+        topic.delete()
         result = {'status': 'success', 'message': '已成功删除'}
         return self.write(result)
 

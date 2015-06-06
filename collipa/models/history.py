@@ -34,6 +34,6 @@ class History(db.Entity, BaseModel):
 
         return super(History, self).save()
 
-    def remove(self):
+    def delete(self):
 
-        super(History, self).remove()
+        super(History, self).delete()

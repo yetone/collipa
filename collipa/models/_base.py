@@ -10,24 +10,15 @@ __all__ = ['db', 'BaseModel']
 db = orm.Database('mysql', config.db_host, config.db_user, config.db_pass, config.db_name)
 
 
-class SessionMixin(object):
+# Cannot inherited from db.Entity, because the fucking design of Pony!!!
+class BaseModel(object):
     def save(self):
         try:
             orm.commit()
-        except Exception:
+        except:
             pass
         return self
 
-    def remove(self):
-        self.delete()
-        try:
-            orm.commit()
-        except Exception:
-            pass
-        return self
-
-
-class ModelMixin(object):
     @staticmethod
     def paginate(self, page, per_page):
         return self[(page - 1) * per_page, page * per_page]
@@ -109,8 +100,6 @@ class ModelMixin(object):
         except:
             return None
 
-
-class BaseModel(SessionMixin, ModelMixin):
     @staticmethod
     def get_compiled_content_mention_users(content):
         mentions = get_mentions(content)
