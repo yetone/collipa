@@ -403,3 +403,15 @@ def collect_items_from_query(query, from_id, limit, attr_name=None):
             can_append = True
 
     return items
+
+
+def process_music(content):
+    content = process_163music(content)
+    return content
+
+
+def process_163music(content):
+    music_ids = re.findall(r'http://music\.163\.com/#/m/song\?id=(?P<music_id>\d+)', content)
+    for music_id in music_ids:
+        content = content.replace('http://music.163.com/#/m/song?id={}'.format(music_id), '<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="http://music.163.com/outchain/player?type=2&id={}&auto=0&height=66"></iframe>'.format(music_id))
+    return content

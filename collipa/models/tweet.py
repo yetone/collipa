@@ -5,7 +5,7 @@ from pony import orm
 from ._base import db, BaseModel
 import collipa.models
 from collipa import config
-from collipa.helpers import strip_tags
+from collipa.helpers import strip_tags, process_music
 
 
 class Tweet(db.Entity, BaseModel):
@@ -67,6 +67,7 @@ class Tweet(db.Entity, BaseModel):
         if not user:
             user = self.author
 
+        self.content = process_music(self.content)
         self.updated_at = now
         self.active = now
 
