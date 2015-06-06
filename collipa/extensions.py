@@ -11,13 +11,6 @@ mc = memcache.Client(['127.0.0.1:11211'], debug=1)
 
 rd = redis.StrictRedis(host='127.0.0.1', port=config.rd_port, db=0)
 
-'''
-def md(text):
-    text = img_convert(text)
-    return misaka.html(text, extensions=misaka.EXT_FENCED_CODE |
-            misaka.EXT_AUTOLINK, render_flags=misaka.HTML_SKIP_HTML)
-'''
-
 
 def memcached(key, limit=86400):
     def wrap(func):
