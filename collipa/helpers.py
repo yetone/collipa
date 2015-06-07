@@ -407,7 +407,7 @@ def collect_items_from_query(query, from_id, limit, attr_name=None):
 
 def extract_urls(content):
     iter_m = re.finditer('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
-    return (m.string for m in iter_m)
+    return (m.group() for m in iter_m)
 
 
 def process_content(content):
