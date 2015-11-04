@@ -55,5 +55,5 @@ def runserver(port=8080, address="127.0.0.1"):
     db.generate_mapping()
     tornado.httpserver.HTTPServer(Application(),
                                   xheaders=True).listen(port, address)
-    print("App started. Listenning on {}:{}".format(address, port))
+    print("App started. Listening on {}:{}".format(address, port))
     tornado.ioloop.IOLoop.instance().start()
