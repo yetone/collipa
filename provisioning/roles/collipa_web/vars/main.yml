@@ -1,0 +1,9 @@
+---
+proc_manager_log_dir: /var/log/supervisor
+
+app_repo: /var/www/collipa
+app_venv: "{{ app_repo }}/.venv"
+app_port: 9090
+app_addr: "127.0.0.1:{{ app_port }}"
+websocket_port: 9089
+websocket_addr: "127.0.0.1:{{ websocket_port }}"

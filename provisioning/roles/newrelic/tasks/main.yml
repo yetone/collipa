@@ -1,0 +1,17 @@
+---
+- name: copy newrelic GPG key
+  copy: src=GPG-KEY-newrelic dest=/tmp/GPG-KEY-newrelic
+
+- name: add newrelic GPG key
+  apt_key: file=/tmp/GPG-KEY-newrelic state=present
+
+- name: add newrelic repo
+  apt_repository: repo='deb http://apt.newrelic.com/debian/ newrelic non-free' state=present
+
+- name: install newrelic
+  apt: pkg=newrelic-sysmond state=installed update_cache=yes
+
+- name: configuring newrelic-sysmond
+  template: src=nrsysmond.cfg.j2 dest=/etc/newrelic/nrsysmond.cfg owner=newrelic group=newrelic mode=0644
+  notify:
+  - restarting newrelic-sysmond

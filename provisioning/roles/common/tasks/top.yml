@@ -1,0 +1,3 @@
+---
+- name: deploy top log cron
+  cron: name='top snapshot' cron_file=top job='COLUMNS=512 top -bc -n 1 | sed "s/\s\+$//g" | logger -t ssss' minute='*/2' user=root

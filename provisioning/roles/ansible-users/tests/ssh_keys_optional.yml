@@ -1,0 +1,45 @@
+---
+
+# SSH keys should not be required
+
+- hosts: test_runners
+  sudo: yes
+
+# Test fixture data
+  vars:
+    users:
+      - username: ansibletestuser
+        name: Ansible Users Role Test Fixture Account
+        uid: 2222
+        groups: []
+        ssh_key: []
+
+# Test setup
+  pre_tasks:
+    - include: cleanup.yml
+    - name: SSH Keys Optional Test | Pre-Assertions | Ensure ansibletestuser not already present
+      command: "grep ansibletestuser /etc/passwd /etc/group"
+      register: ensure_user_not_present
+      failed_when: ensure_user_not_present.rc == 0
+    - name: SSH Keys Optional Test | Pre-Assertions | Ensure ansibletestuser home dir not already present
+      command: "ls -d /home/ansibletestuser"
+      register: ensure_home_not_present
+      failed_when: ensure_home_not_present.rc == 0
+
+# Test run
+  roles:
+    - { role: users }
+
+# Test verify successful
+  tasks:
+    - name: SSH Keys Optional Test | Post-Assertions | Ensure ansibletestuser was created
+      command: "grep ansibletestuser /etc/passwd"
+    - name: SSH Keys Optional Test | Post-Assertions | Ensure no ssh key was added
+      command: "sudo ls /home/ansibletestuser/.ssh/authorized_keys"
+      register: ensure_ssh_key_not_present
+      failed_when: ensure_ssh_key_not_present.rc == 0
+
+# Test tear-down
+  post_tasks:
+    - include: cleanup.yml
+

@@ -1,0 +1,25 @@
+---
+# Install AWS Plugin (see https://github.com/elasticsearch/elasticsearch-cloud-aws)
+#
+# The following variables need to be defined in your playbook or inventory:
+# - elasticsearch_plugin_aws_version
+#
+# The following variables provide a for now limited configuration for the plugin.
+# More options may be available in the future.
+# (see http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-discovery-ec2.html):
+# - elasticsearch_plugin_aws_ec2_groups
+# - elasticsearch_plugin_aws_ec2_ping_timeout
+# - elasticsearch_plugin_aws_access_key
+# - elasticsearch_plugin_aws_secret_key
+# - elasticsearch_plugin_aws_region
+
+
+- name: Installing AWS Plugin
+  action: >
+    shell bin/plugin -install elasticsearch/elasticsearch-cloud-aws/{{ elasticsearch_plugin_aws_version }}
+    chdir={{ elasticsearch_home_dir }}
+# Fix permissions
+- file: >
+    path="{{ elasticsearch_plugin_dir }}" state=directory
+    owner={{ elasticsearch_user }} group={{ elasticsearch_group }}
+    recurse=yes

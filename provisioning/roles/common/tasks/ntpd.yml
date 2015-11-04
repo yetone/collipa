@@ -1,0 +1,20 @@
+---
+- name: set the correct timezone.
+  file: src=/usr/share/zoneinfo/UTC  dest=/etc/localtime state=link force=yes
+
+- name: install ntp
+  apt: name=ntp state=installed
+
+- name: ensure NTP is running and enabled at system start.
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+  when: ntp_enabled
+
+- name: ensure NTP is stopped and disabled at system start.
+  service:
+    name: ntp
+    state: stopped
+    enabled: no
+  when: not ntp_enabled

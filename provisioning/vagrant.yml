@@ -1,0 +1,13 @@
+---
+- hosts: all
+  sudo: True
+  vars:
+      dev_mode: yes
+      server_name: test.collipa.com
+      app_user: vagrant
+  roles:
+      - common
+      - cache
+      - mysql
+      - nodejs
+      - collipa_web

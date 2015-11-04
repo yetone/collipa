@@ -1,0 +1,71 @@
+---
+- name: install virtualenv
+  pip: name=virtualenv state=present version=1.11.6
+
+- name: create a user for collipa
+  user:
+    name: "{{ app_user }}"
+    state: present
+    comment: owner of collipa
+
+- name: install jpeg support for PIL
+  apt: name=libjpeg-dev state=present
+
+- name: install png support for PIL
+  apt: name=zlib1g-dev state=present
+
+- name: install gif support
+  apt: name=gifsicle state=present
+
+- name: install libxslt1-dev
+  apt: name=libxslt1-dev state=present
+
+- name: create app repo
+  file:
+      dest: "{{ app_repo }}"
+      state: directory
+      mode: 0655
+      owner: "{{ app_user }}"
+      group: "{{ app_user }}"
+  when: not dev_mode
+
+- name: pull source code
+  git:
+      repo: https://{{ github_bot_token }}:x-oauth-basic@github.com/yetone/collipa
+      dest: "{{ app_repo }}"
+      version: "{{ app_version }}"
+  tags: deploy
+  when: not dev_mode
+
+- name: create virtualenv
+  shell: virtualenv {{ app_venv }}
+         creates="{{ app_venv }}/bin/activate"
+
+- name: install app dependencies
+  pip:
+      requirements: "{{ app_repo }}/requirements.txt"
+      virtualenv: "{{ app_venv }}"
+      extra_args: "--allow-all-external"
+  tags: deploy
+
+- name: install dev dependencies
+  pip:
+      requirements: "{{ app_repo }}/dev_requirements.txt"
+      virtualenv: "{{ app_venv }}"
+  when: dev_mode
+
+- name: add local_config
+  template:
+      src: local_config.py.j2
+      dest: "{{ app_repo }}/collipa/local_config.py"
+      mode: 0644
+  when: dev_mode
+
+- name: add production config
+  template:
+      src: prod_config.py.j2
+      dest: "{{ app_repo }}/collipa/local_config.py"
+      mode: 0644
+  tags:
+      - deploy
+  when: not dev_mode

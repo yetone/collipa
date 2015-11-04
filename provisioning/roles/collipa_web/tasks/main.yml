@@ -1,0 +1,34 @@
+---
+- name: log directory for process manager
+  file:
+    dest: "{{ proc_manager_log_dir }}/collipa"
+    state: directory
+    mode: 0755
+    owner: "{{ app_user }}"
+
+- name: place collipa supervisor config
+  template: src=collipa.supervisor.conf dest=/etc/supervisor.d/collipa.conf
+  tags: deploy
+
+- name: load collipa with supervisord
+  supervisorctl: name=collipa state=restarted
+  tags: deploy
+
+- name: load collipa_websocket with supervisord
+  supervisorctl: name=collipa_websocket state=restarted
+  tags: deploy
+
+- name: add collipa server config
+  template: src=collipa.nginx.conf dest={{ item }}/collipa.conf mode=0655
+  with_items:
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled
+  notify:
+    - reload nginx
+  tags: 
+    - nginx
+    - deploy
+
+- name: config logrotate
+  template: src=collipa.logrotate.conf dest=/etc/logrotate.d/collipa mode=0644
+  tags: config

@@ -1,0 +1,21 @@
+---
+- name: install mysql packages
+  apt: name={{ item }} state=present
+  with_items:
+    - python-mysqldb
+    - mysql-server
+    - libmysqlclient-dev
+  tags: mysql
+
+- name: configure the service
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf mode=0644
+  notify: restart mysql
+  tags: mysql
+
+- name: configure db user password
+  mysql_user: login_user=root login_password="{{ db_root_pass }}" name={{ db_user }} password="{{ db_pass }}" state=present priv={{ db_name }}.*:ALL,GRANT
+  tags: mysql
+
+- name: create database
+  mysql_db: login_user=root login_password="{{ db_root_pass }}" name={{ db_name }} state=present
+  tags: mysql

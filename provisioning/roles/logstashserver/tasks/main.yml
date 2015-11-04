@@ -1,0 +1,36 @@
+---
+- name: copy GPG key
+  copy: src=GPG-KEY-elasticsearch dest=/tmp/GPG-KEY-elasticsearch
+
+- name: add GPG key
+  apt_key: file=/tmp/GPG-KEY-elasticsearch state=present
+
+- name: add logstash repo
+  apt_repository: repo='deb http://packages.elasticsearch.org/logstash/1.4/debian stable main' state=present
+
+- name: install logstash
+  apt: pkg=logstash=1.4.2-1-2c0f5a1 state=installed update_cache=yes
+
+- name: create /etc/pki/tls/certs
+  file: path=/etc/pki/tls/certs state=directory
+
+- name: create /etc/pki/tls/private
+  file: path=/etc/pki/tls/private state=directory
+
+- name: add /etc/pki/tls/certs/logstash-forwarder.crt
+  copy: src=logstash-forwarder.crt dest=/etc/pki/tls/certs/logstash-forwarder.crt
+  notify:
+  - restart logstash
+
+- name: add /etc/pki/tls/private/logstash-forwarder.key
+  copy: src=logstash-forwarder.key dest=/etc/pki/tls/private/logstash-forwarder.key
+  notify:
+  - restart logstash
+
+- name: configure logstash server
+  copy: src=conf.d dest=/etc/logstash/ directory_mode=yes
+  notify:
+  - restart logstash
+
+- name: keep logstash started
+  service: name=logstash state=started enabled=yes
