@@ -1,0 +1,9 @@
+---
+# TODO specify redis server version
+- name: install redis
+  apt: name=redis-server state=present
+  notify: start redis
+
+- name: install memcached
+  apt: name=memcached
+  notify: start memcached

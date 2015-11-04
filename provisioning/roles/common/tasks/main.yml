@@ -1,0 +1,22 @@
+- name: set hostname
+  tags: system
+  hostname: name={{ inventory_hostname }}
+
+- name: use deb source inside China
+  copy: src=sources.list dest=/etc/apt/sources.list backup=yes
+  register: src_list
+  when: dev_mode
+
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: install system packages
+  apt: pkg={{ item }} state=installed
+  with_items:
+    - python2.7
+    - python-dev
+    - python-pip
+    - git
+
+- include: ntpd.yml
+- include: top.yml

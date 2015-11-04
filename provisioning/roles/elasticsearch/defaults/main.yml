@@ -1,0 +1,24 @@
+---
+# Elasticsearch Ansible Variables
+
+elasticsearch_user: elasticsearch
+elasticsearch_group: elasticsearch
+elasticsearch_download_url: https://download.elasticsearch.org/elasticsearch/elasticsearch
+elasticsearch_version: 1.4.2
+elasticsearch_apt_repos:
+  - 'ppa:webupd8team/java'
+elasticsearch_max_open_files: 65535
+elasticsearch_home_dir: /usr/share/elasticsearch
+elasticsearch_plugin_dir: /usr/share/elasticsearch/plugins
+elasticsearch_log_dir: /var/log/elasticsearch
+elasticsearch_data_dir: /var/lib/elasticsearch
+elasticsearch_work_dir: /tmp/elasticsearch
+elasticsearch_conf_dir: /etc/elasticsearch
+elasticsearch_service_startonboot: no
+elasticsearch_plugin_aws_version: 2.4.1
+elasticsearch_discovery_zen_ping_multicast_enabled: false
+
+# Non-Elasticsearch Defaults
+apt_cache_valid_time: 300 # seconds between "apt-get update" calls.
+elasticsearch_install_java: yes
+elasticsearch_discovery_zen_minimum_master_nodes: 2

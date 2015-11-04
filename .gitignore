@@ -42,3 +42,5 @@ collipa/local_config.py
 .pydevproject
 .idea
 .venv
+
+provisioning/group_vars

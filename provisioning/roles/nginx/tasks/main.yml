@@ -1,0 +1,35 @@
+---
+- name: copy nginx repo key
+  copy: src=nginx_signing.key dest=/tmp/nginx_signing.key
+
+- name: add nginx repo key
+  apt_key: file=/tmp/nginx_signing.key state=present
+
+- name: add nginx repo
+  apt_repository: repo='deb http://nginx.org/packages/ubuntu/ trusty nginx' state=present
+
+- name: add nginx source repo
+  apt_repository: repo='deb-src http://nginx.org/packages/ubuntu/ trusty nginx' state=present
+
+- name: install nginx
+  apt: pkg=nginx state=installed update_cache=yes
+  notify:
+    - start nginx
+
+- name: create sites directories
+  file: path={{ item }} state=directory mode=0755
+  with_items:
+    - /etc/nginx/sites-available
+    - /etc/nginx/sites-enabled
+
+- name: add nginx config
+  template: src=nginx.conf dest=/etc/nginx/nginx.conf mode=0644
+
+- name: log directory for collipa
+  file: state=directory path=/var/log/collipa/nginx/ mode=0655
+
+- name: log files for collipa
+  file: state=touch path=/var/log/collipa/nginx/{{ item }} mode=0644
+  with_items:
+    - access.log
+    - error.log

@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: True
+  gather_facts: no
+  vars:
+      dev_mode: no
+  roles:
+      - {role: common, tags: common}
+      - {role: newrelic, tags: newrelic}
+      - {role: hosts, tags: hosts}

@@ -1,0 +1,18 @@
+---
+- name: install supervisor
+  pip: name=supervisor state=present version=3.1.3
+
+- name: create supervisord directories
+  file: dest={{ item }} state=directory mode=0755
+  with_items:
+    - /etc/supervisor.d
+    - "{{ proc_manager_log_dir }}"
+
+- name: add supervisor config file
+  copy: src=supervisord.conf dest=/etc/supervisord.conf backup=yes
+
+- name: create supervisord init script
+  copy: src=supervisord.sh dest=/etc/init.d/supervisord mode=0755
+
+- name: start supervisord service and have it run during system startup
+  service: name=supervisord state=started enabled=yes

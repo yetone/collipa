@@ -1,0 +1,28 @@
+---
+- name: copy GPG key
+  copy: src=GPG-KEY-elasticsearch dest=/tmp/GPG-KEY-elasticsearch
+
+- name: add GPG key
+  apt_key: file=/tmp/GPG-KEY-elasticsearch state=present
+
+- name: add logstashforwarder repo
+  apt_repository: repo='deb http://packages.elasticsearch.org/logstashforwarder/debian stable main' state=present
+
+- name: install logstashforwarder
+  apt: pkg=logstash-forwarder state=installed update_cache=yes
+
+- name: create SSL directory
+  file: path=/etc/pki/tls/certs state=directory
+
+- name: add SSL certificate
+  copy: src=logstash-forwarder.crt dest=/etc/pki/tls/certs/logstash-forwarder.crt
+  notify:
+      - restart logstashforwarder
+
+- name: configure logstashforwarder
+  template: src=logstash-forwarder.conf dest=/etc/logstash-forwarder.conf mode=0644
+  notify:
+      - restart logstashforwarder
+
+- name: keep logstashforwarder always started
+  service: name=logstash-forwarder state=started enabled=yes

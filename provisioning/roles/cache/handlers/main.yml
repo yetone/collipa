@@ -1,0 +1,6 @@
+---
+- name: start redis
+  service: name=redis-server state=started enabled=yes
+
+- name: start memcached
+  service: name=memcached state=started enabled=yes

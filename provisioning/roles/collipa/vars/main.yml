@@ -1,0 +1,3 @@
+---
+app_repo: /var/www/collipa
+app_venv: "{{ app_repo }}/.venv"

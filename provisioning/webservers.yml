@@ -1,0 +1,15 @@
+---
+- hosts: webservers
+  sudo: True
+  gather_facts: no
+  vars:
+      dev_mode: no
+      server_name: "collipa.com"
+      app_user: collipa
+  roles:
+      - {role: common, tags: common}
+      - supervisor
+      - nginx
+      - collipa
+      - collipa_web
+      - ansible-users

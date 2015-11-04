@@ -1,0 +1,3 @@
+---
+- name: manage /etc/hosts
+  copy: src=hosts dest=/etc/hosts owner=root group=root

@@ -1,0 +1,6 @@
+---
+- name: start logstashforwarder
+  service: name=logstash-forwarder state=started enabled=yes
+
+- name: restart logstashforwarder
+  service: name=logstash-forwarder state=restarted
