@@ -47,7 +47,10 @@ class CommunityHandler(BaseHandler):
                                                                                     orm.desc(rv.created_at))
         else:
             topics = orm.select(rv for rv in Topic).order_by(lambda: orm.desc(rv.last_reply_date))
-        topic_count = orm.count(topics)
+        if isinstance(topics, list):
+            topic_count = len(topics)
+        else:
+            topic_count = orm.count(topics)
         topics = topics[(page - 1) * config.paged: page * config.paged]
         page_count = (topic_count + config.paged - 1) // config.paged
         return self.render("site/index.html", topics=topics, category=category,
