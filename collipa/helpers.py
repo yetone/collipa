@@ -22,13 +22,12 @@ class UsernameParser(HTMLParser):
         self.names = []
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            if len(attrs) == 0:
-                pass
-            else:
-                for (variable, value) in attrs:
-                    if variable == 'data-username':
-                        self.names.append(value)
+        if tag != 'a':
+            return
+        for variable, value in attrs:
+            if variable != 'data-username':
+                continue
+            self.names.append(value)
 
 
 def require_admin(func):
