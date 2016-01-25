@@ -32,3 +32,23 @@ def require_admin(func):
         result = {"status": "error", "message": "对不起，您没有相关权限"}
         self.send_result(result)
     return wrap
+
+
+def require_with_roles(includes=None, excludes=None):
+    def wrap(func):
+        @wraps(func)
+        def _wrap(self, *args, **kwargs):
+            result = {"status": "error", "message": "对不起，您没有相关权限"}
+            if not self.current_user:
+                return self.send_result(result)
+            if isinstance(includes, list):
+                if self.current_user.role in includes:
+                    return func(self, *args, **kwargs)
+                return self.send_result(result)
+            if isinstance(excludes, list):
+                if self.current_user.role in excludes:
+                    return self.send_result(result)
+                return func(self, *args, **kwargs)
+            return self.send_result(result)
+        return _wrap
+    return wrap
