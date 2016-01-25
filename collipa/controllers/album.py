@@ -6,7 +6,8 @@ from ._base import BaseHandler
 from pony import orm
 
 from collipa.models import Album, User, Tweet
-from collipa.helpers import strip_tags, require_permission
+from collipa.helpers import strip_tags
+from collipa.libs.decorators import require_permission
 
 
 class HomeHandler(BaseHandler):

@@ -8,7 +8,7 @@ from pony import orm
 from .user import EmailMixin
 from collipa.models import Topic, Reply
 from collipa.forms import ReplyForm
-from collipa.helpers import require_permission
+from collipa.libs.decorators import require_permission
 from collipa import config
 
 

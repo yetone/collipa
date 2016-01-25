@@ -8,7 +8,8 @@ from pony import orm
 
 from collipa.models import Topic, Node, User
 from collipa.forms import TopicForm, ReplyForm
-from collipa.helpers import force_int, require_admin, require_permission
+from collipa.helpers import force_int
+from collipa.libs.decorators import require_admin, require_permission
 from collipa import config
 
 
