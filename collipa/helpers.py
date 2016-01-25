@@ -15,6 +15,8 @@ from collipa import config
 from collipa.libs import xss
 from collipa.libs.pil import Image
 
+from collipa.models import User
+
 
 class UsernameParser(HTMLParser):
     def __init__(self):
@@ -43,18 +45,19 @@ def require_admin(func):
 def require_permission(func):
     @wraps(func)
     def wrap(self, *args, **kwargs):
-        if self.current_user and (self.current_user.role != 'unverify' or
-                                  self.current_user.is_admin):
-            return func(self, *args, **kwargs)
+        result = None
         if not self.current_user:
             result = {"status": "error",
                       "message": "请登陆"}
-        elif self.current_user.role == 'unverify':
+        elif self.current_user.role == User.UNVERIFY:
             result = {"status": "error",
                       "message": "对不起，您的账户尚未激活，请到注册邮箱检查激活邮件"}
-        else:
+        elif self.current_user.role == User.FORBIDDEN:
             result = {"status": "error", "message": "对不起，您没有相关权限"}
-        self.send_result(result)
+
+        if result is not None:
+            return self.send_result(result)
+        return func(self, *args, **kwargs)
     return wrap
 
 
