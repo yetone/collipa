@@ -70,6 +70,11 @@ class User(db.Entity, BaseModel):
     KEY_ONLINE = 'online:{.id}'
     KEY_G_ONLINE = 'online'
 
+    # roles
+    UNVERIFY = 'unverify'
+    FORBIDDEN = 'forbidden'
+    ADMIN = 'admin'
+
     @classmethod
     def init(cls, **kwargs):
         token = cls.create_token(16)
