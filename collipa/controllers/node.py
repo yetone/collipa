@@ -15,7 +15,8 @@ from pony import orm
 from collipa.libs.pil import Image
 from collipa.models import Node
 from collipa.forms import NodeForm, NodeEditForm
-from collipa.helpers import get_year, get_month, force_int, require_admin
+from collipa.helpers import get_year, get_month, force_int
+from collipa.libs.decorators import require_admin
 from collipa import config
 
 

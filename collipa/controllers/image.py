@@ -8,7 +8,8 @@ from ._base import BaseHandler
 from .user import EmailMixin
 from collipa.libs.pil import Image as Img
 from collipa.models import Image, Album
-from collipa.helpers import require_permission, gen_upload_path, get_relative_path, force_int
+from collipa.helpers import gen_upload_path, get_relative_path, force_int
+from collipa.libs.decorators import require_permission
 
 from collipa import config
 

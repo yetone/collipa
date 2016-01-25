@@ -6,7 +6,8 @@ from ._base import BaseHandler
 from pony import orm
 
 from collipa.models import Tweet, Image
-from collipa.helpers import strip_xss_tags, strip_tags, require_permission
+from collipa.helpers import strip_xss_tags, strip_tags
+from collipa.libs.decorators import require_permission
 
 
 class HomeHandler(BaseHandler):
