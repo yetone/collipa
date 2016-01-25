@@ -2,14 +2,14 @@
 <style type="text/css">
 {% if user.head_img %}
   #head {
-    background: url({{ user.head }});
-    background-size: 100%;
+    background: url({{ user.head }}) no-repeat;
+    background-size: cover;
   }
 {% end %}
 {% if user.background_img %}
   body {
-    background: url({{ user.background }});
-    background-size: 100%;
+    background: url({{ user.background }}) no-repeat;
+    background-size: cover;
   }
 {% end %}
 {% if user.style %}
