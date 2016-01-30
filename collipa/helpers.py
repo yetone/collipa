@@ -398,9 +398,9 @@ def process_video(content):
 
 def process_163music(content):
     embed_tpl = '<div class="music-wrapper"><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="http://music.163.com/outchain/player?type=2&id={music_id}&auto=0&height=66"></iframe></div>'
-    music_ids = re.findall(r'https?://music\.163\.com/#/song/(?P<music_id>\d+)', content)
-    for music_id in music_ids:
-        content = content.replace('http://music.163.com/#/song?id={}'.format(music_id), embed_tpl.format(music_id=music_id))
+    match = re.findall(r'(https?://music\.163\.com/#/song/(\d+))', content)
+    for url, music_id in match:
+        content = content.replace(url, embed_tpl.format(music_id=music_id))
     return content
 
 
