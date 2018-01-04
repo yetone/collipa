@@ -1,9 +1,7 @@
 collipa
 =======
 
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/uQwhr5zoLW3LHe3srwrSyv8A/yetone/collipa'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/uQwhr5zoLW3LHe3srwrSyv8A/yetone/collipa.svg' />
-</a>
+
 
 ## 简介
 
